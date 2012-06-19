@@ -7,8 +7,7 @@
 **  Code: Presence
 **
 **  Last Edit: 20120618
-** hey, in php.ini, do:  disable_functions = phpinfo
-** and in http.conf do: <VirtualHost domain><Location /urldir/>\n php_value mysql.default_user example\n php_value mysql.default_password secretpassword\n </Location></VirtualHost>
+** 	hey, in php.ini, do:  disable_functions = phpinfo
 ****************************************/
 
 function Init() {
