@@ -1,0 +1,29 @@
+RewriteEngine on
+
+# turn pretty SEO url's into presence's index.php dispatcher
+
+RewriteRule ^images - [L]
+RewriteRule ^sources - [L]
+RewriteRule ^favicon.ico - [L]
+RewriteRule ^robots.txt - [L]
+
+RewriteRule ^[/]?$ index.php?page=home [QSA,L]
+
+
+# yeah, literally /Artists will show all artists, but 
+#                 /artist/band_name will show that one band
+# $page name , $aurl and $categoryurl
+RewriteRule ^artist[s]?[/]?([_-a-zA-Z0-9]+)? index.php?page=artist&aurl=$1 [QSA,L,NC]
+RewriteRule ^(category|categories)[/]?([_-a-zA-Z0-9]+)? index.php?page=categories&categoryurl=$2 [QSA,L,NC] 
+
+# static pages just a couple possible typos
+RewriteRule ^tag/([_-a-zA-Z0-9]+) index.php?page=findbytag&tag=$1 [QSA,L,NC]
+RewriteRule ^about[/]? index.php?page=about [QSA,L,NC]
+RewriteRule ^production[/]? index.php?page=production [QSA,L,NC]
+RewriteRule ^contact[/]? index.php?page=contact [QSA,L,NC]
+RewriteRule ^(.*)$ index.php?page=404 [QSA,L,NC]
+
+
+<Files ".ht*">
+deny from all
+</Files>
