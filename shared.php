@@ -16,8 +16,8 @@ function Init() {
 	$host  = "localhost";
 	$db    = "sbpweb";
 	require_once("db.php");
-  //$conn = mysql_pconnect($host, $user, $pass) or die(mysql_error());
-  //mysql_select_db($db);
+  $conn = mysql_pconnect($host, $user, $pass) or die(mysql_error());
+  mysql_select_db($db);
 }
 
 function RecordHit() {

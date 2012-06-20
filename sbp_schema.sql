@@ -1,9 +1,16 @@
+-- MySQL Schema for SBP Web App Database
+-- Presence 2012
+--  mysql> grant usage on *.* to username@localhost identified by 'pass';
+--  mysql> grant all privileges on sbpweb.* to username@localhost;
+
 CREATE TABLE `sbpweb`.`artists` (
 	`aid` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`name` VARCHAR(50) NOT NULL,
+	`url` VARCHAR(50) NOT NULL UNIQUE,
 	`slug` VARCHAR(255) NOT NULL,
 	`is_active` BOOLEAN NOT NULL DEFAULT 0,
-	`is_highlighted` BOOLEAN NOT NULL DEFAULT 0
+	`is_highlighted` BOOLEAN NOT NULL DEFAULT 0,
+	INDEX(`url`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE `sbpweb`.`artistcategories` (
@@ -31,7 +38,7 @@ CREATE TABLE `sbpweb`.`artistlocations` (
 
 CREATE TABLE `sbpweb`.`locations` (
 	`lid` INT NOT NULL PRIMARY KEY,
-	`city` VARCHAR(40) NOT NULL,
+	`city` VARCHAR(40) NOT NULL UNIQUE,
 	`state` CHAR(2) NOT NULL,
 	INDEX(`city`),
 	INDEX(`state`)
@@ -40,6 +47,25 @@ CREATE TABLE `sbpweb`.`locations` (
 CREATE TABLE `sbpweb`.`categories` (
 	`cid` INT NOT NULL PRIMARY KEY,
 	`category` VARCHAR(40) NOT NULL UNIQUE,
-	`description` VARCHAR(250)
+	`url` VARCHAR(50) NOT NULL UNIQUE,
+	`description` VARCHAR(250),
+	INDEX(`url`)
+) ENGINE=InnoDB;
+
+CREATE TABLE `sbpweb`.`videos` (
+	`vid` INT NOT NULL PRIMARY KEY,
+	`aid` INT NOT NULL,
+	`name` VARCHAR(50),
+	`published` date,
+	INDEX(`aid`)
+) ENGINE=InnoDB;
+
+CREATE TABLE `sbpweb`.`sitehits` (
+	`hit_datetime` DATETIME NOT NULL ,
+	`hit_ip` VARCHAR(16) NOT NULL ,
+	`hit_url` VARCHAR(120) NOT NULL ,
+	`user_agent` VARCHAR(255) NULL ,
+	`referrer` VARCHAR(255) NULL ,
+	INDEX(`hit_datetime`,`hit_ip`,`hit_url`)
 ) ENGINE=InnoDB;
 

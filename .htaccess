@@ -10,11 +10,11 @@ RewriteRule ^robots.txt - [L]
 RewriteRule ^[/]?$ index.php?page=home [QSA,L]
 
 
-# yeah, literally /Artists will show all artists, but 
-#                 /artist/band_name will show that one band
-# $page name , $aurl and $categoryurl
-RewriteRule ^artist[s]?[/]?([_-a-zA-Z0-9]+)? index.php?page=artist&aurl=$1 [QSA,L,NC]
-RewriteRule ^(category|categories)[/]?([_-a-zA-Z0-9]+)? index.php?page=categories&categoryurl=$2 [QSA,L,NC] 
+# literally /Artists or /artist/ or /artists/ will show all artists, but 
+# 	/artist/band_name or /artists/band_name or /Artist/Band_Name will show that one band
+# $page name and $url
+RewriteRule ^artist[s]?[/]?([_-a-zA-Z0-9]+)? index.php?page=artist&url=$1 [QSA,L,NC]
+RewriteRule ^(category|categories)[/]?([_-a-zA-Z0-9]+)? index.php?page=categories&url=$2 [QSA,L,NC] 
 
 # static pages just a couple possible typos
 RewriteRule ^tag/([_-a-zA-Z0-9]+) index.php?page=findbytag&tag=$1 [QSA,L,NC]
