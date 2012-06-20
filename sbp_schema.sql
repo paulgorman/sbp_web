@@ -1,0 +1,7 @@
+CREATE TABLE `sbpweb`.`artists (
+	`aid` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`name` VARCHAR(50) NOT NULL,
+	`slug` VARCHAR(255) NOT NULL,
+	`is_active` BOOLEAN NOT NULL DEFAULT 0,
+	`is_highlighted` BOOLEAN NOT NULL DEFAULT 0
+) ENGINE=InnoDB;
