@@ -3,6 +3,11 @@
 --  mysql> grant usage on *.* to username@localhost identified by 'pass';
 --  mysql> grant all privileges on sbpweb.* to username@localhost;
 
+-- DANGER!!! XXX --------------
+-- DROP ALL TABLES FOR A FRESH START HERE 
+DROP TABLE IF EXISTS artists, artistcategories, artistmembers, artistlocations, locations, categories, videos, sitehits, artiststyles, styles;
+-- DANGER!!! XXX --------------
+
 CREATE TABLE `sbpweb`.`artists` (
 	`aid` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`name` VARCHAR(50) NOT NULL,
@@ -66,6 +71,20 @@ CREATE TABLE `sbpweb`.`sitehits` (
 	`hit_url` VARCHAR(120) NOT NULL ,
 	`user_agent` VARCHAR(255) NULL ,
 	`referrer` VARCHAR(255) NULL ,
+	`sessionid` VARCHAR(255) NOT NULL,
+	`sesscount` INT NOT NULL DEFAULT 0,
 	INDEX(`hit_datetime`,`hit_ip`,`hit_url`)
+) ENGINE=InnoDB;
+
+CREATE TABLE `sbpweb`.`artiststyles` (
+	`aid` INT NOT NULL,
+	`sid` INT NOT NULL,
+	INDEX(`aid`),
+	INDEX(`sid`)
+) ENGINE=InnoDB;
+
+CREATE TABLE `sbpweb`.`styles` (
+	`sid` INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+	`name` varchar(40)
 ) ENGINE=InnoDB;
 

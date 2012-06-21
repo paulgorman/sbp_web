@@ -3,8 +3,7 @@
 	require_once("shared.php");
 	Init();
 	RecordHit();
-	echo "You wanted to look at: ";
-	echo $_REQUEST['page'];
+	DebugShow();
 ?>
 
 <br>
