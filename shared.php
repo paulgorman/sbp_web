@@ -199,17 +199,17 @@ function AdminEditCategories() {
 
 function AdminSaveNewCategory() {
 	global $conn;
-	$url = preg_replace("/ /","_",strtolower(strip_tags($_REQUEST['url'])));
-	$category = htmlspecialchars(ucwords($_REQUEST['category']));
+	$url = preg_replace("/ /","_",strtolower(strip_tags($_REQUEST['form_url'])));
+	$category = htmlspecialchars(ucwords($_REQUEST['form_category']));
 	$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`) VALUES ('%s','%s','%s')",
 		mysqli_real_escape_string($conn,$url),
 		mysqli_real_escape_string($conn,$category),
-		mysqli_real_escape_string($conn,($_REQUEST['description']))
+		mysqli_real_escape_string($conn,htmlspecialchars(ucwords($_REQUEST['form_description'])))
 	);
 	if (mysqli_query($conn,$query) === TRUE) {
 		echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Successfully Added.</div>";
 	} else {
-		echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!</div>";
+		echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
 	}
 }
 

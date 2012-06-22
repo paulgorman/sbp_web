@@ -42,7 +42,7 @@ CREATE TABLE `sbpweb`.`artistlocations` (
 ) ENGINE=InnoDB;
 
 CREATE TABLE `sbpweb`.`locations` (
-	`lid` INT NOT NULL PRIMARY KEY,
+	`lid` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`city` VARCHAR(40) NOT NULL UNIQUE,
 	`state` CHAR(2) NOT NULL,
 	INDEX(`city`),
@@ -50,7 +50,7 @@ CREATE TABLE `sbpweb`.`locations` (
 ) ENGINE=InnoDB;
 
 CREATE TABLE `sbpweb`.`categories` (
-	`cid` INT NOT NULL PRIMARY KEY,
+	`cid` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`category` VARCHAR(40) NOT NULL UNIQUE,
 	`url` VARCHAR(50) NOT NULL UNIQUE,
 	`description` VARCHAR(250),
@@ -58,7 +58,7 @@ CREATE TABLE `sbpweb`.`categories` (
 ) ENGINE=InnoDB;
 
 CREATE TABLE `sbpweb`.`videos` (
-	`vid` INT NOT NULL PRIMARY KEY,
+	`vid` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`aid` INT NOT NULL,
 	`name` VARCHAR(50),
 	`published` date,

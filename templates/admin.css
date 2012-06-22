@@ -1,7 +1,16 @@
 <style type="text/css">
 
+body {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:13px;
+}
+
+td {
+	font-size:12px;
+}
+
 .adminTitle {
-	font-family: times, Times New Roman, times-roman, georgia, serif;
+	font-weight: bold;
 	color: #444;
 	margin-left: 10px;
 	padding: 0px 0px 6px 0px;
@@ -12,17 +21,20 @@
 }
 
 .adminNavHolder {
+	font-size:15px;
+  color: #00529B;
+  border: 1px solid;
+	margin: 10px;
+	padding: 15px, 10px, 15px, 50px;
+  background-color: #BDE5F8;
   overflow: auto;
-  width: 100%;
 }
 
 .adminNavItem {
   text-align:center;
-  border: 0px solid rgb(0,0,0);
-/*  width: 8em; */
-  height: 20px;              
+  height: 1.5em;              
   float: left;
-	margin-left: 1em;
+	margin: 0.5em;
 }
 
 .AdminInfo, .AdminSuccess, .AdminWarning, .AdminError, .AdminValidation {
@@ -35,22 +47,22 @@
 .AdminInfo {
     color: #00529B;
     background-color: #BDE5F8;
-    background-image: url('info.png');
+    background-image: url('/templates/icons/Info.png');
 }
 .AdminSuccess {
     color: #4F8A10;
     background-color: #DFF2BF;
-    background-image:url('success.png');
+    background-image:url('/templates/icons/Add.png');
 }
 .AdminWarning {
     color: #9F6000;
     background-color: #FEEFB3;
-    background-image: url('warning.png');
+    background-image: url('/templates/icons/Attention.png');
 }
 .AdminError {
     color: #D8000C;
     background-color: #FFBABA;
-    background-image: url('error.png');
+    background-image: url('/templates/icons/Cancel.png');
 }
 
 /******  This is the Table Content Editing stuff *******/

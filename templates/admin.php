@@ -7,8 +7,9 @@ function AdminHead($curfunction,$adminfunctions) {
 		<html>
 			<head>
 				<title>SBP Admin - <?= $tempadminfunctionsflipped[$curfunction]; ?></title>
+				<script type="text/javascript" src="/templates/tableselect.js"></script>
 	<?			
-	readfile("templates/admin.css");
+		readfile("templates/admin.css");
 	?>
 			</head>
 			<body>
@@ -31,7 +32,6 @@ function AdminNav($curfunction,$adminfunctions) {
 }
 
 function AdminShowCategories ($categorieslist) {
-	echo '<script type="text/javascript" src="/templates/tableselect.js"></script>';
 	?>
 		<table><tr><td>
 			<table class="fixHeader">
@@ -63,11 +63,11 @@ function AdminShowCategories ($categorieslist) {
 				<table class="fixHeader">
 					<tr><td colspan="2">Add New Category</td></tr>
 					<tr><td colspan="2">&nbsp;</td></tr>
-					<tr><td class="shortColumnHead">URL: </td><td class="shortColumnData"><input type="text" name="url"></td></tr>
+					<tr><td class="shortColumnHead">URL: </td><td class="shortColumnData"><input type="text" name="form_url"></td></tr>
 					<tr><td colspan="2" class="mainColumnHead">Category Name: </td></tr>
-					<tr><td colspan="2" class="mainColumnData"><input type="text" name="category"></td></tr>
+					<tr><td colspan="2" class="mainColumnData"><input type="text" name="form_category"></td></tr>
 					<tr><td colspan="2" class="extraColumnHead">Category Description: </td></tr>
-					<tr><td colspan="2" class="extraColumnData"><input type="text" name="description"></td></tr>
+					<tr><td colspan="2" class="extraColumnData"><input type="text" name="form_description"></td></tr>
 					<tr><td colspan="2">&nbsp;</td></tr>
 					<tr><td colspan="2"><input type="submit" value="Add New Category"></td></tr>
 				</table>
