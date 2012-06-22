@@ -25,4 +25,86 @@
 	margin-left: 1em;
 }
 
+.AdminInfo, .AdminSuccess, .AdminWarning, .AdminError, .AdminValidation {
+    border: 1px solid;
+    margin: 10px 0px;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+.AdminInfo {
+    color: #00529B;
+    background-color: #BDE5F8;
+    background-image: url('info.png');
+}
+.AdminSuccess {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+    background-image:url('success.png');
+}
+.AdminWarning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+    background-image: url('warning.png');
+}
+.AdminError {
+    color: #D8000C;
+    background-color: #FFBABA;
+    background-image: url('error.png');
+}
+
+/******  This is the Table Content Editing stuff *******/
+.fixHeader {
+	width: 420px;
+	table-layout:fixed;
+	vertical-align: top; 
+	padding: 10px; 
+	border-spacing: 0px; 
+	border-collapse:collapse;
+	border-width:0px;
+}
+.shortColumnHead {
+	background:#A5A5A5;
+	border: 1px solid #A5A5A5;
+	padding-left:3px;
+	width:60px;
+}
+.mainColumnHead {
+	background:#CCCCCC;
+	border: 1px solid #A5A5A5;
+	padding-left:3px;
+	width:150px;
+}
+.extraColumnHead {
+	background:#A5A5A5;
+	border: 1px solid #A5A5A5;
+	padding-left:3px;
+	width:200px;
+}
+.shortColumnData {
+	width:60px; 
+	overflow:hidden;
+	padding:3px;
+}
+.mainColumnData {
+	width:150px; 
+	overflow:hidden; 
+	padding:5px;
+	padding-left:3px;
+}
+.extraColumnData{
+	width: 200px;
+	overflow: hidden;
+	padding: 5px;
+	padding-left: 3px;
+}
+.scrollableContentOuter {
+	overflow: auto;overflow-x:hidden;height: 400px; width: 420px; border: 1px solid #A5A5A5;
+}
+.scrollableContentInner {
+	width: 402; 
+	table-layout:fixed;
+}
+/******* End Script Flow ORdering stuff ********/
+
 </style>

@@ -165,8 +165,66 @@ function ShowAdminPage() {
 	include("templates/admin.php");
 	AdminHead($_REQUEST['url'],$adminfunctions);
 	AdminNav($_REQUEST['url'],$adminfunctions);
-	if (strlen($_REQUEST['url'] == 0)) {
+	if ((strlen($_REQUEST['url']) == 0) || ($_REQUEST['url'] == "web_stats")) {
 		AdminDisplaySiteStats();
+	} else {
+		if ($_REQUEST['url'] == "categories_list") {
+			if ($_REQUEST['function'] == "add_category") {
+				AdminSaveNewCategory();
+			}
+			if ($_REQUEST['function'] == "del_category") {
+				AdminDeleteCategory();
+			}
+			AdminEditCategories();
+		}
 	}
+}
+
+function AdminEditCategories() {
+	global $conn;
+	$query = "SELECT * FROM `categories`";
+	$result = mysqli_query($conn,$query);
+	$categorieslist = array();
+	while ($row = mysqli_fetch_assoc($result)) {
+		$categorieslist[] = array(
+			"url" => $row['url'],
+			"category" => $row['category'],
+			"description" => $row['description']
+		);
+	}
+	mysqli_free_result($result);
+	aasort($categorieslist,"category");
+	AdminShowCategories($categorieslist);
+}
+
+function AdminSaveNewCategory() {
+	global $conn;
+	$url = preg_replace("/ /","_",strtolower(strip_tags($_REQUEST['url'])));
+	$category = htmlspecialchars(ucwords($_REQUEST['category']));
+	$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`) VALUES ('%s','%s','%s')",
+		mysqli_real_escape_string($conn,$url),
+		mysqli_real_escape_string($conn,$category),
+		mysqli_real_escape_string($conn,($_REQUEST['description']))
+	);
+	if (mysqli_query($conn,$query) === TRUE) {
+		echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Successfully Added.</div>";
+	} else {
+		echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!</div>";
+	}
+}
+
+function aasort (&$array, $key) {
+	// sort an array's array by the sub-array's key name
+	$sorter=array();
+	$ret=array();
+	reset($array);
+	foreach ($array as $ii => $va) {
+		$sorter[$ii]=$va[$key];
+	}
+	asort($sorter);
+	foreach ($sorter as $ii => $va) {
+		$ret[$ii]=$array[$ii];
+	}
+	$array=$ret;
 }
 
