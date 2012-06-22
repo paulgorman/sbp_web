@@ -6,8 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20120618
-** 	hey, in php.ini, do:  disable_functions = phpinfo
+**  Last Edit: 20120620
 ****************************************/
 
 function Init() {
@@ -16,14 +15,14 @@ function Init() {
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
 	$_SESSION['last_move'] = $_SESSION['last_activity']; // testing how long page to page
-	if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
-		// last request was more than 60 minates ago
+	if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 120)) {
+		// last request was more than 60 minates ago (3600 seconds)
 		session_destroy();   // destroy session data in storage
 		session_unset();     // unset $_SESSION variable for the runtime
 	}
 	$_SESSION['last_activity'] = time(); // update last activity time stamp
 	// lets count how many pages visitor's looked at
-	isset($_SESSION['count']) ? $_SESSION['count']++ : $_SESSION['count'] =0;
+	isset($_SESSION['count']) ? $_SESSION['count']++ : $_SESSION['count'] = 0;
 	$host  = "localhost";
 	$db    = "sbpweb";
 	require_once("db.php");
@@ -71,3 +70,21 @@ function DebugShow() {
 		);
 	}
 }
+
+function ShowAdminPage() {
+	$adminfunctions = array(
+		"Welcome" => "",
+		"Artist Editor" => "artist_editor",
+		"Categories List" => "categories_list",
+		"Styles List" => "styles_list",
+		"Locations List" => "locations_list",
+		"Featured Categories" => "categories_featured",
+		"Featured Artists" => "artists_featured",
+		"News Blog" => "blog_editor",
+		"Website Metrics" => "web_stats"
+	);
+	include("templates/admin.php");
+	AdminHead($_REQUEST['url'],$adminfunctions);
+	AdminNav($_REQUEST['url'],$adminfunctions);
+}
+

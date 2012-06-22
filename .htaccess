@@ -13,14 +13,15 @@ RewriteRule ^[/]?$ index.php?page=home [QSA,L]
 # literally /Artists or /artist/ or /artists/ will show all artists, but 
 # 	/artist/band_name or /artists/band_name or /Artist/Band_Name will show that one band
 # $page name and $url
-RewriteRule ^artist[s]?[/]?([_-a-zA-Z0-9]+)? index.php?page=artist&url=$1 [QSA,L,NC]
-RewriteRule ^(category|categories)[/]?([_-a-zA-Z0-9]+)? index.php?page=categories&url=$2 [QSA,L,NC] 
+RewriteRule ^artist[s]?[/]?([a-zA-Z0-9_-]+)? index.php?page=artist&url=$1 [QSA,L,NC]
+RewriteRule ^(category|categories)[/]?([a-zA-Z0-9_-]+)? index.php?page=categories&url=$2 [QSA,L,NC] 
 
 # static pages just a couple possible typos
-RewriteRule ^tag/([_-a-zA-Z0-9]+) index.php?page=findbytag&tag=$1 [QSA,L,NC]
+RewriteRule ^tag/([a-zA-Z0-9_-]+) index.php?page=findbytag&tag=$1 [QSA,L,NC]
 RewriteRule ^about[/]? index.php?page=about [QSA,L,NC]
 RewriteRule ^production[/]? index.php?page=production [QSA,L,NC]
 RewriteRule ^contact[/]? index.php?page=contact [QSA,L,NC]
+RewriteRule ^admin[/]?([a-z_-]+)? index.php?page=admin&url=$1 [QSA,L,NC]
 RewriteRule ^(.*)$ index.php?page=404 [QSA,L,NC]
 
 

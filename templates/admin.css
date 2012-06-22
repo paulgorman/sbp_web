@@ -1,0 +1,28 @@
+<style type="text/css">
+
+.adminTitle {
+	font-family: times, Times New Roman, times-roman, georgia, serif;
+	color: #444;
+	margin-left: 10px;
+	padding: 0px 0px 6px 0px;
+	font-size: 42px;
+	line-height: 40px;
+	letter-spacing: -2px;
+	font-weight: bold;
+}
+
+.adminNavHolder {
+  overflow: auto;
+  width: 100%;
+}
+
+.adminNavItem {
+  text-align:center;
+  border: 0px solid rgb(0,0,0);
+/*  width: 8em; */
+  height: 20px;              
+  float: left;
+	margin-left: 1em;
+}
+
+</style>
