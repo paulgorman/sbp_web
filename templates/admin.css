@@ -5,27 +5,37 @@ body {
 	font-size:13px;
 }
 
+a:link, a:visited {
+	color: #2C6579;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #394C52;
+	text-decoration:underline;
+}
+
 td {
 	font-size:12px;
 }
 
 .adminTitle {
 	font-weight: bold;
+	font-size: 42px;
 	color: #444;
 	margin-left: 10px;
 	padding: 0px 0px 6px 0px;
-	font-size: 42px;
 	line-height: 40px;
 	letter-spacing: -2px;
-	font-weight: bold;
 }
 
 .adminNavHolder {
 	font-size:15px;
   color: #00529B;
   border: 1px solid;
-	margin: 10px;
-	padding: 15px, 10px, 15px, 50px;
+	margin: auto;
+	width: 960px;
+	padding: 15px, 10px, 15px, 10px;
   background-color: #BDE5F8;
   overflow: auto;
 }
@@ -34,89 +44,104 @@ td {
   text-align:center;
   height: 1.5em;              
   float: left;
-	margin: 0.5em;
+	padding: 4px;
 }
 
 .AdminInfo, .AdminSuccess, .AdminWarning, .AdminError, .AdminValidation {
-    border: 1px solid;
-    margin: 10px 0px;
-    padding:15px 10px 15px 50px;
-    background-repeat: no-repeat;
-    background-position: 10px center;
+	border: 1px solid;
+	margin: 10px 0px;
+	padding:15px 10px 15px 50px;
+	background-repeat: no-repeat;
+	background-position: 10px center;
 }
 .AdminInfo {
-    color: #00529B;
-    background-color: #BDE5F8;
-    background-image: url('/templates/icons/Info.png');
+	color: #00529B;
+	background-color: #BDE5F8;
+	background-image: url('/templates/icons/Info.png');
 }
 .AdminSuccess {
-    color: #4F8A10;
-    background-color: #DFF2BF;
-    background-image:url('/templates/icons/Add.png');
+	color: #4F8A10;
+	background-color: #DFF2BF;
+	background-image:url('/templates/icons/Add.png');
 }
 .AdminWarning {
-    color: #9F6000;
-    background-color: #FEEFB3;
-    background-image: url('/templates/icons/Attention.png');
+	color: #9F6000;
+	background-color: #FEEFB3;
+	background-image: url('/templates/icons/Attention.png');
 }
 .AdminError {
-    color: #D8000C;
-    background-color: #FFBABA;
-    background-image: url('/templates/icons/Cancel.png');
+	color: #D8000C;
+	background-color: #FFBABA;
+	background-image: url('/templates/icons/Cancel.png');
 }
 
-/******  This is the Table Content Editing stuff *******/
-.fixHeader {
-	width: 420px;
-	table-layout:fixed;
-	vertical-align: top; 
-	padding: 10px; 
-	border-spacing: 0px; 
-	border-collapse:collapse;
-	border-width:0px;
+.AdminCategoryRemoveIcon {
+	background-image: url('/templates/icons/Remove Red.png');
+	background-size:18px;
+	height:20px;
+	background-repeat:no-repeat;
+	padding-left:22px;
 }
-.shortColumnHead {
-	background:#A5A5A5;
-	border: 1px solid #A5A5A5;
-	padding-left:3px;
-	width:60px;
+
+.AdminCategoryEditIcon {
+	background-image: url('/templates/icons/Snapforward.png');
+	background-size:18px;
+	height:20px;
+	background-repeat:no-repeat;
+	padding-left:22px;
 }
-.mainColumnHead {
-	background:#CCCCCC;
-	border: 1px solid #A5A5A5;
-	padding-left:3px;
-	width:150px;
+
+.metricsOverviewBlock {
+	width: 960px;
+  margin: auto;
 }
-.extraColumnHead {
-	background:#A5A5A5;
-	border: 1px solid #A5A5A5;
-	padding-left:3px;
-	width:200px;
+
+.metricsBlock {
+  color: #00529B;
+  background-color: #BDE5F8;
+  border: 1px solid;
+	width: 300px;
+	float: left;
+	margin: 8px;
 }
-.shortColumnData {
-	width:60px; 
-	overflow:hidden;
-	padding:3px;
+
+.metricsHeader {
+  text-align:center;
+	font-weight: bold;
+	font-size: 13px;
+	color: #444;
+	background-color: #FEEFB3;
+	padding: 4px;
+	width: auto;
 }
-.mainColumnData {
-	width:150px; 
-	overflow:hidden; 
-	padding:5px;
-	padding-left:3px;
+
+.metricsDomain {
+	padding: 4px;
+	font-size: 12px;
+	height: 2em;
+	color: #444;
+	float: left;
+	width: 150px;
 }
-.extraColumnData{
-	width: 200px;
-	overflow: hidden;
-	padding: 5px;
-	padding-left: 3px;
+
+.metricsLabel {
+	padding: 4px;
+	font-size: 12px;
+	color: #444;
+	float: left;
+	width: 40px;
 }
-.scrollableContentOuter {
-	overflow: auto;overflow-x:hidden;height: 400px; width: 420px; border: 1px solid #A5A5A5;
+
+.metricsValue {
+	padding: 4px 0px 0px 0px;
+	font-size: 12px;
+	color: #444;
+	width: 20px;
+	float: right;
 }
-.scrollableContentInner {
-	width: 402; 
-	table-layout:fixed;
+
+.clear {
+	clear: both;
 }
-/******* End Script Flow ORdering stuff ********/
 
 </style>

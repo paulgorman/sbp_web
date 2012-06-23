@@ -86,19 +86,18 @@ function AdminDisplaySiteStats() {
 		$hits[$domain] = $hits[$domain] + 1;
 	}
 	?>
-	<table border="0" cellpadding="10"><tr valign="top"><td>
-		<table border="0" cellpadding="2" cellspacing="0"><tr><td bgcolor="#DE9A40">
-		<table border="0" cellpadding="2" cellspacing="0">
-			<tr><td bgcolor="#DE9A40" colspan="3">Website Activity - 7 Days</td></tr>
+		<div class="metricsOverviewBlock">
+		<div class="metricsBlock">
+			<div class="metricsHeader">Website Activity - 7 Days</div>
 			<? foreach ($domains as $domain) { ?>
-			<tr bgcolor="#2A5756"><td align="right" rowspan="3"><? echo $domain; ?>: </td></tr>
-			<tr bgcolor="#2A5756"><td>Visitors:</td><td><? echo count($visitors[$domain]); ?></td></tr>
-			<tr bgcolor="#2A5756"><td>Hits:</td></td><td><? echo $hits[$domain] + 0; ?></td></tr>
-			<tr><td colspan="3"></td></tr>
+				<div class="metricsDomain"><?= $domain; ?></div>
+				<div class="metricsLabel">Visitors:</div>
+				<div class="metricsValue"><?= count($visitors[$domain]); ?></div>
+				<div class="metricsLabel">Hits:</div>
+				<div class="metricsValue"><?= $hits[$domain] + 0; ?></div>
 			<? } ?>
-		</table></td></tr></table>
-		<?
-
+		</div> <!-- class="metricsBlock" -->
+	<?
 	$hits = array();
 	$visitors = array();
 	$query = "SELECT * FROM sitehits where hit_datetime >= '".DatePHPtoSQL(strtotime('-1 day'))."' AND hit_datetime <= '".DatePHPtoSQL(time())."';";
@@ -110,17 +109,17 @@ function AdminDisplaySiteStats() {
 		$visitors[$domain][$row['hit_ip']] = 1;
 		$hits[$domain] = $hits[$domain] + 1;
 	}
-	?></td><td>
-		<table border="0" cellpadding="2" cellspacing="0"><tr><td bgcolor="#DE9A40">
-		<table border="0" cellpadding="2" cellspacing="0">
-			<tr><td bgcolor="#DE9A40" colspan="3">Website Activity - 24 Hours</td></tr>
+	?>
+		<div class="metricsBlock">
+			<div class="metricsHeader">Website Activity - 24 Hours</div>
 			<? foreach ($domains as $domain) { ?>
-			<tr bgcolor="#2A5756"><td align="right" rowspan="3"><? echo $domain; ?>: </td></tr>
-			<tr bgcolor="#2A5756"><td>Visitors:</td><td><? echo count($visitors[$domain]); ?></td></tr>
-			<tr bgcolor="#2A5756"><td>Hits:</td></td><td><? echo $hits[$domain] + 0; ?></td></tr>
-			<tr><td colspan="3"></td></tr>
+				<div class="metricsDomain"><?= $domain; ?></div>
+				<div class="metricsLabel">Visitors:</div>
+				<div class="metricsValue"><?= count($visitors[$domain]); ?></div>
+				<div class="metricsLabel">Hits:</div>
+				<div class="metricsValue"><?= $hits[$domain] + 0; ?></div>
 			<? } ?>
-		</table></td></tr></table>
+		</div> <!-- class="metricsBlock" -->
 		<?
 
 	$hits = array();
@@ -135,19 +134,19 @@ function AdminDisplaySiteStats() {
 		$visitors[$domain][$row['hit_ip']] = 1;
 		$hits[$domain] = $hits[$domain] + 1;
 	}
-	?></td><td>
-		<table border="0" cellpadding="2" cellspacing="0"><tr><td bgcolor="#DE9A40">
-		<table border="0" cellpadding="2" cellspacing="0">
-			<tr><td bgcolor="#DE9A40" colspan="3">Website Activity - 60 Minutes</td></tr>
+	?>
+		<div class="metricsBlock">
+			<div class="metricsHeader">Website Activity - 60 Minutes</div>
 			<? foreach ($domains as $domain) { ?>
-			<tr bgcolor="#2A5756"><td align="right" rowspan="3"><? echo $domain; ?>: </td></tr>
-			<tr bgcolor="#2A5756"><td>Visitors:</td><td><? echo count($visitors[$domain]); ?></td></tr>
-			<tr bgcolor="#2A5756"><td>Hits:</td></td><td><? echo $hits[$domain] + 0; ?></td></tr>
-			<tr><td colspan="3"></td></tr>
+				<div class="metricsDomain"><?= $domain; ?></div>
+				<div class="metricsLabel">Visitors:</div>
+				<div class="metricsValue"><?= count($visitors[$domain]); ?></div>
+				<div class="metricsLabel">Hits:</div>
+				<div class="metricsValue"><?= $hits[$domain] + 0; ?></div>
 			<? } ?>
-		</table></td></tr></table>
-		</td></tr></table>
-		<?
+		</div> <!-- class="metricsBlock" -->
+		</div> <!-- class="MetricsOverviewBlock" -->
+	<?
 }
 
 function ShowAdminPage() {
@@ -169,15 +168,27 @@ function ShowAdminPage() {
 		AdminDisplaySiteStats();
 	} else {
 		if ($_REQUEST['url'] == "categories_list") {
-			if ($_REQUEST['function'] == "add_category") {
-				AdminSaveNewCategory();
+			switch($_REQUEST['function']) {
+				case "add_category":
+					AdminSaveNewCategory();
+					AdminEditCategories();
+					break;
+				case "del_category":
+					AdminDeleteCategory();
+					AdminEditCategories();
+					break;
+				case "edit_category":
+					AdminEditSingleCategory($_REQUEST['categoryurl']);
+					break;
+				default:
+					AdminEditCategories();
 			}
-			if ($_REQUEST['function'] == "del_category") {
-				AdminDeleteCategory();
-			}
-			AdminEditCategories();
 		}
 	}
+}
+
+function AdminEditSingleCategory($targetcategoryurl) {
+	echo "editing the fields for <B>$targetcategoryurl</B>";
 }
 
 function AdminEditCategories() {

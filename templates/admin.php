@@ -33,32 +33,34 @@ function AdminNav($curfunction,$adminfunctions) {
 
 function AdminShowCategories ($categorieslist) {
 	?>
-		<table><tr><td>
-			<table class="fixHeader">
-				<tr>
-					<td class="shortColumnHead">URL</td>
-					<td class="mainColumnHead">Category</td>
-					<td class="extraColumnHead">Description</td>
-				</tr>
-			</table>
-			<div class="scrollableContentOuter">
-				<table id="available_contacts" class="scrollableContentInner" onkeydown="changeHighLightTR(event, this);">
-					<? foreach ($categorieslist as $catkey => $catvalues) { ?>
-						<tr id="<?=$catvalues['cid']; ?>" onclick="highLightTR(event, this, '#4A9481', '#FFFFFF', '#316AC5', '#FFFFFF');">
-							<td class="shortColumnData"><?=$catvalues['url'] ?></td>
-							<td class="mainColumnData"><?=$catvalues['category'] ?></td>
-							<td class="extraColumnData"><?=$catvalues['description'] ?></td>
-						</tr>
-					<? } ?>
-				</table>
+		<div class="AdminCategoryRemoveIcon">x</div>
+		<div class="AdminCategoryEditIcon">x</div>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListHeaderItem">URL</div>
+				<div class="AdminCategoryListHeaderItem">Category</div>
+				<div class="AdminCategoryListHeaderItem">Description</div>
 			</div>
-		</td>
-		<td align="middle">
-			<br><input type="button" onclick="transfer('selected_contacts','available_contacts');" value="Remove">
-			<br><input type="button" onclick="_submitEdit(1,'del_category');" value="Save">
-		</td>
-		<td valign="top">
-			<form method="POST" action="/admin/categories_list">
+			<? foreach ($categorieslist as $catkey => $catvalues) { ?>
+				<form method="POST" action="/admin/categories_list" name="edit<?= $catvalues['url']; ?>">
+					<div class="AdminCategoryListItem" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" style="cursor: pointer;"><?=$catvalues['url'] ?></div>
+					<div class="AdminCategoryListItem" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" style="cursor: pointer;"><?=$catvalues['category'] ?></div>
+					<div class="AdminCategoryListItem" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" style="cursor: pointer;"><?=$catvalues['description'] ?></div>
+					<div class="AdminCategoryListItem" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;">
+						<input type="hidden" name="categoryurl" value="<?= $catvalues['url']; ?>">
+						<input type="hidden" name="function" value="edit_category">
+						<a href="javascript:;" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategoryEditIcon" title="Edit '<?= $catvalues['category'] ?>' Category"></a>
+					</div> <!-- class="AdminCategoryListItem" -->
+				</form>
+				<form method="POST" action="/admin/categories_list" name="del<?= $catvalues['url']; ?>">
+					<div class="AdminCategoryListItem">
+						<a href="javascript:;" onclick="document.forms['del<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategoryRemoveIcon" title="Remove '<?= $catvalues['category']; ?>' Category"></a>
+					</div>
+				</form>
+			<? } ?>
+		</div> <!-- AdminCategoryListContainer -->
+
+				<form method="POST" action="/admin/categories_list">
 				<input type="hidden" name="function" value="add_category">
 				<table class="fixHeader">
 					<tr><td colspan="2">Add New Category</td></tr>
@@ -72,6 +74,5 @@ function AdminShowCategories ($categorieslist) {
 					<tr><td colspan="2"><input type="submit" value="Add New Category"></td></tr>
 				</table>
 			</form>
-		</td></tr></table>
 	<?
 }
