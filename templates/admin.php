@@ -20,11 +20,11 @@ function AdminHead($curfunction,$adminfunctions) {
 function AdminNav($curfunction,$adminfunctions) {
 	echo "<div class='adminNavHolder'>";
 	foreach ($adminfunctions as $nicename => $url) { 
-		echo "<div class='adminNavItem'> [<a href='/admin/$url'>"; 
+		echo "<div class='adminNavItem'> <a href='/admin/$url'>"; 
 		if ($curfunction == $url) { 
-			echo "<B>$nicename</B></a>]";
+			echo "<B>" . strtoupper($nicename) . "</B></a>";
 		} else { 
-			echo "$nicename</a>]"; 
+			echo strtoupper($nicename) . "</a>"; 
 		}
 		echo '</div>';
 	}

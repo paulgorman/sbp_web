@@ -10,7 +10,7 @@
 ****************************************/
 
 function Init() {
-  global $conn;
+	global $conn;
 	error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
@@ -151,15 +151,14 @@ function AdminDisplaySiteStats() {
 
 function ShowAdminPage() {
 	$adminfunctions = array(
-		"Welcome" => "",
-		"Artist Editor" => "artist_editor",
-		"Categories List" => "categories_list",
-		"Styles List" => "styles_list",
-		"Locations List" => "locations_list",
-		"Featured Categories" => "categories_featured",
-		"Featured Artists" => "artists_featured",
-		"News Blog" => "blog_editor",
-		"Website Metrics" => "web_stats"
+		"Overview" => "",
+		"Artists" => "artist_editor",
+		"Categories" => "categories_list",
+		"Styles" => "styles_list",
+		"Locations" => "locations_list",
+		"Featured" => "categories_featured",
+		"Blog" => "blog_editor",
+		"Metrics" => "web_stats"
 	);
 	include("templates/admin.php");
 	AdminHead($_REQUEST['url'],$adminfunctions);
