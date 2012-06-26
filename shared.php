@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20120620
+**  Last Edit: 20120625
 ****************************************/
 
 function Init() {
@@ -26,7 +26,7 @@ function Init() {
 	$host  = "localhost";
 	$db    = "sbpweb";
 	require_once("db.php");
-  $conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
+	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
 }
 
 function RecordHit() {

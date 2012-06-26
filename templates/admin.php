@@ -3,11 +3,10 @@
 
 function AdminHead($curfunction,$adminfunctions) {
 	$tempadminfunctionsflipped = array_flip ($adminfunctions);
-	?>
+	?><!DOCTYPE html>
 		<html>
 			<head>
 				<title>SBP Admin - <?= $tempadminfunctionsflipped[$curfunction]; ?></title>
-				<script type="text/javascript" src="/templates/tableselect.js"></script>
 	<?			
 		readfile("templates/admin.css");
 	?>
@@ -33,46 +32,46 @@ function AdminNav($curfunction,$adminfunctions) {
 
 function AdminShowCategories ($categorieslist) {
 	?>
-		<div class="AdminCategoryRemoveIcon">x</div>
-		<div class="AdminCategoryEditIcon">x</div>
 		<div class="AdminCategoryListContainer">
 			<div class="AdminCategoryListHeader">
-				<div class="AdminCategoryListHeaderItem">URL</div>
-				<div class="AdminCategoryListHeaderItem">Category</div>
-				<div class="AdminCategoryListHeaderItem">Description</div>
+				<div class="AdminCategoryListItemURL">URL</div>
+				<div class="AdminCategoryListItemCategory">Category Name</div>
+				<div class="AdminCategoryListItemDescription">Description</div>
 			</div>
+			<div class="clear"></div>
 			<? foreach ($categorieslist as $catkey => $catvalues) { ?>
-				<form method="POST" action="/admin/categories_list" name="edit<?= $catvalues['url']; ?>">
-					<div class="AdminCategoryListItem" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" style="cursor: pointer;"><?=$catvalues['url'] ?></div>
-					<div class="AdminCategoryListItem" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" style="cursor: pointer;"><?=$catvalues['category'] ?></div>
-					<div class="AdminCategoryListItem" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" style="cursor: pointer;"><?=$catvalues['description'] ?></div>
-					<div class="AdminCategoryListItem" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;">
-						<input type="hidden" name="categoryurl" value="<?= $catvalues['url']; ?>">
-						<input type="hidden" name="function" value="edit_category">
-						<a href="javascript:;" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategoryEditIcon" title="Edit '<?= $catvalues['category'] ?>' Category"></a>
-					</div> <!-- class="AdminCategoryListItem" -->
-				</form>
-				<form method="POST" action="/admin/categories_list" name="del<?= $catvalues['url']; ?>">
-					<div class="AdminCategoryListItem">
-						<a href="javascript:;" onclick="document.forms['del<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategoryRemoveIcon" title="Remove '<?= $catvalues['category']; ?>' Category"></a>
+				<div class="AdminCategoryListRow">
+					<form method="POST" action="/admin/categories_list" name="edit<?= $catvalues['url']; ?>">
+						<div class="AdminCategoryListItemURL" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['url'] ?></div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['category'] ?></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['description'] ?></div>
+						<div class="AdminCategoryListItemIcon" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;">
+							<input type="hidden" name="categoryurl" value="<?= $catvalues['url']; ?>">
+							<input type="hidden" name="function" value="edit_category">
+							<a href="javascript:;" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategoryEditIcon" title="Edit '<?= $catvalues['category'] ?>' Category"></a>
+						</div> <!-- class="AdminCategoryListItem" -->
+					</form>
+					<div class="AdminCategoryListItemIcon">
+						<form method="POST" action="/admin/categories_list" name="del<?= $catvalues['url']; ?>">
+							<a href="javascript:;" onclick="document.forms['del<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategoryRemoveIcon" title="Remove '<?= $catvalues['category']; ?>' Category"></a>
+						</form>
 					</div>
-				</form>
+				</div>  <!-- class="AdminCategoryListRow" -->
 			<? } ?>
 		</div> <!-- AdminCategoryListContainer -->
-
-				<form method="POST" action="/admin/categories_list">
-				<input type="hidden" name="function" value="add_category">
-				<table class="fixHeader">
-					<tr><td colspan="2">Add New Category</td></tr>
-					<tr><td colspan="2">&nbsp;</td></tr>
-					<tr><td class="shortColumnHead">URL: </td><td class="shortColumnData"><input type="text" name="form_url"></td></tr>
-					<tr><td colspan="2" class="mainColumnHead">Category Name: </td></tr>
-					<tr><td colspan="2" class="mainColumnData"><input type="text" name="form_category"></td></tr>
-					<tr><td colspan="2" class="extraColumnHead">Category Description: </td></tr>
-					<tr><td colspan="2" class="extraColumnData"><input type="text" name="form_description"></td></tr>
-					<tr><td colspan="2">&nbsp;</td></tr>
-					<tr><td colspan="2"><input type="submit" value="Add New Category"></td></tr>
-				</table>
-			</form>
+		<div class="clear"></div>
+		<form method="POST" action="/admin/categories_list">
+			<input type="hidden" name="function" value="add_category">
+			<div class="AdminCategoryListingAddContainer">
+				<div class="AdminCategoryListingAddHeader">Add New Category</div>
+				<div class="AdminCategoryListingAddItem">URL</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_url" length="15" style="text-transform: lowercase"></div>
+				<div class="AdminCategoryListingAddItem">Category Name</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_category" length="20"></div>
+				<div class="AdminCategoryListingAddItem">Description</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" length="30"></div>
+				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Category"></div>
+			</div> <!-- class="AdminCategoryListingAddContainer" -->
+		</form>
 	<?
 }

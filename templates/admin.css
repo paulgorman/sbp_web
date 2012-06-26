@@ -30,21 +30,28 @@ td {
 }
 
 .adminNavHolder {
-	font-size:15px;
-  color: #00529B;
-  border: 1px solid;
+	text-align: center;
+	font-size: 15px;
+	color: #00529B;
+	border: 1px solid;
 	margin: auto;
 	width: 960px;
 	padding: 15px, 10px, 15px, 10px;
-  background-color: #BDE5F8;
-  overflow: auto;
+	background-color: #BDE5F8;
+	overflow: auto;
 }
 
 .adminNavItem {
-  text-align:center;
-  height: 1.5em;              
-  float: left;
+	text-align: center;
+	height: 1.5em;              
+	float: left;
+	width: 100px;
+	margin: auto;
 	padding: 4px;
+}
+
+.adminNavItem:hover {
+	background-color: #BFEFFF;
 }
 
 .AdminInfo, .AdminSuccess, .AdminWarning, .AdminError, .AdminValidation {
@@ -75,38 +82,110 @@ td {
 	background-image: url('/templates/icons/Cancel.png');
 }
 
+.AdminCategoryListContainer {
+	padding-top: 10px;
+	width:960px;
+	margin: auto;
+}
+
+.AdminCategoryListHeader {
+	text-align: left;
+	font-weight: bold;
+	font-size: 14px;
+	background-color: #FEEFB3;
+	padding: 4px;
+	width: auto;
+	height: 1.5em;
+	margin-bottom: 1em;
+}
+
+.AdminCategoryListRow {
+	font-size: 12px;
+	color: #444;
+	margin: 2px;
+	border: 1px solid;
+	height: 2em;
+}
+
+.AdminCategoryListRow:hover {
+	background-color: #BDE5F8;
+	border: 1px solid;
+	cursor: pointer;
+}
+
+.AdminCategoryListItemURL {
+	padding: 4px;
+	float: left;
+	width: 10em;
+}
+
+.AdminCategoryListItemCategory {
+	padding: 4px;
+	float: left;
+	width: 15em;
+}
+
+.AdminCategoryListItemDescription {
+	padding: 4px;
+	float: left;
+	width: 40em;
+}
+
+.AdminCategoryListItemIcon {
+	float: left;
+	width: 22px;
+	height: 1.5em;
+	vertical-align: top;
+}
+
 .AdminCategoryRemoveIcon {
 	background-image: url('/templates/icons/Remove Red.png');
 	background-size:18px;
-	height:20px;
 	background-repeat:no-repeat;
 	padding-left:22px;
+	height: 1.5em;
+	vertical-align: top;
+	float:left;
 }
 
 .AdminCategoryEditIcon {
 	background-image: url('/templates/icons/Snapforward.png');
 	background-size:18px;
-	height:20px;
 	background-repeat:no-repeat;
 	padding-left:22px;
+	height: 1.5em;
+	vertical-align: top;
+	float:left;
+}
+
+.AdminCategoryListingAddContainer {
+}
+
+.AdminCategoryListingAddHeader {
+}
+
+.AdminCategoryListingAddItem {
+}
+
+.AdminCategoryListingAddValue {
 }
 
 .metricsOverviewBlock {
 	width: 960px;
-  margin: auto;
+	margin: auto;
 }
 
 .metricsBlock {
-  color: #00529B;
-  background-color: #BDE5F8;
-  border: 1px solid;
+	color: #00529B;
+	background-color: #BDE5F8;
+	border: 1px solid;
 	width: 300px;
 	float: left;
 	margin: 8px;
 }
 
 .metricsHeader {
-  text-align:center;
+	text-align:center;
 	font-weight: bold;
 	font-size: 13px;
 	color: #444;
