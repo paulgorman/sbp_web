@@ -83,9 +83,13 @@ td {
 }
 
 .AdminCategoryListContainer {
-	padding-top: 10px;
+	color: #9F6000;
+	background-color: #FEEFB3;
+	margin-top: 10px;
+	border: 1px solid;
 	width:960px;
-	margin: auto;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .AdminCategoryListHeader {
@@ -96,18 +100,20 @@ td {
 	padding: 4px;
 	width: auto;
 	height: 1.5em;
-	margin-bottom: 1em;
+	margin-bottom: 4px
 }
 
 .AdminCategoryListRow {
+	color: #9F6000;
+	background-color: #FFFFFF;
 	font-size: 12px;
-	color: #444;
 	margin: 2px;
 	border: 1px solid;
 	height: 2em;
 }
 
 .AdminCategoryListRow:hover {
+	color: #00529B;
 	background-color: #BDE5F8;
 	border: 1px solid;
 	cursor: pointer;
@@ -117,18 +123,21 @@ td {
 	padding: 4px;
 	float: left;
 	width: 10em;
+	color: #444;
 }
 
 .AdminCategoryListItemCategory {
 	padding: 4px;
 	float: left;
 	width: 15em;
+	color: #444;
 }
 
 .AdminCategoryListItemDescription {
 	padding: 4px;
 	float: left;
 	width: 40em;
+	color: #444;
 }
 
 .AdminCategoryListItemIcon {
@@ -156,6 +165,16 @@ td {
 	height: 1.5em;
 	vertical-align: top;
 	float:left;
+}
+
+.AdminCategorySearchIcon {
+	background-image: url('/templates/icons/Search.png');
+	background-size: 18px;
+	background-repeat: no-repeat;
+	padding-left: 22px;
+	height: 1.5em;
+	vertical-align:top;
+	float: left;
 }
 
 .AdminCategoryListingAddContainer {

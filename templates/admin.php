@@ -53,7 +53,16 @@ function AdminShowCategories ($categorieslist) {
 					</form>
 					<div class="AdminCategoryListItemIcon">
 						<form method="POST" action="/admin/categories_list" name="del<?= $catvalues['url']; ?>">
+							<input type="hidden" name="categoryurl" value="<?= $catvalues['url']; ?>">
+							<input type="hidden" name="function" value="del_category">
 							<a href="javascript:;" onclick="document.forms['del<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategoryRemoveIcon" title="Remove '<?= $catvalues['category']; ?>' Category"></a>
+						</form>
+					</div>
+					<div class="AdminCategoryListItemIcon">
+						<form method="POST" action="/admin/categories_list" name="search<?= $catvalues['url']; ?>">
+							<input type="hidden" name="categoryurl" value="<?= $catvalues['url']; ?>">
+							<input type="hidden" name="function" value="search_category">
+							<a href="javascript:;" onclick="document.forms['search<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategorySearchIcon" title="Show all artists in the '<?= $catvalues['category']; ?>' Category"></a>
 						</form>
 					</div>
 				</div>  <!-- class="AdminCategoryListRow" -->
@@ -73,5 +82,19 @@ function AdminShowCategories ($categorieslist) {
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Category"></div>
 			</div> <!-- class="AdminCategoryListingAddContainer" -->
 		</form>
+	<?
+}
+
+function AdminShowDeleteConfirmation($targetcategoryurl,$url,$nextfunction) {
+	?>
+		<div class="AdminWarning">
+			<form method="POST" action="/admin/<?= $url ?>">
+				<input type="hidden" name="targetcategoryurl" value="<?= $targetcategoryurl ?>">
+				<input type="hidden" name="function" value="<?= $nextfunction ?>">
+				Are you sure you want to delete <B><?= $targetcategoryurl ?></B>?<br>
+				Proceding will have this feature removed from any artists possessing the feature.<br>
+				<input type="submit" value="Delete"><input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/<?= $url ?>'">
+			</form>
+		</div>
 	<?
 }

@@ -173,7 +173,10 @@ function ShowAdminPage() {
 					AdminEditCategories();
 					break;
 				case "del_category":
-					AdminDeleteCategory();
+					AdminDeleteCategory($_REQUEST['categoryurl']);
+					break;
+				case "del_category_for_reals":
+					AdminDeleteCategoryGo($_REQUEST['targetcategoryurl']);
 					AdminEditCategories();
 					break;
 				case "edit_category":
@@ -188,6 +191,43 @@ function ShowAdminPage() {
 
 function AdminEditSingleCategory($targetcategoryurl) {
 	echo "editing the fields for <B>$targetcategoryurl</B>";
+}
+
+function AdminDeleteCategory($targetcategoryurl) {
+	$nextfunction = "del_category_for_reals";
+	$url = "categories_list";
+	AdminShowDeleteConfirmation($targetcategoryurl,$url,$nextfunction);
+}
+
+function AdminDeleteCategoryGo($targetcategoryurl) {
+	global $conn;
+	// fetch us the category id for tihs url
+	// XXX: could this be some sort of joined thing?  Yeah.  Am I doing it?  Dunno how.  Does it matter?  Not this time.
+	$query = sprintf("SELECT `cid` FROM `categories` WHERE `url` = '%s'",
+		mysqli_real_escape_string($conn,$targetcategoryurl)
+	);
+	$result = mysqli_query($conn,$query);
+	$cid = mysqli_fetch_array($result)[0];
+	if (strlen($cid) == 0) {
+		echo "<div class='AdminError'>Huh, I couldn't retrieve the cid from $targetcategoryurl.". mysqli_error($conn) ."</div>";
+	}
+	// find all artists using this category in `artistcategories` and clean 'em up
+	$query = sprintf("DELETE FROM `artistcategories` WHERE `cid` = '%s'",
+		mysqli_real_escape_string($conn,$cid)
+	);
+	if (mysqli_query($conn,$query) === FALSE) {
+		echo "<div class='AdminError'>Whoa, couldn't delete '$cid' from artistcategories.". mysqli_error($conn) ."</div>";
+	}
+	$artists = array();	
+	// delete the category from `categories`
+	$query = sprintf("DELETE FROM `categories` WHERE `cid` = '%s'",
+		mysqli_real_escape_string($conn,$cid)
+	);
+	if (mysqli_query($conn,$query) === TRUE) {
+		echo "<div class='AdminSuccess'>The light is green, the trap is clean.</div>";
+	} else {
+		echo "<div class='AdminError'>Hmm, couldn't delete '$cid' from categories.". mysqli_error($conn) ."</div>";
+	}
 }
 
 function AdminEditCategories() {
@@ -209,17 +249,21 @@ function AdminEditCategories() {
 
 function AdminSaveNewCategory() {
 	global $conn;
-	$url = preg_replace("/ /","_",strtolower(strip_tags($_REQUEST['form_url'])));
-	$category = htmlspecialchars(ucwords($_REQUEST['form_category']));
-	$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`) VALUES ('%s','%s','%s')",
-		mysqli_real_escape_string($conn,$url),
-		mysqli_real_escape_string($conn,$category),
-		mysqli_real_escape_string($conn,htmlspecialchars(ucwords($_REQUEST['form_description'])))
-	);
-	if (mysqli_query($conn,$query) === TRUE) {
-		echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Successfully Added.</div>";
+	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0) {
+		echo "<div class='AdminError'>Please fill in all three fields!</div>";
 	} else {
-		echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
+		$url = preg_replace("/ /","_",strtolower(strip_tags($_REQUEST['form_url'])));
+		$category = htmlspecialchars(ucwords($_REQUEST['form_category']));
+		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`) VALUES ('%s','%s','%s')",
+			mysqli_real_escape_string($conn,$url),
+			mysqli_real_escape_string($conn,$category),
+			mysqli_real_escape_string($conn,htmlspecialchars(ucwords($_REQUEST['form_description'])))
+		);
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Successfully Added.</div>";
+		} else {
+			echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
+		}
 	}
 }
 
