@@ -4,8 +4,10 @@
 function AdminHead($curfunction,$adminfunctions) {
 	$tempadminfunctionsflipped = array_flip ($adminfunctions);
 	?><!DOCTYPE html>
-		<html>
+		<html lang="en">
 			<head>
+				<meta http-equiv="X-UA-Compatible" content="IE=edge">
+				<meta charset="utf-8">
 				<title>SBP Admin - <?= $tempadminfunctionsflipped[$curfunction]; ?></title>
 	<?			
 		readfile("templates/admin.css");
