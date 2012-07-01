@@ -19,9 +19,9 @@ function AdminHead($curfunction,$adminfunctions) {
 }
 
 function AdminNav($curfunction,$adminfunctions) {
-	echo "<div class='adminNavHolder'>";
+	echo "<nav class='adminNavHolder'>";
 	foreach ($adminfunctions as $nicename => $url) { 
-		echo "<div class='adminNavItem'> <a href='/admin/$url'>"; 
+		echo "<div class='adminNavItem'><a href='/admin/$url'>"; 
 		if ($curfunction == $url) { 
 			echo "<B>" . strtoupper($nicename) . "</B></a>";
 		} else { 
@@ -29,7 +29,7 @@ function AdminNav($curfunction,$adminfunctions) {
 		}
 		echo '</div>';
 	}
-	echo "</div>";
+	echo "</nav>";
 }
 
 function AdminShowCategories ($categorieslist) {
@@ -71,17 +71,21 @@ function AdminShowCategories ($categorieslist) {
 			<? } ?>
 		</div> <!-- AdminCategoryListContainer -->
 		<div class="clear"></div>
-		<form method="POST" action="/admin/categories_list">
+		<form method="POST" action="/admin/categories_list" enctype="multipart/form-data">
 			<input type="hidden" name="function" value="add_category">
 			<div class="AdminCategoryListingAddContainer">
-				<div class="AdminCategoryListingAddHeader">Add New Category</div>
+				<div class="AdminCategoryListingAddHeader">ADD NEW CATEGORY</div>
 				<div class="AdminCategoryListingAddItem">URL</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="form_url" length="15" style="text-transform: lowercase"></div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_url" size="15" style="text-transform: lowercase"></div>
 				<div class="AdminCategoryListingAddItem">Category Name</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="form_category" length="20"></div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_category" size="20"></div>
 				<div class="AdminCategoryListingAddItem">Description</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" length="30"></div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" size="40"></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">Category Logo</div>
+				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple=""></div>
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Category"></div>
+				<div class="clear"></div>
 			</div> <!-- class="AdminCategoryListingAddContainer" -->
 		</form>
 	<?

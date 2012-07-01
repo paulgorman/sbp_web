@@ -178,15 +178,55 @@ td {
 }
 
 .AdminCategoryListingAddContainer {
+	color: #4F8A10;
+	background-color: #DFF2BF;
+	margin-top: 2em;
+	border: 1px solid;
+	width:960px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .AdminCategoryListingAddHeader {
+	background-image:url('/templates/icons/Add.png');
+	background-repeat: no-repeat;
+	background-position: 10px top;
+	padding: 10px 0px 10px 0px;
+	text-align: left;
+	font-weight: bold;
+	font-size: 14px;
+	padding: 10px 0px 0px 45px;
+	width: auto;
+	height: 1.5em;
+	margin-bottom: 8px;
+	margin-top: 4px;
 }
 
 .AdminCategoryListingAddItem {
+	color: #4F8A10;
+	font-weight: bold;
+	font-size: 13px;
+	margin: 2px;
+	float: left;
+	padding-left: 45px;
+	text-align: right;
 }
 
 .AdminCategoryListingAddValue {
+	color: #4F8A10;
+	background-color: #FFFFFF;
+	font-size: 12px;
+	margin: 2px;
+	border: 0px solid;
+	height: 2em;
+	float: left;
+}
+
+.AdminCategoryListingAddSubmit {
+	height: 2em;
+	margin: 2px;
+	padding-left: 4em;
+	float: left;
 }
 
 .metricsOverviewBlock {
