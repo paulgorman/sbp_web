@@ -249,15 +249,16 @@ function AdminEditCategories() {
 
 function AdminSaveNewCategory() {
 	global $conn;
+	$fileid = uniqid();
 	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0) {
 		echo "<div class='AdminError'>Please fill in all three fields!</div>";
 	} else {
-		$url = preg_replace("/ /","_",strtolower(strip_tags($_REQUEST['form_url'])));
-		$category = htmlspecialchars(ucwords($_REQUEST['form_category']));
+		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
+		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
 		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`) VALUES ('%s','%s','%s')",
 			mysqli_real_escape_string($conn,$url),
 			mysqli_real_escape_string($conn,$category),
-			mysqli_real_escape_string($conn,htmlspecialchars(ucwords($_REQUEST['form_description'])))
+			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description']))))
 		);
 		if (mysqli_query($conn,$query) === TRUE) {
 			echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Successfully Added.</div>";

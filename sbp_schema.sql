@@ -15,7 +15,7 @@ CREATE TABLE `sbpweb`.`artists` (
 	`slug` VARCHAR(255) NOT NULL,
 	`is_active` BOOLEAN NOT NULL DEFAULT 0,
 	`is_highlighted` BOOLEAN NOT NULL DEFAULT 0,
-	`last_updated` DATETIME,
+	`last_updated` DATETIME NOT NULL,
 	INDEX(`url`)
 ) ENGINE=InnoDB;
 
@@ -55,7 +55,9 @@ CREATE TABLE `sbpweb`.`categories` (
 	`category` VARCHAR(40) NOT NULL UNIQUE,
 	`url` VARCHAR(50) NOT NULL UNIQUE,
 	`description` VARCHAR(250),
-	`image` VARCHAR(30) NOT NULL UNIQUE,
+	`image_filename` VARCHAR(30) NOT NULL UNIQUE,
+	`image_id` CHAR(13) NOT NULL UNIQUE,
+	`last_updated` DATETIME NOT NULL,
 	INDEX(`url`)
 ) ENGINE=InnoDB;
 
