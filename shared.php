@@ -249,10 +249,18 @@ function AdminEditCategories() {
 
 function AdminSaveNewCategory() {
 	global $conn;
-	$fileid = uniqid();
 	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0) {
 		echo "<div class='AdminError'>Please fill in all three fields!</div>";
 	} else {
+		$fileid = uniqid();
+		print_r($_FILES); 
+
+		if(count($_FILES['filesToUpload']['name'])) {
+			foreach ($_FILES['filesToUpload']['tmp_name'] as $ref => $fullfilename) {
+				move_uploaded_file($fullfilename, "uploads/" . $_FILES['filesToUpload']['name'][$ref] );
+				echo ".";
+			}
+		}
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
 		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
 		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`) VALUES ('%s','%s','%s')",
