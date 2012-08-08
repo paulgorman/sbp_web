@@ -56,7 +56,7 @@ CREATE TABLE `sbpweb`.`categories` (
 	`url` VARCHAR(50) NOT NULL UNIQUE,
 	`description` VARCHAR(250),
 	`image_filename` VARCHAR(30) NOT NULL UNIQUE,
-	`image_id` CHAR(13) NOT NULL UNIQUE,
+	`image_id` CHAR(17) NOT NULL UNIQUE,
 	`last_updated` DATETIME NOT NULL,
 	INDEX(`url`)
 ) ENGINE=InnoDB;

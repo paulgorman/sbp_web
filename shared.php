@@ -11,6 +11,7 @@
 
 function Init() {
 	global $conn;
+	global $dirlocation;
 	error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
@@ -27,6 +28,7 @@ function Init() {
 	$db    = "sbpweb";
 	require_once("db.php");
 	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
+	$dirlocation = "/home/presence/samba_public_share/sbp_app";	// no trailing slash.
 }
 
 function RecordHit() {
@@ -201,13 +203,14 @@ function AdminDeleteCategory($targetcategoryurl) {
 
 function AdminDeleteCategoryGo($targetcategoryurl) {
 	global $conn;
+	global $dirlocation;
 	// fetch us the category id for tihs url
 	// XXX: could this be some sort of joined thing?  Yeah.  Am I doing it?  Dunno how.  Does it matter?  Not this time.
-	$query = sprintf("SELECT `cid` FROM `categories` WHERE `url` = '%s'",
+	$query = sprintf("SELECT `cid`,`image_id` FROM `categories` WHERE `url` = '%s'",
 		mysqli_real_escape_string($conn,$targetcategoryurl)
 	);
 	$result = mysqli_query($conn,$query);
-	$cid = mysqli_fetch_array($result)[0];
+	list($cid,$fileid) = mysqli_fetch_array($result);
 	if (strlen($cid) == 0) {
 		echo "<div class='AdminError'>Huh, I couldn't retrieve the cid from $targetcategoryurl.". mysqli_error($conn) ."</div>";
 	}
@@ -223,6 +226,8 @@ function AdminDeleteCategoryGo($targetcategoryurl) {
 	$query = sprintf("DELETE FROM `categories` WHERE `cid` = '%s'",
 		mysqli_real_escape_string($conn,$cid)
 	);
+	// delete the category image file from the system
+	unlink("$dirlocation/images/category/$fileid");
 	if (mysqli_query($conn,$query) === TRUE) {
 		echo "<div class='AdminSuccess'>The light is green, the trap is clean.</div>";
 	} else {
@@ -249,24 +254,19 @@ function AdminEditCategories() {
 
 function AdminSaveNewCategory() {
 	global $conn;
-	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0) {
-		echo "<div class='AdminError'>Please fill in all three fields!</div>";
+	list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
+	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0 || strlen($fileid == 0)) {
+		echo "<div class='AdminError'>Please fill in all three Category name fields and the Category Graphic</div>";
 	} else {
-		$fileid = uniqid();
-		print_r($_FILES); 
-
-		if(count($_FILES['filesToUpload']['name'])) {
-			foreach ($_FILES['filesToUpload']['tmp_name'] as $ref => $fullfilename) {
-				move_uploaded_file($fullfilename, "uploads/" . $_FILES['filesToUpload']['name'][$ref] );
-				echo ".";
-			}
-		}
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
 		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
-		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`) VALUES ('%s','%s','%s')",
+		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn,$url),
 			mysqli_real_escape_string($conn,$category),
-			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description']))))
+			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description'])))),
+			mysqli_real_escape_string($conn,$filename),
+			mysqli_real_escape_string($conn,$fileid),
+			mysqli_real_escape_string($conn,DatePHPtoSQL(time()))
 		);
 		if (mysqli_query($conn,$query) === TRUE) {
 			echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Successfully Added.</div>";
@@ -274,6 +274,76 @@ function AdminSaveNewCategory() {
 			echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
 		}
 	}
+}
+
+function SaveFile($purpose) {
+	// save a form's files into their purpose's directory as a unique ID, returning back the id and "file name"
+	global $dirlocation;
+	$fileid = uniqid();
+	$happyuploads = array(); // the array of ids & names of the numerous uploaded files
+	$error_types = array(
+		1=>"Your file is too large for the server",
+		2=>"Your file is larger than expected",
+		3=>"Your file upload incomplete, only partially uploaded",
+		4=>"You did not select a file, so no file uploaded",
+		6=>"Server problem with the temp directory",
+		7=>"Server failed to write file to disk",
+		8=>"Server PHP extension prevented upload"
+	);
+	// hi do we have file(s) here?
+	if(count($_FILES['filesToUpload']['name']) == 0) {
+		// empty form!
+		$error_message = $error_types(4); 
+		echo "<div class='AdminError'>File Upload Error: $error_message.</div>";
+		return array(array(NULL,NULL));
+	} else {
+		// form has a file uploaded maybe?
+		foreach ($_FILES['filesToUpload']['tmp_name'] as $ref => $tmp_name) {
+			//make the filename safe
+			$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['filesToUpload']['name'][$ref]);
+			$errorIndex = $_FILES['filesToUpload']['error'][$ref];
+			if ($errorIndex > 0) {
+				$error_message = $error_types[$_FILES['filesToUpload']['error'][$ref]]; 
+				echo "<div class='AdminError'>File Upload Error: $error_message.</div>";
+    			$happyuploads[] = array(NULL,NULL);
+			} else {
+				// XXX: I am a race condition, where my unconfirmed file name is exposed on the webs
+				move_uploaded_file($tmp_name, $dirlocation . "/images/" . $purpose  . "/" . $fileid );
+				if (filesize($dirlocation . "/images/" . $purpose . "/" . $fileid) < 1024) {
+					// if the file is smaller than 1kb, I don't trust it.
+					unlink($dirlocation . "/images/" . $purpose . "/" . $fileid);
+					echo "<div class='AdminError'>File Upload Error: File is invalid due to small size.</div>";
+					$happyuploads[] = array(NULL,NULL);
+				} else {
+					// Yay, its a file!  Lets totally blow off the given file name and replace with my own.
+					$finfo = finfo_open(FILEINFO_MIME);
+					$type = finfo_file($finfo, $dirlocation . "/images/" . $purpose . "/" . $fileid);
+					if (preg_match("/jpeg/i",$type)) {
+						$newfileid = "$fileid.jpg";	
+					} elseif (preg_match("/png/i",$type)) {
+						$newfileid = "$fileid.png";
+					} elseif (preg_match("/mp4/i",$type)) {
+						$newfileid = "$fileid.mp4";
+					} elseif (preg_match("/word/i",$type)) {
+						$newfileid = "$fileid.doc";
+					} elseif (preg_match("/excel/i",$type)) {
+						$newfileid = "$fileid.xls";
+					} elseif (preg_match("/pdf/i",$type)) {
+						$newfileid = "$fileid.pdf";
+					} else {
+						$newfileid = $fileid;
+					}
+					rename (
+						$dirlocation . "/images/" . $purpose . "/". $fileid,
+						$dirlocation . "/images/" . $purpose . "/". $newfileid
+					);
+					$happyuploads[] = array($newfileid,$filename);
+				}
+			}
+		}
+		// We accepted a positive number of files !
+		return $happyuploads;
+	} 
 }
 
 function aasort (&$array, $key) {
