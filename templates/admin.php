@@ -104,3 +104,42 @@ function AdminShowDeleteConfirmation($targetcategoryurl,$url,$nextfunction) {
 		</div>
 	<?
 }
+
+function AdminEditCategory($dataarray) {
+	// cid, category, url, description, image_filename, image_id, last_updated
+	?>
+		<form method="POST" action="/admin/categories_list" enctype="multipart/form-data">
+			<input method="hidden" name="function" value="save_category" style="display:none">
+			<input method="hidden" name="form_cid" value="<?= $dataarray['cid'] ?>" style="display:none">
+			<div class="AdminCategoryListContainer">
+				<div class="AdminCategoryListingEditHeader">
+					Edit Category Properties for "<?= $dataarray['category'] ?>" <font size="-2">Last edited <?= nicetime($dataarray['last_updated']) ?> (<?= $dataarray['last_updated'] ?>)</font>
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Short Name:</div>
+				<div class="AdminCategoryListingAddValue">
+					<input type="text" name="form_category" size="20" value="<?= $dataarray['category']?>">
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Nice Description:</div>
+				<div class="AdminCategoryListingAddValue">
+					<input type="text" name="form_description" size="50" value="<?= $dataarray['description'] ?>">
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">URL:</div>
+				<div class="AdminCategoryListingAddValue">
+					<input type="text" name="form_url" size="20" value="<?= $dataarray['url'] ?>">
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Stored Image:</div>
+				<div class="AdminCategoryListingAddValue"><?= $dataarray['image_id'] ?></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Image Name:</div>
+				<div class="AdminCategoryListingAddValue"><?= $dataarray['image_filename'] ?></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem"></div>
+				<div class="clear"></div>
+			</div> <!-- AdminCategoryListContainer -->
+		</form>
+	<?
+}

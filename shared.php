@@ -184,6 +184,9 @@ function ShowAdminPage() {
 				case "edit_category":
 					AdminEditSingleCategory($_REQUEST['categoryurl']);
 					break;
+				case "save_category":
+					AdminSaveSingleCategory($_REQUEST['cid']);
+					break;
 				default:
 					AdminEditCategories();
 			}
@@ -192,7 +195,18 @@ function ShowAdminPage() {
 }
 
 function AdminEditSingleCategory($targetcategoryurl) {
-	echo "editing the fields for <B>$targetcategoryurl</B>";
+	global $conn;
+	$query = sprintf("SELECT * FROM `categories` WHERE `url` = '%s'",
+		mysqli_real_escape_string($conn,$targetcategoryurl)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminEditCategory($row);
+	mysqli_free_result($result);
+}
+
+function AdminSaveSingleCategory($cid) {
+	echo "Here's me saving the $cid category's changes!";
 }
 
 function AdminDeleteCategory($targetcategoryurl) {
@@ -382,4 +396,34 @@ function ValidatePassword($password, $correctHash) {
     $testHash = hash("sha256", $salt . $password); //hash the password being tested
     //if the hashes are exactly the same, the password is valid
     return $testHash === $validHash;
+}
+
+function nicetime($date) {
+	if(empty($date)) {
+		return "ERROR: No date provided";
+	}
+	$periods = array("second", "minute", "hour", "day", "week", "month", "year", "decade");
+	$lengths = array("60","60","24","7","4.35","12","10");
+	$now = time();
+	$unix_date = strtotime($date);
+	// check validity of date
+	if(empty($unix_date)) {
+		return "ERROR: Invalid date";
+	}
+	// is it future date or past date
+	if($now > $unix_date) {
+		$difference = $now - $unix_date;
+		$tense = "ago";
+	} else {
+		$difference = $unix_date - $now;
+		$tense = "from now";
+	} for($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) {
+		$difference /= $lengths[$j];
+	}
+	$difference = round($difference);
+	if($difference != 1) {
+	//  $periods[$j] .= "s"; // plural for English language
+		$periods = array("seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"); // plural for international words
+	}
+	return "$difference $periods[$j] {$tense}";
 }

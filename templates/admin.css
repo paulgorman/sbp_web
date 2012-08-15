@@ -234,6 +234,32 @@ td {
 	float: left;
 }
 
+.AdminCategoryListingEditItem {
+	width: 9em;
+	color: #9F6000;
+	font-weight: bold;
+	font-size: 12px;
+	margin: 2px;
+	float: left;
+	padding-left: 45px;
+	text-align: right;
+}
+
+.AdminCategoryListingEditHeader {
+	background-image:url('/templates/icons/Valid Blue.png');
+	background-repeat: no-repeat;
+	background-position: 10px top;
+	padding: 10px 0px 10px 0px;
+	text-align: left;
+	font-weight: bold;
+	font-size: 14px;
+	padding: 10px 0px 0px 45px;
+	width: auto;
+	height: 1.5em;
+	margin-bottom: 8px;
+	margin-top: 4px;
+}
+
 .metricsOverviewBlock {
 	width: 960px;
 	margin: auto;
