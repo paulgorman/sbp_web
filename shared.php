@@ -272,6 +272,7 @@ function AdminSaveNewCategory() {
 	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0 || strlen($fileid == 0)) {
 		echo "<div class='AdminError'>Please fill in all three Category name fields and the Category Graphic</div>";
 	} else {
+		ResizeImage($fileid,"category"); // 728x90
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
 		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
 		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s')",
@@ -288,6 +289,23 @@ function AdminSaveNewCategory() {
 			echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
 		}
 	}
+}
+
+function ResizeImage($fileid,$purpose) {
+	// Resize image according to its purpose
+	global $dirlocation;
+	if (preg_match("/category/",$purpose)) {
+		$width = 728;
+		$height = 90;
+	}
+	$newimage = imagecreatetruecolor($width,$height);
+	if (preg_match("/\.jpg/",$fileid)) {
+		$origimage = imagecreatefromjpeg("$dirlocation/$purpose/$fileid");
+	} elseif (preg_match("/\.png/",$fileid)) {
+		$origimage = imagecreatefrompng("$dirlocation/$purpose/$fileid");
+		imagealphablending($origimage, true);
+	}
+	imagecopyresampled($background_image,$source_image,0, 0, 0, 0, imagesx($background_image), imagesY($background_image), imagesx($background_image), imagesY($background_image));
 }
 
 function SaveFile($purpose) {

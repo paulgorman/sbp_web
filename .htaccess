@@ -3,6 +3,8 @@ RewriteEngine on
 
 # turn pretty SEO url's into presence's index.php dispatcher
 
+RewriteRule ^server-status - [L]
+RewriteRule ^server-info - [L]
 RewriteRule ^images - [L]
 RewriteRule ^sources - [L]
 RewriteRule ^favicon.ico - [L]
