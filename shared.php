@@ -242,6 +242,7 @@ function AdminDeleteCategoryGo($targetcategoryurl) {
 	);
 	// delete the category image file from the system
 	unlink("$dirlocation/images/category/$fileid");
+	unlink("$dirlocation/images/category/original-$fileid");
 	if (mysqli_query($conn,$query) === TRUE) {
 		echo "<div class='AdminSuccess'>The light is green, the trap is clean.</div>";
 	} else {
@@ -299,13 +300,25 @@ function ResizeImage($fileid,$purpose) {
 		$height = 90;
 	}
 	$newimage = imagecreatetruecolor($width,$height);
+	imagesavealpha($newimage, true); 
+	$color = imagecolorallocatealpha($newimage,0x00,0x00,0x00,127);
+	imagefill($newimage, 0, 0, $color); 
 	if (preg_match("/\.jpg/",$fileid)) {
-		$origimage = imagecreatefromjpeg("$dirlocation/$purpose/$fileid");
+		$origimage = imagecreatefromjpeg("$dirlocation/images/$purpose/original-$fileid");
 	} elseif (preg_match("/\.png/",$fileid)) {
-		$origimage = imagecreatefrompng("$dirlocation/$purpose/$fileid");
+		$origimage = imagecreatefrompng("$dirlocation/images/$purpose/original-$fileid");
 		imagealphablending($origimage, true);
+		imagesavealpha($origimage, true); 
 	}
-	imagecopyresampled($background_image,$source_image,0, 0, 0, 0, imagesx($background_image), imagesY($background_image), imagesx($background_image), imagesY($background_image));
+	// dest , src , x dest, y dest , x src , y src , dest w, dest h, src w, src h
+	if (!imagecopyresampled($newimage,$origimage,0, 0, 0, 0, $width, $height, imagesX($origimage), imagesY($origimage))) {
+		echo "<div class='AdminError'>Category Image No Web Resize/Compress WTF $fileid</div>";
+	}
+	//imagejpeg($origimage, "$dirlocation/images/$purpose/$fileid", 80); // http://www.ebrueggeman.com/blog/php_image_optimization
+	$newfilename = substr($fileid,0,-4) . ".png";
+	imagepng($newimage, "$dirlocation/images/$purpose/$newfilename",9);
+	imagedestroy($origimage);
+	imagedestroy($newimage);
 }
 
 function SaveFile($purpose) {
@@ -340,16 +353,16 @@ function SaveFile($purpose) {
     			$happyuploads[] = array(NULL,NULL);
 			} else {
 				// XXX: I am a race condition, where my unconfirmed file name is exposed on the webs
-				move_uploaded_file($tmp_name, $dirlocation . "/images/" . $purpose  . "/" . $fileid );
-				if (filesize($dirlocation . "/images/" . $purpose . "/" . $fileid) < 1024) {
+				move_uploaded_file($tmp_name, $dirlocation . "/images/" . $purpose  . "/original-" . $fileid );
+				if (filesize($dirlocation . "/images/" . $purpose . "/original-" . $fileid) < 1024) {
 					// if the file is smaller than 1kb, I don't trust it.
-					unlink($dirlocation . "/images/" . $purpose . "/" . $fileid);
+					unlink($dirlocation . "/images/" . $purpose . "/original-" . $fileid);
 					echo "<div class='AdminError'>File Upload Error: File is invalid due to small size.</div>";
 					$happyuploads[] = array(NULL,NULL);
 				} else {
 					// Yay, its a file!  Lets totally blow off the given file name and replace with my own.
 					$finfo = finfo_open(FILEINFO_MIME);
-					$type = finfo_file($finfo, $dirlocation . "/images/" . $purpose . "/" . $fileid);
+					$type = finfo_file($finfo, $dirlocation . "/images/" . $purpose . "/original-" . $fileid);
 					if (preg_match("/jpeg/i",$type)) {
 						$newfileid = "$fileid.jpg";	
 					} elseif (preg_match("/png/i",$type)) {
@@ -366,8 +379,8 @@ function SaveFile($purpose) {
 						$newfileid = $fileid;
 					}
 					rename (
-						$dirlocation . "/images/" . $purpose . "/". $fileid,
-						$dirlocation . "/images/" . $purpose . "/". $newfileid
+						$dirlocation . "/images/" . $purpose . "/original-". $fileid,
+						$dirlocation . "/images/" . $purpose . "/original-". $newfileid 
 					);
 					$happyuploads[] = array($newfileid,$filename);
 				}

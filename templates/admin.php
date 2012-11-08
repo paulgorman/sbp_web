@@ -132,12 +132,17 @@ function AdminEditCategory($dataarray) {
 				</div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">Stored Image:</div>
-				<div class="AdminCategoryListingAddValue"><?= $dataarray['image_id'] ?></div>
+				<div class="AdminCategoryListingShowImage"><img src="/images/category/<?= $dataarray['image_id'] ?>"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">Image Name:</div>
 				<div class="AdminCategoryListingAddValue"><?= $dataarray['image_filename'] ?></div>
+				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple=""></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem"></div>
+				<div class="AdminCategoryListingAddSubmit">
+					<input type="submit" value="Update Category">
+					<input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/categories_list'">
+				</div>
 				<div class="clear"></div>
 			</div> <!-- AdminCategoryListContainer -->
 		</form>

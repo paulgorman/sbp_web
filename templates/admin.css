@@ -227,6 +227,17 @@ td {
 	float: left;
 }
 
+.AdminCategoryListingShowImage {
+	color: #9F6000;
+	font-size: 12px;
+	margin: 2px;
+	border: 0px solid;
+	height: 2em;
+	float: left;
+	height: 90px;
+	width: 728px;
+}
+
 .AdminCategoryListingAddSubmit {
 	height: 2em;
 	margin: 2px;
