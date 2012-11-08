@@ -273,7 +273,7 @@ function AdminSaveNewCategory() {
 	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0 || strlen($fileid == 0)) {
 		echo "<div class='AdminError'>Please fill in all three Category name fields and the Category Graphic</div>";
 	} else {
-		ResizeImage($fileid,"category"); // 728x90
+		$newfileid = ResizeImage($fileid,"category"); // 728x90
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
 		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
 		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s')",
@@ -281,7 +281,7 @@ function AdminSaveNewCategory() {
 			mysqli_real_escape_string($conn,$category),
 			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description'])))),
 			mysqli_real_escape_string($conn,$filename),
-			mysqli_real_escape_string($conn,$fileid),
+			mysqli_real_escape_string($conn,$newfileid),
 			mysqli_real_escape_string($conn,DatePHPtoSQL(time()))
 		);
 		if (mysqli_query($conn,$query) === TRUE) {
@@ -319,6 +319,7 @@ function ResizeImage($fileid,$purpose) {
 	imagepng($newimage, "$dirlocation/images/$purpose/$newfilename",9);
 	imagedestroy($origimage);
 	imagedestroy($newimage);
+	return($newfilename);
 }
 
 function SaveFile($purpose) {
