@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20120625
+**  Last Edit: 20121108
 ****************************************/
 
 function Init() {
@@ -206,7 +206,31 @@ function AdminEditSingleCategory($targetcategoryurl) {
 }
 
 function AdminSaveSingleCategory($cid) {
-	echo "Here's me saving the $cid category's changes!";
+	// XXX: marker
+	global $conn;
+	if (CheckForFiles()) {
+		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
+	}
+	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0 || strlen($fileid == 0)) {
+		echo "<div class='AdminError'>Please fill in all three Category name fields and the Category Graphic</div>";
+	} else {
+		$newfileid = ResizeImage($fileid,"category"); // 728x90
+		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
+		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
+		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($conn,$url),
+			mysqli_real_escape_string($conn,$category),
+			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description'])))),
+			mysqli_real_escape_string($conn,$filename),
+			mysqli_real_escape_string($conn,$newfileid),
+			mysqli_real_escape_string($conn,DatePHPtoSQL(time()))
+		);
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Successfully Added.</div>";
+		} else {
+			echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
+		}
+	}
 }
 
 function AdminDeleteCategory($targetcategoryurl) {
@@ -269,7 +293,11 @@ function AdminEditCategories() {
 
 function AdminSaveNewCategory() {
 	global $conn;
-	list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
+	if (CheckForFiles()) {
+		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
+	} else {
+		echo "<div class='AdminError'>No Category Image Selected!</div>";
+	}
 	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0 || strlen($fileid == 0)) {
 		echo "<div class='AdminError'>Please fill in all three Category name fields and the Category Graphic</div>";
 	} else {
@@ -322,6 +350,15 @@ function ResizeImage($fileid,$purpose) {
 	return($newfilename);
 }
 
+function CheckForFiles() {
+	if(count($_FILES['filesToUpload']['name']) == 0) {
+		// empty form!
+		return NULL;
+	} else {
+		return count($_FILES['filesToUpload']['name']);
+	}
+}
+
 function SaveFile($purpose) {
 	// save a form's files into their purpose's directory as a unique ID, returning back the id and "file name"
 	global $dirlocation;
@@ -336,61 +373,52 @@ function SaveFile($purpose) {
 		7=>"Server failed to write file to disk",
 		8=>"Server PHP extension prevented upload"
 	);
-	// hi do we have file(s) here?
-	if(count($_FILES['filesToUpload']['name']) == 0) {
-		// empty form!
-		$error_message = $error_types(4); 
-		echo "<div class='AdminError'>File Upload Error: $error_message.</div>";
-		return array(array(NULL,NULL));
-	} else {
-		// form has a file uploaded maybe?
-		foreach ($_FILES['filesToUpload']['tmp_name'] as $ref => $tmp_name) {
-			//make the filename safe
-			$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['filesToUpload']['name'][$ref]);
-			$errorIndex = $_FILES['filesToUpload']['error'][$ref];
-			if ($errorIndex > 0) {
-				$error_message = $error_types[$_FILES['filesToUpload']['error'][$ref]]; 
-				echo "<div class='AdminError'>File Upload Error: $error_message.</div>";
-    			$happyuploads[] = array(NULL,NULL);
+	foreach ($_FILES['filesToUpload']['tmp_name'] as $ref => $tmp_name) {
+		//make the filename safe
+		$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['filesToUpload']['name'][$ref]);
+		$errorIndex = $_FILES['filesToUpload']['error'][$ref];
+		if ($errorIndex > 0) {
+			$error_message = $error_types[$_FILES['filesToUpload']['error'][$ref]]; 
+			echo "<div class='AdminError'>File Upload Error: $error_message.</div>";
+   			$happyuploads[] = array(NULL,NULL);
+		} else {
+			// XXX: I am a race condition, where my unconfirmed file name is exposed on the webs
+			move_uploaded_file($tmp_name, $dirlocation . "/images/" . $purpose  . "/original-" . $fileid );
+			if (filesize($dirlocation . "/images/" . $purpose . "/original-" . $fileid) < 1024) {
+				// if the file is smaller than 1kb, I don't trust it.
+				unlink($dirlocation . "/images/" . $purpose . "/original-" . $fileid);
+				echo "<div class='AdminError'>File Upload Error: File is invalid due to small size.</div>";
+				$happyuploads[] = array(NULL,NULL);
 			} else {
-				// XXX: I am a race condition, where my unconfirmed file name is exposed on the webs
-				move_uploaded_file($tmp_name, $dirlocation . "/images/" . $purpose  . "/original-" . $fileid );
-				if (filesize($dirlocation . "/images/" . $purpose . "/original-" . $fileid) < 1024) {
-					// if the file is smaller than 1kb, I don't trust it.
-					unlink($dirlocation . "/images/" . $purpose . "/original-" . $fileid);
-					echo "<div class='AdminError'>File Upload Error: File is invalid due to small size.</div>";
-					$happyuploads[] = array(NULL,NULL);
+				// Yay, its a file!  Lets totally blow off the given file name and replace with my own.
+				$finfo = finfo_open(FILEINFO_MIME);
+				$type = finfo_file($finfo, $dirlocation . "/images/" . $purpose . "/original-" . $fileid);
+				if (preg_match("/jpeg/i",$type)) {
+					$newfileid = "$fileid.jpg";	
+				} elseif (preg_match("/png/i",$type)) {
+					$newfileid = "$fileid.png";
+				} elseif (preg_match("/mp4/i",$type)) {
+					$newfileid = "$fileid.mp4";
+				} elseif (preg_match("/word/i",$type)) {
+					$newfileid = "$fileid.doc";
+				} elseif (preg_match("/excel/i",$type)) {
+					$newfileid = "$fileid.xls";
+				} elseif (preg_match("/pdf/i",$type)) {
+					$newfileid = "$fileid.pdf";
 				} else {
-					// Yay, its a file!  Lets totally blow off the given file name and replace with my own.
-					$finfo = finfo_open(FILEINFO_MIME);
-					$type = finfo_file($finfo, $dirlocation . "/images/" . $purpose . "/original-" . $fileid);
-					if (preg_match("/jpeg/i",$type)) {
-						$newfileid = "$fileid.jpg";	
-					} elseif (preg_match("/png/i",$type)) {
-						$newfileid = "$fileid.png";
-					} elseif (preg_match("/mp4/i",$type)) {
-						$newfileid = "$fileid.mp4";
-					} elseif (preg_match("/word/i",$type)) {
-						$newfileid = "$fileid.doc";
-					} elseif (preg_match("/excel/i",$type)) {
-						$newfileid = "$fileid.xls";
-					} elseif (preg_match("/pdf/i",$type)) {
-						$newfileid = "$fileid.pdf";
-					} else {
-						$newfileid = $fileid;
-					}
-					rename (
-						$dirlocation . "/images/" . $purpose . "/original-". $fileid,
-						$dirlocation . "/images/" . $purpose . "/original-". $newfileid 
-					);
-					$happyuploads[] = array($newfileid,$filename);
+					$newfileid = $fileid;
 				}
+				rename (
+					$dirlocation . "/images/" . $purpose . "/original-". $fileid,
+					$dirlocation . "/images/" . $purpose . "/original-". $newfileid 
+				);
+				$happyuploads[] = array($newfileid,$filename);
 			}
 		}
-		// We accepted a positive number of files !
-		return $happyuploads;
-	} 
-}
+	}
+	// We accepted a positive number of files !
+	return $happyuploads;
+} 
 
 function aasort (&$array, $key) {
 	// sort an array's array by the sub-array's key name
