@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20121108
+**  Last Edit: 20121109
 ****************************************/
 
 function Init() {
@@ -186,6 +186,7 @@ function ShowAdminPage() {
 					break;
 				case "save_category":
 					AdminSaveSingleCategory($_REQUEST['cid']);
+					AdminEditCategories();
 					break;
 				default:
 					AdminEditCategories();
@@ -206,29 +207,48 @@ function AdminEditSingleCategory($targetcategoryurl) {
 }
 
 function AdminSaveSingleCategory($cid) {
-	// XXX: marker
+	// save an existing category that was just edited
 	global $conn;
+	global $dirlocation;
 	if (CheckForFiles()) {
 		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
-	}
-	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0 || strlen($fileid == 0)) {
-		echo "<div class='AdminError'>Please fill in all three Category name fields and the Category Graphic</div>";
-	} else {
 		$newfileid = ResizeImage($fileid,"category"); // 728x90
+	}
+	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0) {
+		echo "<div class='AdminError'>Please fill in all three Category fields</div>";
+	} else {
+		$cid = preg_replace("/\[^0-9]/","",trim($_REQUEST['form_cid']));
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
-		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
-		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s')",
-			mysqli_real_escape_string($conn,$url),
-			mysqli_real_escape_string($conn,$category),
-			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description'])))),
-			mysqli_real_escape_string($conn,$filename),
-			mysqli_real_escape_string($conn,$newfileid),
-			mysqli_real_escape_string($conn,DatePHPtoSQL(time()))
-		);
-		if (mysqli_query($conn,$query) === TRUE) {
-			echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Successfully Added.</div>";
+		$category = htmlspecialchars(trim($_REQUEST['form_category']));
+		if ($filename) {
+			// delete the old category image file from the system
+			$query = sprintf("SELECT `image_id` FROM `categories` WHERE `cid` = '%s'", mysqli_real_escape_string($conn,$cid));
+			$result = mysqli_query($conn,$query);
+			list($old_fileid) = mysqli_fetch_array($result);
+			unlink("$dirlocation/images/category/$old_fileid");
+			unlink("$dirlocation/images/category/original-$old_fileid"); // XXX: we're not deleting jpegs, only png.
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `image_filename` = '%s', `image_id` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
+				mysqli_real_escape_string($conn,$url),
+				mysqli_real_escape_string($conn,$category),
+				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
+				mysqli_real_escape_string($conn,$filename),
+				mysqli_real_escape_string($conn,$newfileid),
+				mysqli_real_escape_string($conn,DatePHPtoSQL(time())),
+				mysqli_real_escape_string($conn,$cid)
+			);
 		} else {
-			echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
+				mysqli_real_escape_string($conn,$url),
+				mysqli_real_escape_string($conn,$category),
+				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
+				mysqli_real_escape_string($conn,DatePHPtoSQL(time())),
+				mysqli_real_escape_string($conn,$cid)
+			);
+		}
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Successfully Updated.</div>";
+		} else {
+			echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Update!<br>". mysqli_error($conn) ."</div>";
 		}
 	}
 }
@@ -266,7 +286,7 @@ function AdminDeleteCategoryGo($targetcategoryurl) {
 	);
 	// delete the category image file from the system
 	unlink("$dirlocation/images/category/$fileid");
-	unlink("$dirlocation/images/category/original-$fileid");
+	unlink("$dirlocation/images/category/original-$fileid"); // XXX: we're not deleting jpegs, only png.
 	if (mysqli_query($conn,$query) === TRUE) {
 		echo "<div class='AdminSuccess'>The light is green, the trap is clean.</div>";
 	} else {
@@ -292,6 +312,7 @@ function AdminEditCategories() {
 }
 
 function AdminSaveNewCategory() {
+	// save a NEW category
 	global $conn;
 	if (CheckForFiles()) {
 		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
@@ -351,12 +372,13 @@ function ResizeImage($fileid,$purpose) {
 }
 
 function CheckForFiles() {
-	if(count($_FILES['filesToUpload']['name']) == 0) {
-		// empty form!
-		return NULL;
-	} else {
-		return count($_FILES['filesToUpload']['name']);
+	$count = 0;
+	foreach ($_FILES['filesToUpload']['error'] as $status){
+		if ($status === UPLOAD_ERR_OK) {
+			$count++;
+		}
 	}
+	return ($count);
 }
 
 function SaveFile($purpose) {

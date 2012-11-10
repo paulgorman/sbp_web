@@ -128,7 +128,7 @@ function AdminEditCategory($dataarray) {
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">URL:</div>
 				<div class="AdminCategoryListingAddValue">
-					<input type="text" name="form_url" size="20" value="<?= $dataarray['url'] ?>">
+					<input type="text" name="form_url" size="20" value="<?= $dataarray['url'] ?>" style="text-transform: lowercase">
 				</div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">Stored Image:</div>
