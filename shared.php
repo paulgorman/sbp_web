@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20121109
+**  Last Edit: 20121111
 ****************************************/
 
 function Init() {
@@ -220,6 +220,11 @@ function AdminSaveSingleCategory($cid) {
 		$cid = preg_replace("/\[^0-9]/","",trim($_REQUEST['form_cid']));
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
 		$category = htmlspecialchars(trim($_REQUEST['form_category']));
+		if (strlen($_REQUEST['published'])) {
+			$published = TRUE;
+		} else { 
+			$published = FALSE;
+		}
 		if ($filename) {
 			// delete the old category image file from the system
 			$query = sprintf("SELECT `image_id` FROM `categories` WHERE `cid` = '%s'", mysqli_real_escape_string($conn,$cid));
@@ -227,20 +232,22 @@ function AdminSaveSingleCategory($cid) {
 			list($old_fileid) = mysqli_fetch_array($result);
 			unlink("$dirlocation/images/category/$old_fileid");
 			unlink("$dirlocation/images/category/original-$old_fileid"); // XXX: we're not deleting jpegs, only png.
-			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `image_filename` = '%s', `image_id` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `published` = '%s', `image_filename` = '%s', `image_id` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
 				mysqli_real_escape_string($conn,$url),
 				mysqli_real_escape_string($conn,$category),
 				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
+				mysqli_real_escape_string($conn,$published),
 				mysqli_real_escape_string($conn,$filename),
 				mysqli_real_escape_string($conn,$newfileid),
 				mysqli_real_escape_string($conn,DatePHPtoSQL(time())),
 				mysqli_real_escape_string($conn,$cid)
 			);
 		} else {
-			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `published` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
 				mysqli_real_escape_string($conn,$url),
 				mysqli_real_escape_string($conn,$category),
 				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
+				mysqli_real_escape_string($conn,$published),
 				mysqli_real_escape_string($conn,DatePHPtoSQL(time())),
 				mysqli_real_escape_string($conn,$cid)
 			);
@@ -325,10 +332,17 @@ function AdminSaveNewCategory() {
 		$newfileid = ResizeImage($fileid,"category"); // 728x90
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
 		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
-		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s')",
+		if (strlen($_REQUEST['published'])) {
+			$published = TRUE;
+		} else { 
+			$published = FALSE;
+		}
+		if ($filename) {
+		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`published`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn,$url),
 			mysqli_real_escape_string($conn,$category),
 			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description'])))),
+			mysqli_real_escape_string($conn,$published),
 			mysqli_real_escape_string($conn,$filename),
 			mysqli_real_escape_string($conn,$newfileid),
 			mysqli_real_escape_string($conn,DatePHPtoSQL(time()))

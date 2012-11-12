@@ -55,6 +55,7 @@ CREATE TABLE `sbpweb`.`categories` (
 	`category` VARCHAR(40) NOT NULL UNIQUE,
 	`url` VARCHAR(50) NOT NULL UNIQUE,
 	`description` VARCHAR(250),
+	`published` BOOLEAN NOT NULL DEFAULT 1,
 	`image_filename` VARCHAR(30) NOT NULL UNIQUE,
 	`image_id` CHAR(17) NOT NULL UNIQUE,
 	`last_updated` DATETIME NOT NULL,

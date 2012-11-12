@@ -47,6 +47,13 @@ function AdminShowCategories ($categorieslist) {
 						<div class="AdminCategoryListItemURL" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['url'] ?></div>
 						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['category'] ?></div>
 						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['description'] ?></div>
+						<?
+							if ($catvalues['listed'] == TRUE) {
+								echo "<div class='AdminCategoryPublishedIcon' title='Is Listed Category'></div>";
+							} else {
+								echo "<div class='AdminCategoryHiddenIcon' title='Not Listed'></div>";
+							}
+						?>
 						<div class="AdminCategoryListItemIcon" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;">
 							<input type="hidden" name="categoryurl" value="<?= $catvalues['url']; ?>">
 							<input type="hidden" name="function" value="edit_category">
