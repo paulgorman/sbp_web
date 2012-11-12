@@ -322,6 +322,7 @@ function AdminSaveNewCategory() {
 	// save a NEW category
 	global $conn;
 	if (CheckForFiles()) {
+		// XXX: PRESENCE Do this if the fields are confirmed!
 		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
 	} else {
 		echo "<div class='AdminError'>No Category Image Selected!</div>";
@@ -337,7 +338,6 @@ function AdminSaveNewCategory() {
 		} else { 
 			$published = FALSE;
 		}
-		if ($filename) {
 		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`published`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn,$url),
 			mysqli_real_escape_string($conn,$category),
