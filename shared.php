@@ -310,7 +310,8 @@ function AdminEditCategories() {
 		$categorieslist[] = array(
 			"url" => $row['url'],
 			"category" => $row['category'],
-			"description" => $row['description']
+			"description" => $row['description'],
+			"published" => $row['published']
 		);
 	}
 	mysqli_free_result($result);
