@@ -321,15 +321,10 @@ function AdminEditCategories() {
 function AdminSaveNewCategory() {
 	// save a NEW category
 	global $conn;
-	if (CheckForFiles()) {
-		// XXX: PRESENCE Do this if the fields are confirmed!
-		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
-	} else {
-		echo "<div class='AdminError'>No Category Image Selected!</div>";
-	}
-	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0 || strlen($fileid == 0)) {
+	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0 || (!CheckForFiles())) {
 		echo "<div class='AdminError'>Please fill in all three Category name fields and the Category Graphic</div>";
 	} else {
+		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
 		$newfileid = ResizeImage($fileid,"category"); // 728x90
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
 		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
