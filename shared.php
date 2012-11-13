@@ -185,12 +185,122 @@ function ShowAdminPage() {
 					AdminEditSingleCategory($_REQUEST['categoryurl']);
 					break;
 				case "save_category":
-					AdminSaveSingleCategory($_REQUEST['cid']);
+					AdminSaveSingleCategory();
 					AdminEditCategories();
 					break;
 				default:
 					AdminEditCategories();
 			}
+		}
+		if ($_REQUEST['url'] == "styles_list") {
+			switch($_REQUEST['function']) {
+				case "add_style":
+					AdminSaveNewStyle();
+					AdminListStyleS();
+					break;
+				case "del_style":
+					AdminDeleteStyle($_REQUEST['sid']);
+					AdminListStyleS();
+					break;
+				case "edit_style":
+					AdminEditSingleStyle($_REQUEST['sid']);
+					break;
+				case "save_style":
+					AdminSaveSingleStyle();
+					AdminListStyles();
+					break;
+				default:
+					AdminListStyles();
+			}
+		}
+	}
+}
+
+function AdminListStyles() {
+	global $conn;
+	$query = "SELECT `sid`, `name` FROM `styles`";
+	$result = mysqli_query($conn,$query);
+	$categorieslist = array();
+	while ($row = mysqli_fetch_assoc($result)) {
+		$styles[] = array(
+			"sid" => $row['sid'],
+			"name" => $row['name']
+		);
+	}
+	mysqli_free_result($result);
+	aasort($styles,"name");
+	$quantity = count($styles);
+	AdminShowStyles($styles,$quantity);
+}
+
+function AdminSaveSingleStyle() {
+	// save an existing style that was just edited
+	global $conn;
+	$sid = preg_replace("/[^0-9]/","",$_REQUEST['sid']); // input sanitization -- only numbers
+	$name = htmlspecialchars(ucwords(trim($_REQUEST['name'])));
+	if (strlen($name) == 0) {
+		echo "<div class='AdminError'>Please fill in the style's Name.</div>";
+	} else {
+		$sid = preg_replace("/\[^0-9]/","",trim($_REQUEST['sid']));
+		$query = sprintf("UPDATE `styles` SET `name` = '%s' WHERE `sid` = '%s'",
+			mysqli_real_escape_string($conn,$name),
+			mysqli_real_escape_string($conn,$sid)
+		);
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'>Style Entry <B>$name</B> [$sid] Successfully Updated.</div>";
+		} else {
+			echo "<div class='AdminError'>Category Entry <B>$name</B> [$sid] Failed to Update!<br>". mysqli_error($conn) ."</div>";
+		}
+	}
+}
+
+function AdminDeleteStyle($sid) {
+	global $conn;
+	$sid = preg_replace("/[^0-9]/","",$sid); // input sanitization -- only numbers
+	// find all artists using this category in `artistcategories` and clean 'em up
+	$query = sprintf("DELETE FROM `artiststyles` WHERE `sid` = '%s'",
+		mysqli_real_escape_string($conn,$sid)
+	);
+	if (mysqli_query($conn,$query) === FALSE) {
+		echo "<div class='AdminError'>Whoa, couldn't delete '$sid' from artiststyles. ". mysqli_error($conn) ."</div>";
+	}
+	$artists = array();	
+	// delete the style from `styles`
+	$query = sprintf("DELETE FROM `styles` WHERE `sid` = '%s'",
+		mysqli_real_escape_string($conn,$sid)
+	);
+	if (mysqli_query($conn,$query) === TRUE) {
+		echo "<div class='AdminSuccess'>Style removed.</div>";
+	} else {
+		echo "<div class='AdminError'>Hmm, couldn't delete '$sid' from categories.". mysqli_error($conn) ."</div>";
+	}
+}
+
+function AdminEditSingleStyle($sid) {
+	global $conn;
+	$query = sprintf("SELECT `sid`,`name` FROM `styles` WHERE `sid` = '%s'",
+		mysqli_real_escape_string($conn,$sid)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminEditStyle($row);
+	mysqli_free_result($result);
+}
+
+function AdminSaveNewStyle() {
+	// save a NEW style
+	global $conn;
+	if (strlen($_REQUEST['name']) == 0) {
+		echo "<div class='AdminError'>Please fill in the style's name.</div>";
+	} else {
+		$name = htmlspecialchars(ucwords(trim($_REQUEST['name'])));
+		$query = sprintf("INSERT INTO `styles` (`name`) VALUES ('%s')",
+			mysqli_real_escape_string($conn,$name)
+		); // I'm trusting that MySQL's UNIQUE will prevent duplicates
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'>Style Entry <B>$name</B> Successfully Added.</div>";
+		} else {
+			echo "<div class='AdminError'>Style Entry <B>$name</B> Failed to Save!<br>". mysqli_error($conn) ."</div>";
 		}
 	}
 }

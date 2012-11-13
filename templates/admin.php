@@ -32,6 +32,56 @@ function AdminNav($curfunction,$adminfunctions) {
 	echo "</nav>";
 }
 
+function AdminShowStyles($styles,$quantity) {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemURL">Styles (<?= $quantity ?>)</div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($styles as $key => $values) { ?>
+				<div class="AdminCategoryListRow">
+					<form method="POST" action="/admin/styles_list" name="edit<?= $values['sid']; ?>">
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['sid']; ?>'].submit(); return false;"><?=$values['name'] ?></div>
+						<div class="AdminCategoryListItemURL" onclick="document.forms['edit<?= $values['sid']; ?>'].submit(); return false;">&nbsp;</div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['sid']; ?>'].submit(); return false;">&nbsp;</div>
+						<div class="AdminCategoryListItemIcon" onclick="document.forms['edit<?= $values['sid']; ?>'].submit(); return false;">
+							<input type="hidden" name="sid" value="<?= $values['sid']; ?>">
+							<input type="hidden" name="function" value="edit_style">
+							<a href="javascript:;" onclick="document.forms['edit<?= $values['sid']; ?>'].submit(); return false;" class="AdminCategoryEditIcon" title="Edit '<?= $values['name'] ?>' Style"></a>
+						</div> <!-- class="AdminCategoryListItem" -->
+					</form>
+					<div class="AdminCategoryListItemIcon">
+						<form method="POST" action="/admin/styles_list" name="del<?= $values['sid']; ?>">
+							<input type="hidden" name="sid" value="<?= $values['sid']; ?>">
+							<input type="hidden" name="function" value="del_style">
+							<a href="javascript:;" onclick="document.forms['del<?= $values['sid']; ?>'].submit(); return false;" class="AdminCategoryRemoveIcon" title="Remove '<?= $values['name']; ?>' Style"></a>
+						</form>
+					</div>
+					<div class="AdminCategoryListItemIcon">
+						<form method="POST" action="/admin/styles_list" name="search<?= $values['sid']; ?>">
+							<input type="hidden" name="sid" value="<?= $values['sid']; ?>">
+							<input type="hidden" name="function" value="search_style">
+							<a href="javascript:;" onclick="document.forms['search<?= $values['sid']; ?>'].submit(); return false;" class="AdminCategorySearchIcon" title="Show all artists in the '<?= $values['name']; ?>' style"></a>
+						</form>
+					</div>
+				</div>  <!-- class="AdminCategoryListRow" -->
+			<? } ?>
+		</div> <!-- AdminCategoryListContainer -->
+		<div class="clear"></div>
+		<form method="POST" action="/admin/styles_list" enctype="multipart/form-data">
+			<input type="hidden" name="function" value="add_style">
+			<div class="AdminCategoryListingAddContainer">
+				<div class="AdminCategoryListingAddHeader">ADD NEW STYLE</div>
+				<div class="AdminCategoryListingAddItem">Name</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="name" size="40"></div>
+				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Style"></div>
+				<div class="clear"></div>
+			</div> <!-- class="AdminCategoryListingAddContainer" -->
+		</form>
+	<?
+}
+
 function AdminShowCategories ($categorieslist) {
 	?>
 		<div class="AdminCategoryListContainer">
@@ -89,18 +139,12 @@ function AdminShowCategories ($categorieslist) {
 				<div class="AdminCategoryListingAddItem">Description</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" size="40"></div>
 				<div class="clear"></div>
-
-
-
 				<div class="AdminCategoryListingAddItem">Category Logo</div>
 				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple=""></div>
-
     		<div class="AdminCategoryListingAddItem">Public</div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="published" id="published" class="regular-checkbox big-checkbox" CHECKED /><label title="Publicly Displayed in Categories Listing" for="published"></label>
 				</div>
-
-
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Category"></div>
 				<div class="clear"></div>
 			</div> <!-- class="AdminCategoryListingAddContainer" -->
@@ -166,6 +210,30 @@ function AdminEditCategory($dataarray) {
 				<div class="AdminCategoryListingAddSubmit">
 					<input type="submit" value="Update Category">
 					<input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/categories_list'">
+				</div>
+				<div class="clear"></div>
+			</div> <!-- AdminCategoryListContainer -->
+		</form>
+	<?
+}
+
+function AdminEditStyle($dataarray) {
+	?>
+		<form method="POST" action="/admin/styles_list" enctype="multipart/form-data">
+			<input method="hidden" name="function" value="save_style" style="display:none">
+			<input method="hidden" name="sid" value="<?= $dataarray['sid'] ?>" style="display:none">
+			<div class="AdminCategoryListContainer">
+				<div class="AdminCategoryListingEditHeader">
+					Edit Style Name "<?= $dataarray['name'] ?>"
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Style Name:</div>
+				<div class="AdminCategoryListingAddValue">
+					<input type="text" name="name" size="40" value="<?= $dataarray['name'] ?>">
+				</div>
+				<div class="AdminCategoryListingAddSubmit">
+					<input type="submit" value="Update Style">
+					<input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/styles_list'">
 				</div>
 				<div class="clear"></div>
 			</div> <!-- AdminCategoryListContainer -->

@@ -90,6 +90,7 @@ CREATE TABLE `sbpweb`.`artiststyles` (
 
 CREATE TABLE `sbpweb`.`styles` (
 	`sid` INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-	`name` varchar(40)
+	`name` varchar(40) NOT NULL UNIQUE,
+	INDEX(`name`)
 ) ENGINE=InnoDB;
 
