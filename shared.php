@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20121111
+**  Last Edit: 20121112
 ****************************************/
 
 function Init() {
@@ -212,6 +212,63 @@ function ShowAdminPage() {
 				default:
 					AdminListStyles();
 			}
+		}
+		if ($_REQUEST['url'] == "locations_list") {
+			switch($_REQUEST['function']) {
+				case "add_location":
+					AdminSaveNewLocation();
+					AdminListLocations();
+					break;
+				case "del_location":
+					AdminDeleteLocation($_REQUEST['lid']);
+					AdminListLocations();
+					break;
+				case "edit_location":
+					AdminEditSingleLocation($_REQUEST['lid']);
+					break;
+				case "save_location":
+					AdminSaveSingleLocation();
+					AdminListLocations();
+					break;
+				default:
+					AdminListLocations();
+			}
+		}
+	}
+}
+
+function AdminListLocations() {
+	global $conn;
+	$query = "SELECT `lid`, `city`, `state` FROM `locations` ORDER BY `state`, `city`";
+	$result = mysqli_query($conn,$query);
+	$locationslist = array();
+	while ($row = mysqli_fetch_assoc($result)) {
+		$locations[] = array(
+			"lid" => $row['lid'],
+			"city" => $row['city'],
+			"state" => StateCodeToName($row['state'])
+		);
+	}
+	mysqli_free_result($result);
+	AdminShowLocations($locations);
+}
+
+function AdminSaveNewLocation() {
+	global $conn;
+	if ( (strlen($_REQUEST['city']) == 0) || (strlen($_REQUEST['state']) != 2) ) {
+		echo "<div class='AdminError'>Please input both a city and state.</div>";
+	} else {
+		$city = htmlspecialchars(ucwords(trim($_REQUEST['city'])));
+		$state = htmlspecialchars(strtoupper(trim($_REQUEST['state'])));
+		$query = sprintf("INSERT INTO `locations` (`city`,`state`) VALUES ('%s','%s')",
+			mysqli_real_escape_string($conn,$city),
+			mysqli_real_escape_string($conn,$state)
+		); // XXX: there may be two legitimate cities named the same, but in different states.  Not allowed currently.
+		$statename = StateCodeToName($state); 
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'><B>$city, $statename</B> Successfully Added.</div>";
+		} else {
+			echo "<div class='AdminError'><B>$city, $statename</B> Failed to Save!<br>". mysqli_error($conn) ."</div>";
 		}
 	}
 }
@@ -628,4 +685,32 @@ function nicetime($date) {
 		$periods = array("seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"); // plural for international words
 	}
 	return "$difference $periods[$j] {$tense}";
+}
+
+function StatesArray() {
+	return(array('AL'=>"Alabama",'AK'=>"Alaska",'AZ'=>"Arizona",'AR'=>"Arkansas",'CA'=>"California",'CO'=>"Colorado",'CT'=>"Connecticut",'DE'=>"Delaware",'DC'=>"District Of Columbia",'FL'=>"Florida",'GA'=>"Georgia",'HI'=>"Hawaii",'ID'=>"Idaho",'IL'=>"Illinois", 'IN'=>"Indiana", 'IA'=>"Iowa",  'KS'=>"Kansas",'KY'=>"Kentucky",'LA'=>"Louisiana",'ME'=>"Maine",'MD'=>"Maryland", 'MA'=>"Massachusetts",'MI'=>"Michigan",'MN'=>"Minnesota",'MS'=>"Mississippi",'MO'=>"Missouri",'MT'=>"Montana",'NE'=>"Nebraska",'NV'=>"Nevada",'NH'=>"New Hampshire",'NJ'=>"New Jersey",'NM'=>"New Mexico",'NY'=>"New York",'NC'=>"North Carolina",'ND'=>"North Dakota",'OH'=>"Ohio",'OK'=>"Oklahoma", 'OR'=>"Oregon",'PA'=>"Pennsylvania",'RI'=>"Rhode Island",'SC'=>"South Carolina",'SD'=>"South Dakota",'TN'=>"Tennessee",'TX'=>"Texas",'UT'=>"Utah",'VT'=>"Vermont",'VA'=>"Virginia",'WA'=>"Washington",'WV'=>"West Virginia",'WI'=>"Wisconsin",'WY'=>"Wyoming",'UK'=>'United Kingdom','AU'=>"Australia",'MX'=>"Mexico",'CN'=>"China",'CD'=>"Canada"));
+}
+
+function StateCodeToName($code) {
+	$states = StatesArray();
+	return($states[$code]);
+}
+
+function StateNameToCode($state) {
+	$states = StatesArray();
+	return(array_search($state, $states)); 
+}
+
+function OptionsDropDown($active) {
+	// show a dropdown of states with the active state highlighted, or just zend a zero for nuffin
+	$states = StatesArray();
+	$string = "";
+	foreach($states as $code => $state) {
+		$string .= sprintf("<option value='%s' %s>%s</option>",
+			$code,
+			($active == $code)? ' selected="SELECTED"' : '', // yeah bitches
+			$state
+		);	
+	}
+	return($string);
 }

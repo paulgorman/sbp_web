@@ -32,6 +32,58 @@ function AdminNav($curfunction,$adminfunctions) {
 	echo "</nav>";
 }
 
+function AdminShowLocations($locations) {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemURL">Locations</div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($locations as $key => $values) { ?>
+				<div class="AdminCategoryListRow">
+					<form method="POST" action="/admin/locations_list" name="edit<?= $values['lid']; ?>">
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['lid']; ?>'].submit(); return false;"><?=$values['city'] ?></div>
+						<div class="AdminCategoryListItemURL" onclick="document.forms['edit<?= $values['lid']; ?>'].submit(); return false;"><?=$values['state'] ?></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['sid']; ?>'].submit(); return false;">&nbsp;</div>
+						<div class="AdminCategoryListItemIcon" onclick="document.forms['edit<?= $values['lid']; ?>'].submit(); return false;">
+							<input type="hidden" name="lid" value="<?= $values['lid']; ?>">
+							<input type="hidden" name="function" value="edit_location">
+							<a href="javascript:;" onclick="document.forms['edit<?= $values['lid']; ?>'].submit(); return false;" class="AdminCategoryEditIcon" title="Rename <?= $values['city'] ?>, <?= $values['state'] ?>."></a>
+						</div> <!-- class="AdminCategoryListItem" -->
+					</form>
+					<div class="AdminCategoryListItemIcon">
+						<form method="POST" action="/admin/locations_list" name="del<?= $values['lid']; ?>">
+							<input type="hidden" name="lid" value="<?= $values['lid']; ?>">
+							<input type="hidden" name="function" value="del_location">
+							<a href="javascript:;" onclick="document.forms['del<?= $values['lid']; ?>'].submit(); return false;" class="AdminCategoryRemoveIcon" title="Remove <?= $values['city']; ?>, <?= $values['state'] ?>."></a>
+						</form>
+					</div>
+					<div class="AdminCategoryListItemIcon">
+						<form method="POST" action="/admin/locations_list" name="search<?= $values['lid']; ?>">
+							<input type="hidden" name="lid" value="<?= $values['lid']; ?>">
+							<input type="hidden" name="function" value="search_location">
+							<a href="javascript:;" onclick="document.forms['search<?= $values['lid']; ?>'].submit(); return false;" class="AdminCategorySearchIcon" title="Show all artists in '<?= $values['city'] ?>, <?= $values['state'] ?>."></a>
+						</form>
+					</div>
+				</div>  <!-- class="AdminCategoryListRow" -->
+			<? } ?>
+		</div> <!-- AdminCategoryListContainer -->
+		<div class="clear"></div>
+		<form method="POST" action="/admin/locations_list" enctype="multipart/form-data">
+			<input type="hidden" name="function" value="add_location">
+			<div class="AdminCategoryListingAddContainer">
+				<div class="AdminCategoryListingAddHeader">ADD NEW LOCATION</div>
+				<div class="AdminCategoryListingAddItem">City</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="city" size="30"></div>
+				<div class="AdminCategoryListingAddItem">State</div>
+				<div class="AdminCategoryListingAddValue"><select name="state"><option value="">Select a State</option><?= OptionsDropDown("none"); ?></select></div>
+				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Location"></div>
+				<div class="clear"></div>
+			</div> <!-- class="AdminCategoryListingAddContainer" -->
+		</form>
+	<?
+}
+
 function AdminShowStyles($styles,$quantity) {
 	?>
 		<div class="AdminCategoryListContainer">
