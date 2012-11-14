@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20121112
+**  Last Edit: 20121113
 ****************************************/
 
 function Init() {
@@ -273,6 +273,26 @@ function AdminSaveNewLocation() {
 	}
 }
 
+function AdminDeleteLocation($lid) {
+	global $conn;
+	$sid = preg_replace("/[^0-9]/","",$lid); // input sanitization -- only numbers
+	// find all artists using this location in `artistlocations` and clean 'em up
+	$query = sprintf("DELETE FROM `artistlocations` WHERE `lid` = '%s'",
+		mysqli_real_escape_string($conn,$lid)
+	);
+	if (mysqli_query($conn,$query) === FALSE) {
+		echo "<div class='AdminError'>Whoa, couldn't delete '$lid' from artistlocations. ". mysqli_error($conn) ."</div>";
+	}
+	$query = sprintf("DELETE FROM `locations` WHERE `lid` = '%s'",
+		mysqli_real_escape_string($conn,$lid)
+	);
+	if (mysqli_query($conn,$query) === TRUE) {
+		echo "<div class='AdminSuccess'>Location removed.</div>";
+	} else {
+		echo "<div class='AdminError'>Hmm, couldn't delete '$lid' from locations.". mysqli_error($conn) ."</div>";
+	}
+}
+
 function AdminListStyles() {
 	global $conn;
 	$query = "SELECT `sid`, `name` FROM `styles`";
@@ -321,7 +341,6 @@ function AdminDeleteStyle($sid) {
 	if (mysqli_query($conn,$query) === FALSE) {
 		echo "<div class='AdminError'>Whoa, couldn't delete '$sid' from artiststyles. ". mysqli_error($conn) ."</div>";
 	}
-	$artists = array();	
 	// delete the style from `styles`
 	$query = sprintf("DELETE FROM `styles` WHERE `sid` = '%s'",
 		mysqli_real_escape_string($conn,$sid)
@@ -453,7 +472,6 @@ function AdminDeleteCategoryGo($targetcategoryurl) {
 	if (mysqli_query($conn,$query) === FALSE) {
 		echo "<div class='AdminError'>Whoa, couldn't delete '$cid' from artistcategories.". mysqli_error($conn) ."</div>";
 	}
-	$artists = array();	
 	// delete the category from `categories`
 	$query = sprintf("DELETE FROM `categories` WHERE `cid` = '%s'",
 		mysqli_real_escape_string($conn,$cid)
