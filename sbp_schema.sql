@@ -15,6 +15,7 @@ CREATE TABLE `sbpweb`.`artists` (
 	`slug` VARCHAR(255) NOT NULL,
 	`is_active` BOOLEAN NOT NULL DEFAULT 0,
 	`is_highlighted` BOOLEAN NOT NULL DEFAULT 0,
+	`is_searchable` BOOLEAN NOT NULL DEFAULT 0,
 	`last_updated` DATETIME NOT NULL,
 	INDEX(`url`)
 ) ENGINE=InnoDB;
