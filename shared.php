@@ -237,6 +237,17 @@ function ShowAdminPage() {
 	}
 }
 
+function AdminEditSingleLocation($lid) {
+	global $conn;
+	$query = sprintf("SELECT `lid`, `city`,`state` FROM `locations` WHERE `lid` = '%s'",
+		mysqli_real_escape_string($conn,$lid)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminEditLocation($row);
+	mysqli_free_result($result);
+}
+
 function AdminListLocations() {
 	global $conn;
 	$query = "SELECT `lid`, `city`, `state` FROM `locations` ORDER BY `state`, `city`";
@@ -308,6 +319,29 @@ function AdminListStyles() {
 	aasort($styles,"name");
 	$quantity = count($styles);
 	AdminShowStyles($styles,$quantity);
+}
+
+function AdminSaveSingleLocation() {
+	// save an existing location that was just edited
+	global $conn;
+	if ( (strlen($_REQUEST['city']) == 0) || (strlen($_REQUEST['state']) != 2) ) {
+		echo "<div class='AdminError'>Please input both a city and state.</div>";
+	} else {
+		$lid = preg_replace("/[^0-9]/","",$_REQUEST['lid']); // input sanitization -- only numbers
+		$city = htmlspecialchars(ucwords(trim($_REQUEST['city'])));
+		$state = htmlspecialchars(strtoupper(trim($_REQUEST['state'])));
+		$statename = StateCodeToName($state); 
+		$query = sprintf("UPDATE `locations` SET `city` = '%s', `state` = '%s' WHERE `lid` = '%s'",
+			mysqli_real_escape_string($conn,$city),
+			mysqli_real_escape_string($conn,$state),
+			mysqli_real_escape_string($conn,$lid)
+		);
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'>Location <B>$city</B>, <B>$statename</B> [$lid] Successfully Updated.</div>";
+		} else {
+			echo "<div class='AdminError'>Location <B>$city</B>, <B>$statename</B> [$lid] Failed to Update!<br>". mysqli_error($conn) ."</div>";
+		}
+	}
 }
 
 function AdminSaveSingleStyle() {

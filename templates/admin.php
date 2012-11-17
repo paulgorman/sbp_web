@@ -44,7 +44,7 @@ function AdminShowLocations($locations) {
 					<form method="POST" action="/admin/locations_list" name="edit<?= $values['lid']; ?>">
 						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['lid']; ?>'].submit(); return false;"><?=$values['city'] ?></div>
 						<div class="AdminCategoryListItemURL" onclick="document.forms['edit<?= $values['lid']; ?>'].submit(); return false;"><?=$values['state'] ?></div>
-						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['sid']; ?>'].submit(); return false;">&nbsp;</div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['lid']; ?>'].submit(); return false;">&nbsp;</div>
 						<div class="AdminCategoryListItemIcon" onclick="document.forms['edit<?= $values['lid']; ?>'].submit(); return false;">
 							<input type="hidden" name="lid" value="<?= $values['lid']; ?>">
 							<input type="hidden" name="function" value="edit_location">
@@ -262,6 +262,31 @@ function AdminEditCategory($dataarray) {
 				<div class="AdminCategoryListingAddSubmit">
 					<input type="submit" value="Update Category">
 					<input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/categories_list'">
+				</div>
+				<div class="clear"></div>
+			</div> <!-- AdminCategoryListContainer -->
+		</form>
+	<?
+}
+
+function AdminEditLocation($dataarray) {
+	?>
+		<form method="POST" action="/admin/locations_list" enctype="multipart/form-data">
+			<input method="hidden" name="function" value="save_location" style="display:none">
+			<input method="hidden" name="lid" value="<?= $dataarray['lid'] ?>" style="display:none">
+			<div class="AdminCategoryListContainer">
+				<div class="AdminCategoryListingEditHeader">
+					Rename Location "<?= $dataarray['city'] ?>, <?= StateCodeToName($dataarray['state']) ?>"
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">City:</div>
+				<div class="AdminCategoryListingAddValue">
+					<input type="text" name="city" size="40" value="<?= $dataarray['city'] ?>">
+				</div>
+				<div class="AdminCategoryListingAddValue"><select name="state"><?= OptionsDropDown($dataarray['state']) ?></select></div>
+				<div class="AdminCategoryListingAddSubmit">
+					<input type="submit" value="Update Location">
+					<input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/locations_list'">
 				</div>
 				<div class="clear"></div>
 			</div> <!-- AdminCategoryListContainer -->
