@@ -154,7 +154,7 @@ function AdminDisplaySiteStats() {
 function ShowAdminPage() {
 	$adminfunctions = array(
 		"Overview" => "",
-		"Artists" => "artist_editor",
+		"Artists" => "artists",
 		"Categories" => "categories_list",
 		"Styles" => "styles_list",
 		"Locations" => "locations_list",
@@ -234,7 +234,40 @@ function ShowAdminPage() {
 					AdminListLocations();
 			}
 		}
+		if ($_REQUEST['url'] == "artists") {
+			AdminArtistsButtonBar();
+			switch($_REQUEST['function']) {
+				case "search":
+					echo $_REQUEST['q'];
+					break;
+				case "list_all":
+					AdminArtistListAll();
+					break;
+				case "add_new":
+					AdminArtistAddNew();
+					break;
+				default:
+					AdminArtistListAll();
+			}
+		}
 	}
+}
+
+function AdminArtistList() {
+	global $conn;
+	if (isset($_REQUEST['page'])) {
+		$page = preg_replace("/[^0-9]/","",$_REQUEST['page']);
+	} else {
+		$page = 1;
+	}
+	$start_from = ($page - 1) * 50;
+	$query = sprintf("SELECT * FROM `artists` ORDER BY `name` LIMIT %s",
+		mysqli_real_escape_string($conn,$start_from)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminArtistListPage($result,$page);
+	mysqli_free_result($result);
 }
 
 function AdminEditSingleLocation($lid) {

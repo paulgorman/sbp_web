@@ -51,7 +51,46 @@ td {
 	padding: 4px;
 }
 
+.adminNavSubItem {
+	text-align: center;
+	height: 1.5em;              
+	float: left;
+	margin: auto;
+	padding: 4px;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.adminNavItemSelected {
+	text-align: center;
+	background-color: #AACEDF;
+	height: 1.5em;              
+	border-bottom: 0px;
+	float: left;
+	width: 100px;
+	margin: auto;
+	padding: 4px;
+}
+
+.adminNavSubHolder {
+	text-align: center;
+	font-size: 15px;
+	color: #252d31;
+	background-color: #AACEDF;
+	border: 1px solid;
+	border-top: 0px;
+	border-color: #00529B;
+	margin: auto;
+	width: 960px;
+	padding: 15px, 10px, 15px, 10px;
+	overflow: auto;
+}
+
 .adminNavItem:hover {
+	background-color: #BFEFFF;
+}
+
+.adminNavSubItem:hover {
 	background-color: #BFEFFF;
 }
 
@@ -399,5 +438,42 @@ label {
     font-size: 28px;
     left: 6px;
 }
- 
+
+/* ---- search box --- */
+#search {
+
+}
+
+#search input[type="text"] {
+    background: url("/templates/icons/search-white.png") no-repeat 8px 3px #718994;
+    border: 0 none;
+    font: bold 12px; 
+    color: #d7d7d7;
+    width:150px;
+    padding: 3px 15px 3px 35px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.3); 
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+    -webkit-transition: all 0.7s ease 0s;
+    -moz-transition: all 0.7s ease 0s;
+    -o-transition: all 0.7s ease 0s;
+    transition: all 0.7s ease 0s;
+}
+
+#search input[type="text"]:focus {
+    background: url("/templates/icons/search-dark.png") no-repeat 8px 3px #fcfcfc;
+    color: #6a6f75;
+    width: 160px;
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+
+
 </style>

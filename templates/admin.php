@@ -21,15 +21,38 @@ function AdminHead($curfunction,$adminfunctions) {
 function AdminNav($curfunction,$adminfunctions) {
 	echo "<nav class='adminNavHolder'>";
 	foreach ($adminfunctions as $nicename => $url) { 
-		echo "<div class='adminNavItem'><a href='/admin/$url'>"; 
 		if ($curfunction == $url) { 
-			echo "<B>" . strtoupper($nicename) . "</B></a>";
+			?>
+					<div class='adminNavItemSelected'>
+						<a href='/admin/<?= $url ?>'><B><?= strtoupper($nicename) ?></B></a>
+					</div>
+			<?
 		} else { 
-			echo strtoupper($nicename) . "</a>"; 
+			?>
+					<div class='adminNavItem'>
+						<a href='/admin/<?= $url ?>'><?= strtoupper($nicename) ?></a>
+					</div>
+			<?
 		}
-		echo '</div>';
 	}
 	echo "</nav>";
+}
+
+function AdminArtistsButtonBar() {
+	?>
+		<div  class="adminNavSubHolder">
+			<div class="adminNavSubItem"><a href='/admin/artists/add_new'>Add New Artist</a></div>
+			<div class="adminNavSubItem"><a href='/admin/artists/list_new'>List Newest Artists</a></div>
+			<div class="adminNavSubItem"><a href='/admin/artists/list_feat'>List Featured Artists</a></div>
+			<div class="adminNavSubItem"><a href='/admin/artists/list_secret'>List Hidden Artists</a></div>
+			<div class="adminNavSubItem"><a href='/admin/artists/list_all'>List All Artists</a></div>
+			<div class="adminNavSubItem"><form method="POST" action="/admin/artists/" id="search"><input type="hidden" name="function" value="search"><input type="text" name="q" placeholder="Search..."></form></div>
+		</div>
+	<?
+}
+
+function AdminArtistListPage($artists,$page) {
+
 }
 
 function AdminShowLocations($locations) {
