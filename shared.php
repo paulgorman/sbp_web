@@ -12,6 +12,7 @@
 function Init() {
 	global $conn;
 	global $dirlocation;
+	global $pagination;
 	error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
@@ -29,6 +30,7 @@ function Init() {
 	require_once("db.php");
 	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
 	$dirlocation = "/home/presence/samba_public_share/sbp_app";	// no trailing slash.
+	$pagination = "2";	// number of entries per "page"
 }
 
 function RecordHit() {
@@ -241,28 +243,66 @@ function ShowAdminPage() {
 					echo $_REQUEST['q'];
 					break;
 				case "list_all":
-					AdminArtistListAll();
+					AdminArtistList();
 					break;
 				case "add_new":
 					AdminArtistAddNew();
 					break;
 				default:
-					AdminArtistListAll();
+					AdminArtistList();
 			}
 		}
 	}
 }
 
+function FigurePageNav($type,$page=1) {
+	global $conn;
+	global $pagination;
+	if ($type == "list_all") {
+		$query = "SELECT COUNT(*) FROM `artists`";
+	}
+	$result = mysqli_query($conn,$query);
+	list($count) = mysqli_fetch_array($result);
+	// get maximum number of pages
+	$maximum = ceil($count/$pagination); // round up to a whole page number
+	// get previous page
+	if ($page ==  1) {
+		$previous = 1;
+	} else {
+		$previous = abs($page - 1); 
+	}
+	// get next page
+	if ($maximum > $page) {
+		$next = ($page + 1);
+	} else {
+		$next = $page;
+	}
+	return(
+		array(
+			"type"=>$type,
+			"first"=>1,
+			"previous"=>$previous,
+			"page"=>$page,
+			"next"=>$next,
+			"maximum"=>$maximum
+		)
+	);
+}
+
 function AdminArtistList() {
 	global $conn;
-	if (isset($_REQUEST['page'])) {
-		$page = preg_replace("/[^0-9]/","",$_REQUEST['page']);
+	global $pagination;
+	if ($_REQUEST['listpage'] > 0) {
+		$page = preg_replace("/[^0-9]/","",$_REQUEST['listpage']);
 	} else {
 		$page = 1;
 	}
-	$start_from = ($page - 1) * 50;
-	$query = sprintf("SELECT * FROM `artists` ORDER BY `name` LIMIT %s",
-		mysqli_real_escape_string($conn,$start_from)
+	$limit_start = (abs($page - 1) * $pagination);
+	$limit_end = abs($page * $pagination);
+	//echo "$limit_start / $limit_end";
+	$query = sprintf("SELECT * FROM `artists` ORDER BY `name` LIMIT %s,%s",
+		mysqli_real_escape_string($conn,$limit_start),
+		mysqli_real_escape_string($conn,$limit_end)
 	);
 	$result = mysqli_query($conn,$query);
 	$row = mysqli_fetch_assoc($result);

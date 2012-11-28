@@ -147,6 +147,17 @@ td {
 	margin-bottom: 4px
 }
 
+.ListPage {
+	float:right;
+	text-align:right;
+}
+
+.ListPageItem {
+	float:left;
+	margin-left:4px;
+	margin-right:4px;
+}
+
 .AdminCategoryListRow {
 	color: #9F6000;
 	background-color: #FFFFFF;

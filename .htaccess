@@ -26,7 +26,7 @@ RewriteRule ^tag/([a-zA-Z0-9_-]+) index.php?page=findbytag&tag=$1 [QSA,L,NC]
 RewriteRule ^about[/]? index.php?page=about [QSA,L,NC]
 RewriteRule ^production[/]? index.php?page=production [QSA,L,NC]
 RewriteRule ^contact[/]? index.php?page=contact [QSA,L,NC]
-RewriteRule ^admin[/]?([a-z_-]+)?[/]? /index.php?page=admin&url=$1 [QSA,L,NC]
+RewriteRule ^admin[/]?([a-z_-]+)?[/]?([a-z_-]+)?[/]?([0-9]+)? /index.php?page=admin&url=$1&function=$2&listpage=$3 [QSA,L,NC]
 RewriteRule ^(.*)$ index.php?page=404 [QSA,L,NC]
 
 

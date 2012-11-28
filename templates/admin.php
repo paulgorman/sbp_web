@@ -52,7 +52,42 @@ function AdminArtistsButtonBar() {
 }
 
 function AdminArtistListPage($artists,$page) {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemURL">All Artists</div>
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_all",$page)); ?></div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($artists as $key => $values) { ?>
+				<div class="AdminCategoryListRow">
+					<div class="AdminCategoryListItemCategory"><?= $values['name'] ?></div>
+					<div class="AdminCategoryListItemURL"><?= $values['url'] ?></div>
+					<div class="AdminCategoryListItemDescription"><?= $values['slug'] ?></div>
+				</div>
+			<? } ?>
+			<div class="AdminCategoryListHeader">
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_all",$page)); ?></div>
+			</div>
+		</div>
+	<?
+}
 
+function ShowPageNav($pageinfo) {
+	if ($pageinfo['page'] != $pageinfo['first']) {
+		$returnhtml .= "<div class='ListPageItem'><a href='/admin/artists/". $pageinfo['type'] ."/". $pageinfo['first'] ."'>First</a></div>";
+	}
+	if ($pageinfo['previous'] != $pageinfo['page'] && $pageinfo['previous'] != $pageinfo['first']) {
+		$returnhtml .= "<div class='ListPageItem'><a href='/admin/artists/". $pageinfo['type'] ."/". $pageinfo['previous'] ."'>Previous</a></div>";
+	}
+	$returnhtml .= "<div class='ListPageItem'> (Page ". $pageinfo['page'] ." of ". $pageinfo['maximum'] .") </div>";
+	if ($pageinfo['next'] != $pageinfo['page'] && $pageinfo['next'] != $pageinfo['maximum']) {
+		$returnhtml .= "<div class='ListPageItem'><a href='/admin/artists/". $pageinfo['type'] ."/". $pageinfo['next'] ."'>Next</a></div>";
+	}
+	if ($pageinfo['page'] != $pageinfo['maximum']){
+		$returnhtml .= "<div class='ListPageItem'><a href='/admin/artists/". $pageinfo['type'] ."/". $pageinfo['maximum'] ."'>Last</a></div>";
+	}
+	return $returnhtml;
 }
 
 function AdminShowLocations($locations) {
