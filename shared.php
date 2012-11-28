@@ -198,11 +198,11 @@ function ShowAdminPage() {
 			switch($_REQUEST['function']) {
 				case "add_style":
 					AdminSaveNewStyle();
-					AdminListStyleS();
+					AdminListStyles();
 					break;
 				case "del_style":
 					AdminDeleteStyle($_REQUEST['sid']);
-					AdminListStyleS();
+					AdminListStyles();
 					break;
 				case "edit_style":
 					AdminEditSingleStyle($_REQUEST['sid']);
@@ -300,6 +300,7 @@ function AdminArtistList() {
 	$limit_start = (abs($page - 1) * $pagination);
 	$limit_end = abs($page * $pagination);
 	//echo "$limit_start / $limit_end";
+	// XXX: Presence -- Figure out what to select, plz
 	$query = sprintf("SELECT * FROM `artists` ORDER BY `name` LIMIT %s,%s",
 		mysqli_real_escape_string($conn,$limit_start),
 		mysqli_real_escape_string($conn,$limit_end)
