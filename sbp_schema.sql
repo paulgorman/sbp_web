@@ -13,11 +13,13 @@ CREATE TABLE `sbpweb`.`artists` (
 	`name` VARCHAR(50) NOT NULL,
 	`url` VARCHAR(50) NOT NULL UNIQUE,
 	`slug` VARCHAR(255) NOT NULL,
+	`bio` TEXT,
 	`is_active` BOOLEAN NOT NULL DEFAULT 0,
 	`is_highlighted` BOOLEAN NOT NULL DEFAULT 0,
 	`is_searchable` BOOLEAN NOT NULL DEFAULT 0,
 	`last_updated` DATETIME NOT NULL,
-	INDEX(`url`)
+	INDEX(`url`),
+	INDEX(`slug`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE `sbpweb`.`artistcategories` (

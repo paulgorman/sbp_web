@@ -297,6 +297,16 @@ td {
 	float: left;
 }
 
+.AdminCategoryListingAddTextBox {
+	color: #4F8A10;
+	background-color: #FFFFFF;
+	font-size: 12px;
+	margin: 2px;
+	border: 0px solid;
+	height: 10em;
+	float: left;
+}
+
 .AdminCategoryListingCheckBox {
 	color: #4F8A10;
 	margin: 2px;

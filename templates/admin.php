@@ -375,3 +375,43 @@ function AdminEditStyle($dataarray) {
 		</form>
 	<?
 }
+
+function AdminArtistFormNew() {
+	?>
+		<form method="POST" action="/admin/artists/add_new" enctype="multipart/form-data">
+			<input type="hidden" name="function" value="add_new">
+			<div class="AdminCategoryListingAddContainer">
+				<div class="AdminCategoryListingAddHeader">ADD NEW ARTIST</div>
+				<div class="AdminCategoryListingAddItem">Artist/Act/Band Name</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="name" size="50"></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">One-Line Summary,<br> Header, Slug</div>
+				<div class="AdminCategoryListingAddValue"><textarea rows="2" cols="50" name="slug" wrap="virtual"></textarea></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">&nbsp;</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">&nbsp;</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">Artist is Active</div>
+    		<div class="AdminCategoryListingCheckBox">
+					<input type="checkbox" name="is_active" id="is_active" class="regular-checkbox big-checkbox" CHECKED /><label title="Active, available for gigs" for="is_active"></label>
+				</div>
+				<div class="AdminCategoryListingAddItem">Artist is Searchable</div>
+    		<div class="AdminCategoryListingCheckBox">
+					<input type="checkbox" name="is_searchable" id="is_searchable" class="regular-checkbox big-checkbox" CHECKED /><label title="Artist listed in search results" for="is_searchable"></label>
+				</div>
+				<div class="AdminCategoryListingAddItem">Highlighted on Home Page<br>and Category Listings</div>
+    		<div class="AdminCategoryListingCheckBox">
+					<input type="checkbox" name="is_highlighted" id="is_highlighted" class="regular-checkbox big-checkbox" /><label title="Artist is highlighted on Home Page and Category Listings" for="is_highlighted"></label>
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">Bio</div>
+				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="85" name="bio" wrap="virtual"></textarea></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Save New Artist"></div>
+				<div class="clear"></div>
+			</div> <!-- class="AdminCategoryListingAddContainer" -->
+		</form>
+	<?
+}
+

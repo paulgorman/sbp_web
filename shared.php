@@ -237,7 +237,7 @@ function ShowAdminPage() {
 			}
 		}
 		if ($_REQUEST['url'] == "artists") {
-			AdminArtistsButtonBar();
+			AdminArtistsButtonBar(); // display that additional nav/button bar
 			switch($_REQUEST['function']) {
 				case "search":
 					echo $_REQUEST['q'];
@@ -248,11 +248,23 @@ function ShowAdminPage() {
 				case "add_new":
 					AdminArtistAddNew();
 					break;
+				case "save_new":
+					$aid = AdminArtistSaveNew();
+					AdminArtistViewSingle($aid);
+					break;
 				default:
 					AdminArtistList();
 			}
 		}
 	}
+}
+
+function AdminArtistAddNew() {
+	AdminArtistFormNew();
+}
+
+function AdminArtistViewSingle($aid) {
+	// XXX Show somethign omg
 }
 
 function FigurePageNav($type,$page=1) {
@@ -298,7 +310,7 @@ function AdminArtistList() {
 		$page = 1;
 	}
 	$limit_start = (abs($page - 1) * $pagination);
-	$limit_end = abs($page * $pagination);
+	$limit_end = $pagination;
 	//echo "$limit_start / $limit_end";
 	// XXX: Presence -- Figure out what to select, plz
 	$query = sprintf("SELECT * FROM `artists` ORDER BY `name` LIMIT %s,%s",
