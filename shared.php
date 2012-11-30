@@ -643,7 +643,7 @@ function AdminSelectCategories($aid = NULL) {
 		}
 	}
 	foreach($categorieslist as $cid => $category) {
-		$string .= sprintf("<option value='%s' %s>%s</option>",
+		$string .= sprintf("<option value='%s'%s>%s</option>",
 			$cid,
 			($artistcategories[$cid])? ' selected="SELECTED"' : '', // yeah bitches
 			$category
@@ -872,7 +872,7 @@ function StateOptionsDropDown($active) {
 	$states = StatesArray();
 	$string = "";
 	foreach($states as $code => $state) {
-		$string .= sprintf("<option value='%s' %s>%s</option>",
+		$string .= sprintf("<option value='%s'%s>%s</option>",
 			$code,
 			($active == $code)? ' selected="SELECTED"' : '', // yeah bitches
 			$state

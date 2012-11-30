@@ -429,7 +429,6 @@ function AdminArtistFormNew() {
 				<div class="AdminCategoryListingAddItem">Bio</div>
 				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="85" name="bio" wrap="virtual"></textarea></div>
 				<div class="clear"></div>
-
 				<div class="AdminCategoryListingAddItem">
 					<label for="Categories">Artist's Categories</label>
 				</div>
@@ -438,7 +437,6 @@ function AdminArtistFormNew() {
 						<?= AdminSelectCategories(); ?>
 					</select>
 				</div>
-
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Save New Artist"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddValue">
