@@ -12,6 +12,13 @@ function AdminHead($curfunction,$adminfunctions) {
 	<?			
 		readfile("templates/admin.css");
 	?>
+	  		<link rel="stylesheet" type="text/css" href="/templates/css/jquery.bsmselect.css" />
+	  		<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+	  		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+	  		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+	  		<script type="text/javascript" src="/templates/js/jquery.bsmselect.js"></script>
+	  		<script type="text/javascript" src="/templates/js/jquery.bsmselect.sortable.js"></script>
+	  		<script type="text/javascript" src="/templates/js/jquery.bsmselect.compatibility.js"></script>
 			</head>
 			<body>
 				<div class='adminTitle'>SBP Website Administration - <?= $tempadminfunctionsflipped[$curfunction]; ?></div>
@@ -134,7 +141,7 @@ function AdminShowLocations($locations) {
 				<div class="AdminCategoryListingAddItem">City</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="city" size="30"></div>
 				<div class="AdminCategoryListingAddItem">State</div>
-				<div class="AdminCategoryListingAddValue"><select name="state"><option value="">Select a State</option><?= OptionsDropDown("none"); ?></select></div>
+				<div class="AdminCategoryListingAddValue"><select name="state"><option value="">Select a State</option><?= StateOptionsDropDown("none"); ?></select></div>
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Location"></div>
 				<div class="clear"></div>
 			</div> <!-- class="AdminCategoryListingAddContainer" -->
@@ -341,7 +348,7 @@ function AdminEditLocation($dataarray) {
 				<div class="AdminCategoryListingAddValue">
 					<input type="text" name="city" size="40" value="<?= $dataarray['city'] ?>">
 				</div>
-				<div class="AdminCategoryListingAddValue"><select name="state"><?= OptionsDropDown($dataarray['state']) ?></select></div>
+				<div class="AdminCategoryListingAddValue"><select name="state"><?= StateOptionsDropDown($dataarray['state']) ?></select></div>
 				<div class="AdminCategoryListingAddSubmit">
 					<input type="submit" value="Update Location">
 					<input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/locations_list'">
@@ -378,6 +385,20 @@ function AdminEditStyle($dataarray) {
 
 function AdminArtistFormNew() {
 	?>
+  <script type="text/javascript">//<![CDATA[
+    jQuery(function($) {
+      $("#Categories").bsmSelect({
+        addItemTarget: 'bottom',
+        animate: true,
+        highlight: true,
+        plugins: [
+          $.bsmSelect.plugins.sortable({ axis : 'y', opacity : 0.5 }, { listSortableClass : 'bsmListSortableCustom' }),
+          $.bsmSelect.plugins.compatibility()
+        ]
+      });
+    });
+  //]]></script>
+
 		<form method="POST" action="/admin/artists/add_new" enctype="multipart/form-data">
 			<input type="hidden" name="function" value="add_new">
 			<div class="AdminCategoryListingAddContainer">
@@ -408,8 +429,20 @@ function AdminArtistFormNew() {
 				<div class="AdminCategoryListingAddItem">Bio</div>
 				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="85" name="bio" wrap="virtual"></textarea></div>
 				<div class="clear"></div>
+
+				<div class="AdminCategoryListingAddItem">
+					<label for="Categories">Artist's Categories</label>
+				</div>
+				<div class="AdminCategoryListingAddDropDown">
+					<select id="Categories" multiple="multiple" name="categories[]" title="Categories" class="sminit">
+						<?= AdminSelectCategories(); ?>
+					</select>
+				</div>
+
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Save New Artist"></div>
 				<div class="clear"></div>
+				<div class="AdminCategoryListingAddValue">
+  </form>
 			</div> <!-- class="AdminCategoryListingAddContainer" -->
 		</form>
 	<?

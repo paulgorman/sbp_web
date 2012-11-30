@@ -624,6 +624,34 @@ function AdminEditCategories() {
 	AdminShowCategories($categorieslist);
 }
 
+function AdminSelectCategories($aid = NULL) {
+	// for adding or editing an artist
+	global $conn;
+	$categorieslist = array();
+	$artistcategories = array();
+	$query = "SELECT * FROM `categories` ORDER BY `category`";
+	$result = mysqli_query($conn,$query);
+	while ($row = mysqli_fetch_assoc($result)) {
+		$categorieslist[$row['cid']] = $row['category'];
+	}
+	mysqli_free_result($result);
+	if ($aid) {
+		$query = "SELECT `cid` FROM `artistcategories` WHERE 'aid' = $aid";
+		$result = mysqli_query($conn,$query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$artistcategories[$row['cid']] = TRUE;
+		}
+	}
+	foreach($categorieslist as $cid => $category) {
+		$string .= sprintf("<option value='%s' %s>%s</option>",
+			$cid,
+			($artistcategories[$cid])? ' selected="SELECTED"' : '', // yeah bitches
+			$category
+		);
+	}
+	return($string);
+}
+
 function AdminSaveNewCategory() {
 	// save a NEW category
 	global $conn;
@@ -839,7 +867,7 @@ function StateNameToCode($state) {
 	return(array_search($state, $states)); 
 }
 
-function OptionsDropDown($active) {
+function StateOptionsDropDown($active) {
 	// show a dropdown of states with the active state highlighted, or just zend a zero for nuffin
 	$states = StatesArray();
 	$string = "";

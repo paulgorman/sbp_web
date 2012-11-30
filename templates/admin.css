@@ -297,13 +297,17 @@ td {
 	float: left;
 }
 
+.AdminCategoryListingAddDropDown {
+	color: #4F8A10;
+	width: 30em;
+	padding-left: 45px;
+}
+
 .AdminCategoryListingAddTextBox {
 	color: #4F8A10;
-	background-color: #FFFFFF;
 	font-size: 12px;
 	margin: 2px;
 	border: 0px solid;
-	height: 10em;
 	float: left;
 }
 
@@ -496,5 +500,61 @@ label {
 }
 
 
+/* ----=== BSM multiselect === ----- */
+.bsmHighlight {
+  color: #777;
+}
+
+.bsmSelect {
+  margin: 0 0 0.25em 1em;
+}
+
+.bsmListSortableCustom li {
+  cursor: move;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  margin: 2px 0;
+}
+
+/* custom */
+
+.bsmList-custom {
+  /* html list that contains selected items */
+  margin: 0.25em 0 0.25em 0;
+  display: block;
+  padding-left: 0;
+  list-style: none;
+}
+
+.bsmListItem-custom {
+  /* li item from the html list above */
+  margin: 0 5px 5px 0;
+  padding: 4px;
+  list-style: none;
+  background: #ddd;
+  border: 1px solid #bbb;
+  line-height: 1em;
+  float: left;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px; 
+}
+
+.bsmListItem-custom:hover {
+  background-color: #e5e5e5;
+  box-shadow: 0 0 3px #aaa;
+  -webkit-box-shadow: 0 0 3px #aaa;
+  -moz-box-shadow: 0 0 3px #aaa;
+}
+
+.bsmListItemLabel-custom {
+  padding-right: 5px;
+}
+
+.bsmListItemRemove-custom {
+  text-decoration: none;
+}
+/* ----=== End BSM Multiselect === ----- */
 
 </style>
