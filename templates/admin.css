@@ -299,8 +299,16 @@ td {
 
 .AdminCategoryListingAddDropDown {
 	color: #4F8A10;
+	width: 40em;
+	padding-left: 45px;
+}
+
+.AdminCategoryListingAddAnotherDropDown {
+	color: #4F8A10;
+	margin-top: -3em;
 	width: 30em;
 	padding-left: 45px;
+	float:right;
 }
 
 .AdminCategoryListingAddTextBox {

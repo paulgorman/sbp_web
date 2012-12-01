@@ -652,6 +652,73 @@ function AdminSelectCategories($aid = NULL) {
 	return($string);
 }
 
+function AdminSelectStyles($aid = NULL) {
+	// for adding or editing an artist
+	// I'm totally duplicating code
+	global $conn;
+	$styleslist = array();
+	$artiststyles = array();
+	$query = "SELECT * FROM `styles` ORDER BY `name`";
+	$result = mysqli_query($conn,$query);
+	while ($row = mysqli_fetch_assoc($result)) {
+		$styleslist[$row['sid']] = $row['name'];
+	}
+	mysqli_free_result($result);
+	if ($aid) {
+		$query = "SELECT `sid` FROM `artiststyles` WHERE 'aid' = $aid";
+		$result = mysqli_query($conn,$query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$artiststyles[$row['sid']] = TRUE;
+		}
+	}
+	foreach($styleslist as $sid => $name) {
+		$string .= sprintf("<option value='%s'%s>%s</option>",
+			$sid,
+			($artiststyles[$sid])? ' selected="SELECTED"' : '', // yeah bitches
+			$name
+		);
+	}
+	return($string);
+}
+
+function AdminSelectLocations($aid = NULL) {
+	// for adding or editing an artist
+	// I'm totally duplicating code
+	global $conn;
+	$locationslist = array();
+	$artistlocations = array();
+	$query = "SELECT * FROM `locations` ORDER BY `state`, `city`";
+	$result = mysqli_query($conn,$query);
+	while ($row = mysqli_fetch_assoc($result)) {
+		$locationslist[$row['lid']] = array($row['city'],$row['state']);
+	}
+	mysqli_free_result($result);
+	if ($aid) {
+		$query = "SELECT `lid` FROM `artistlocations` WHERE 'aid' = $aid";
+		$result = mysqli_query($conn,$query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$artistlocations[$row['lid']] = TRUE;
+		}
+	}
+	// insanity to make the dropdown list nice
+	$oldstate = "";
+	foreach($locationslist as $lid => $citystate) {
+		if ($citystate[1] != $oldstate) {
+			($firstpost)? $string .= "</optgroup>" : $firstpost++;
+			$string .= "\n<optgroup label='". StateCodeToName($citystate[1]) ."'>";
+			$oldstate = $citystate[1];
+		}
+		$string .= sprintf("<option value='%s'%s>%s, %s</option>",
+			$lid,
+			($artistlocations[$lid])? ' selected="SELECTED"' : '', // yeah bitches
+			$citystate[0],
+			StateCodeToName($citystate[1])
+		);
+	}
+	$string .= "</optgroup>";
+	return($string);
+}
+
 function AdminSaveNewCategory() {
 	// save a NEW category
 	global $conn;

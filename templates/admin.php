@@ -396,9 +396,26 @@ function AdminArtistFormNew() {
           $.bsmSelect.plugins.compatibility()
         ]
       });
+      $("#Styles").bsmSelect({
+        addItemTarget: 'bottom',
+        animate: true,
+        highlight: true,
+        plugins: [
+          $.bsmSelect.plugins.sortable({ axis : 'y', opacity : 0.5 }, { listSortableClass : 'bsmListSortableCustom' }),
+          $.bsmSelect.plugins.compatibility()
+        ]
+      });
+      $("#Locations").bsmSelect({
+        addItemTarget: 'bottom',
+        animate: true,
+        highlight: true,
+        plugins: [
+          $.bsmSelect.plugins.sortable({ axis : 'y', opacity : 0.5 }, { listSortableClass : 'bsmListSortableCustom' }),
+          $.bsmSelect.plugins.compatibility()
+        ]
+			});
     });
   //]]></script>
-
 		<form method="POST" action="/admin/artists/add_new" enctype="multipart/form-data">
 			<input type="hidden" name="function" value="add_new">
 			<div class="AdminCategoryListingAddContainer">
@@ -429,18 +446,36 @@ function AdminArtistFormNew() {
 				<div class="AdminCategoryListingAddItem">Bio</div>
 				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="85" name="bio" wrap="virtual"></textarea></div>
 				<div class="clear"></div>
+
 				<div class="AdminCategoryListingAddItem">
-					<label for="Categories">Artist's Categories</label>
+					<label for="Categories">Website Categories</label>
 				</div>
 				<div class="AdminCategoryListingAddDropDown">
 					<select id="Categories" multiple="multiple" name="categories[]" title="Categories" class="sminit">
 						<?= AdminSelectCategories(); ?>
 					</select>
 				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">
+					<label for="Styles">Performance Styles</label>
+				</div>
+				<div class="AdminCategoryListingAddDropDown">
+					<select id="Styles" multiple="multiple" name="styles[]" title="Styles" class="sminit">
+						<?= AdminSelectStyles(); ?>
+					</select>
+				</div>
+				<div class="AdminCategoryListingAddItem">
+					<label for="Styles">Available Locations</label>
+				</div>
+				<div class="AdminCategoryListingAddDropDown">
+					<select id="Locations" multiple="multiple" name="locations[]" title="Locations" class="sminit">
+						<?= AdminSelectLocations(); ?>
+					</select>
+				</div>
+				<div class="clear"></div>
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Save New Artist"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddValue">
-  </form>
 			</div> <!-- class="AdminCategoryListingAddContainer" -->
 		</form>
 	<?
