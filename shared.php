@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20121113
+**  Last Edit: 20121203
 ****************************************/
 
 function Init() {
@@ -30,7 +30,7 @@ function Init() {
 	require_once("db.php");
 	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
 	$dirlocation = "/home/presence/samba_public_share/sbp_app";	// no trailing slash.
-	$pagination = "2";	// number of entries per "page"
+	$pagination = "10";	// number of entries per "page"
 }
 
 function RecordHit() {
@@ -260,7 +260,33 @@ function ShowAdminPage() {
 }
 
 function AdminArtistAddNew() {
-	AdminArtistFormNew();
+	if (!isset($_REQUEST['formpage'])) {
+		// brand new artist
+		AdminArtistFormNew();
+	} elseif ($_REQUEST['formpage'] == "1") {
+		// attempt to save the first page
+		$aid = AdminArtistSaveNew();
+		if (strlen($aid) > 0) {
+			// there's an $aid, so page two, go!
+			echo "<div class='AdminSuccess'>Now please add media for artist. ($aid)</div>";
+			AdminArtistFormSecond($aid);
+		} else {
+			// Error in first page, redisplay first page.
+			echo "<div class='AdminError'>Please fill out all of the Artist's information.</div>";
+			AdminArtistFormNew();
+		}
+	} elseif ($_REQUEST['formpage'] == "2") {
+		// save that media plz	
+		if (AdminArtistSaveMedia()) {
+			// hurray!
+			echo "<div class='AdminSuccess'>New artist added!</div>";
+			AdminArtistViewSingle($aid);
+		} else {
+			// usr plz fix something
+			AdminArtistFormSecond();
+			echo "<div class='AdminError'>Please check that you're uploading at least a photo or video for this artist.</div>";
+		}
+	}
 }
 
 function AdminArtistViewSingle($aid) {
@@ -299,6 +325,24 @@ function FigurePageNav($type,$page=1) {
 			"maximum"=>$maximum
 		)
 	);
+}
+
+function AdminArtistSaveNew() {
+	// save artist info, locations, styles, categories.
+	// then go to second page for media uploads
+	global $conn;
+	// stuff
+	return($aid);
+}
+
+function AdminArtistSaveMedia() {
+	// page 2's save artist's media from $_REQUEST['aid']
+}
+
+function AdminArtistFormSecond($aid) {
+	global $conn;
+	// pull back everything we got so far from database
+	// then send over to the admin template for page 2, media addition
 }
 
 function AdminArtistList() {
@@ -626,6 +670,7 @@ function AdminEditCategories() {
 
 function AdminSelectCategories($aid = NULL) {
 	// for adding or editing an artist
+	// XXX: This does not respect user-defined priority/sequence order from webform or database
 	global $conn;
 	$categorieslist = array();
 	$artistcategories = array();
@@ -636,16 +681,30 @@ function AdminSelectCategories($aid = NULL) {
 	}
 	mysqli_free_result($result);
 	if ($aid) {
-		$query = "SELECT `cid` FROM `artistcategories` WHERE 'aid' = $aid";
+		$query = sprintf("SELECT `cid` FROM `artistcategories` WHERE 'aid' = %s",
+			mysqli_real_escape_string($conn,$aid)
+		);
 		$result = mysqli_query($conn,$query);
 		while ($row = mysqli_fetch_assoc($result)) {
 			$artistcategories[$row['cid']] = TRUE;
 		}
 	}
 	foreach($categorieslist as $cid => $category) {
+		$s = 0; // selected flag
+		if ($artistcategories[$cid]) {
+			// if artist is assigned to category is in the database
+			$s++;
+		}
+		if ($_REQUEST['formpage'] == 1) {
+			// if this is from the new artist webform...
+			if (strlen(array_search($cid,$_REQUEST['categories'])) > 0) { // LAME: array_search returns null for a key that's "0"
+				// if artist selected to category from form page 1
+				$s++;
+			}
+		}
 		$string .= sprintf("<option value='%s'%s>%s</option>",
 			$cid,
-			($artistcategories[$cid])? ' selected="SELECTED"' : '', // yeah bitches
+			($s > 0)? ' selected' : '',
 			$category
 		);
 	}
@@ -653,8 +712,7 @@ function AdminSelectCategories($aid = NULL) {
 }
 
 function AdminSelectStyles($aid = NULL) {
-	// for adding or editing an artist
-	// I'm totally duplicating code
+	// for adding or editing an artist // I'm totally duplicating code // please review AdminSelectCategories() above for notes
 	global $conn;
 	$styleslist = array();
 	$artiststyles = array();
@@ -665,16 +723,27 @@ function AdminSelectStyles($aid = NULL) {
 	}
 	mysqli_free_result($result);
 	if ($aid) {
-		$query = "SELECT `sid` FROM `artiststyles` WHERE 'aid' = $aid";
+		$query = sprintf("SELECT `sid` FROM `artiststyles` WHERE 'aid' = %s",
+			mysqli_real_escape_string($conn,$aid)
+		);
 		$result = mysqli_query($conn,$query);
 		while ($row = mysqli_fetch_assoc($result)) {
 			$artiststyles[$row['sid']] = TRUE;
 		}
 	}
 	foreach($styleslist as $sid => $name) {
+		$s = 0; 
+		if ($artiststyles[$sid]) {
+			$s++;
+		}
+		if ($_REQUEST['formpage'] == 1) {
+			if (strlen(array_search($sid,$_REQUEST['styles'])) > 0) {
+				$s++;
+			}
+		}
 		$string .= sprintf("<option value='%s'%s>%s</option>",
 			$sid,
-			($artiststyles[$sid])? ' selected="SELECTED"' : '', // yeah bitches
+			($s > 0)? ' selected' : '',
 			$name
 		);
 	}
@@ -682,8 +751,7 @@ function AdminSelectStyles($aid = NULL) {
 }
 
 function AdminSelectLocations($aid = NULL) {
-	// for adding or editing an artist
-	// I'm totally duplicating code
+	// for adding or editing an artist // I'm totally duplicating code // please review AdminSelectCategories() above for notes
 	global $conn;
 	$locationslist = array();
 	$artistlocations = array();
@@ -694,13 +762,15 @@ function AdminSelectLocations($aid = NULL) {
 	}
 	mysqli_free_result($result);
 	if ($aid) {
-		$query = "SELECT `lid` FROM `artistlocations` WHERE 'aid' = $aid";
+		$query = sprintf("SELECT `lid` FROM `artistlocations` WHERE 'aid' = %s",
+			mysqli_real_escape_string($aid)
+		);
 		$result = mysqli_query($conn,$query);
 		while ($row = mysqli_fetch_assoc($result)) {
 			$artistlocations[$row['lid']] = TRUE;
 		}
 	}
-	// insanity to make the dropdown list nice
+	// insanity to make the dropdown list nice grouped by state
 	$oldstate = "";
 	foreach($locationslist as $lid => $citystate) {
 		if ($citystate[1] != $oldstate) {
@@ -708,9 +778,18 @@ function AdminSelectLocations($aid = NULL) {
 			$string .= "\n<optgroup label='". StateCodeToName($citystate[1]) ."'>";
 			$oldstate = $citystate[1];
 		}
+		$s = 0;
+		if ($artistlocations[$lid]) {
+			$s++;
+		}
+		if ($_REQUEST['formpage'] == 1) {
+			if (strlen(array_search($lid,$_REQUEST['locations'])) > 0) {
+				$s++;
+			}
+		}
 		$string .= sprintf("<option value='%s'%s>%s, %s</option>",
 			$lid,
-			($artistlocations[$lid])? ' selected="SELECTED"' : '', // yeah bitches
+			($s > 0)? ' selected' : '',
 			$citystate[0],
 			StateCodeToName($citystate[1])
 		);
