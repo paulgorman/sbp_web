@@ -268,7 +268,7 @@ function AdminArtistAddNew() {
 		$aid = AdminArtistSaveNew();
 		if (strlen($aid) > 0) {
 			// there's an $aid, so page two, go!
-			AdminArtistFormSecond($aid);
+			AdminArtistFormSecondPrepare($aid);
 		} else {
 			// Error in first page, redisplay first page.
 			AdminArtistFormNew();
@@ -281,7 +281,7 @@ function AdminArtistAddNew() {
 			AdminArtistViewSingle($aid);
 		} else {
 			// usr plz fix something
-			AdminArtistFormSecond();
+			AdminArtistFormSecondPrepare();
 			echo "<div class='AdminError'>Please check that you're uploading at least a photo or video for this artist.</div>";
 		}
 	}
@@ -411,7 +411,7 @@ function AdminArtistSaveNew() {
 					$errors[] = "Error saving location $lid for $aid!" .mysqli_error($conn);
 				}
 			}
-			echo "<div class='AdminSuccess'>Artist Information Saved!</div>";
+			echo "<div class='AdminSuccess'>Artist information for <B>$name</B> saved!</div>";
 		} else {
 			$errors[] = "<B>Did not save new artist!</B> Database Failure: ".mysqli_error($conn);
 		}
@@ -430,10 +430,18 @@ function AdminArtistSaveMedia() {
 	// page 2's save artist's media from $_REQUEST['aid']
 }
 
-function AdminArtistFormSecond($aid) {
+function AdminArtistFormSecondPrepare($aid) {
 	global $conn;
+	$artistinfo = array();
+	$query = sprintf("SELECT name FROM `artists` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	$artistinfo['name'] = $row['name'];
+	$artistinfo['aid'] = $aid;
+	mysqli_free_result($result);
 	// pull back everything we got so far from database
 	// then send over to the admin template for page 2, media addition
+	AdminArtistFormSecond($artistinfo);
 }
 
 function AdminArtistList() {
@@ -786,7 +794,7 @@ function AdminSelectCategories($aid = NULL) {
 			// if artist is assigned to category is in the database
 			$s++;
 		}
-		if ($_REQUEST['formpage'] == 1) {
+		if (($_REQUEST['formpage'] == 1) && (count($_REQUEST['categories']) > 0)) {
 			// if this is from the new artist webform...
 			if (strlen(array_search($cid,$_REQUEST['categories'])) > 0) { // LAME: array_search returns null for a key that's "0"
 				// if artist selected to category from form page 1
@@ -827,7 +835,7 @@ function AdminSelectStyles($aid = NULL) {
 		if ($artiststyles[$sid]) {
 			$s++;
 		}
-		if ($_REQUEST['formpage'] == 1) {
+		if (($_REQUEST['formpage'] == 1) && (count($_REQUEST['styles']) > 0)) {
 			if (strlen(array_search($sid,$_REQUEST['styles'])) > 0) {
 				$s++;
 			}
@@ -873,7 +881,7 @@ function AdminSelectLocations($aid = NULL) {
 		if ($artistlocations[$lid]) {
 			$s++;
 		}
-		if ($_REQUEST['formpage'] == 1) {
+		if (($_REQUEST['formpage'] == 1) && (count($_REQUEST['locations']) > 0)) {
 			if (strlen(array_search($lid,$_REQUEST['locations'])) > 0) {
 				$s++;
 			}

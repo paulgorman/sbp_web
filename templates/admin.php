@@ -481,3 +481,18 @@ function AdminArtistFormNew() {
 	<?
 }
 
+function AdminArtistFormSecond($info) {
+	?>
+		<form method="POST" action="/admin/artists/add_new" enctype="multipart/form-data">
+			<input type="hidden" name="function" value="add_new">
+			<input type="hidden" name="formpage" value="2">
+			<input type="hidden" name="aid" value="<?= $info['aid']; ?>">
+			<div class="AdminCategoryListingAddContainer">
+				<div class="AdminCategoryListingAddHeader"><?= $info['name']; ?> - ADD MEDIA (Page 2 of 2)</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="name" value="<?= $info['name']; ?>" size="50"></div>
+				<div class="clear"></div>
+			</div>
+		</form>
+	<?
+}
+
