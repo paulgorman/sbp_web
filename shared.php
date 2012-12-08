@@ -268,11 +268,9 @@ function AdminArtistAddNew() {
 		$aid = AdminArtistSaveNew();
 		if (strlen($aid) > 0) {
 			// there's an $aid, so page two, go!
-			echo "<div class='AdminSuccess'>Now please add media for artist. ($aid)</div>";
 			AdminArtistFormSecond($aid);
 		} else {
 			// Error in first page, redisplay first page.
-			echo "<div class='AdminError'>Please fill out all of the Artist's information.</div>";
 			AdminArtistFormNew();
 		}
 	} elseif ($_REQUEST['formpage'] == "2") {
@@ -331,8 +329,101 @@ function AdminArtistSaveNew() {
 	// save artist info, locations, styles, categories.
 	// then go to second page for media uploads
 	global $conn;
-	// stuff
-	return($aid);
+	(strlen($_REQUEST['name']) > 0)? $name = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['name'])))) : $errors[] = "Please enter the artist or act name.";
+	(strlen($_REQUEST['slug']) > 0)? $slug = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['slug'])))) : $errors[] = "Please provide a descriptive phrase about artist.";
+	(strlen($_REQUEST['bio']) > 0)? $bio = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['bio']))) : $errors[] = "Missing the artist's bio. Please have at least a paragraph describing the artist.";
+	$is_active = isset($_REQUEST['is_active']);
+	$is_searchable = isset($_REQUEST['is_searchable']);
+	$is_highlighted = isset($_REQUEST['is_highlighted']);
+	if (isset($_REQUEST['categories'])) {
+		$categories = array();
+		foreach ($_REQUEST['categories'] as $key => $value) {
+			$categories[$key] = preg_replace("/[^0-9]/","",$value);
+		}
+	} else {
+		$errors[] = "Please select at least one category for this artist.";
+	}
+	if (isset($_REQUEST['styles'])) {
+		$styles = array();
+		foreach ($_REQUEST['styles'] as $key => $value) {
+			$styles[$key] = preg_replace("/[^0-9]/","",$value);
+		}
+	} else {
+		$errors[] = "Please select at least one style of entertainment this artist performs.";
+	}
+	if (isset($_REQUEST['locations'])) {
+		$locations = array();
+		foreach ($_REQUEST['locations'] as $key => $value) {
+			$locations[$key] = preg_replace("/[^0-9]/","",$value);
+		}
+	} else {
+		$errors[] = "Please select one or more cities that this artist is local to.";
+	}
+	// check if this is a duplicate // being a real jerk by including the "cleaned" URL text
+	$query = sprintf("SELECT `name` FROM `artists` WHERE `name` = '%s' OR `url` = '%s'",
+		mysqli_real_escape_string($conn, $name),
+		mysqli_real_escape_string($conn, $url)
+	);
+	$result = mysqli_query($conn,$query);
+	if (mysqli_num_rows($result) > 0) {
+		$errors[] = "This artist may already exist in the database! Please check the artist's name carefully.";
+	}
+	// XXX: This guess at an URL is pretty weaksauce
+	$url = MakeURL(strtolower($name));
+	// insert into artist table and get the auto_incremented aid
+	if (!isset($errors)) {
+		$query = sprintf("INSERT INTO `artists` (`name`,`url`,`slug`,`bio`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($conn, $name),
+			mysqli_real_escape_string($conn, $url),
+			mysqli_real_escape_string($conn, $slug),
+			mysqli_real_escape_string($conn, $bio),
+			mysqli_real_escape_string($conn, $is_active),
+			mysqli_real_escape_string($conn, $is_highlighted),
+			mysqli_real_escape_string($conn, $is_searchable),
+			mysqli_real_escape_string($conn, DatePHPtoSQL(time()))
+		);
+		if (mysqli_query($conn,$query) === TRUE) {
+			$aid = mysqli_insert_id($conn);
+			foreach($categories as $cid) {
+				$query = sprintf("INSERT INTO `artistcategories` (`cid`,`aid`) VALUES (%s,%s)",
+					mysqli_real_escape_string($conn, $cid),
+					mysqli_real_escape_string($conn, $aid)
+				);
+				if (mysqli_query($conn,$query) === FALSE) {
+					$errors[] = "Error saving category $cid for $aid!" .mysqli_error($conn);
+				}
+			}
+			foreach($styles as $sid) {
+				$query = sprintf("INSERT INTO `artiststyles` (`sid`,`aid`) VALUES (%s,%s)",
+					mysqli_real_escape_string($conn, $sid),
+					mysqli_real_escape_string($conn, $aid)
+				);
+				if (mysqli_query($conn,$query) === FALSE) {
+					$errors[] = "Error saving style $sid for $aid!" .mysqli_error($conn);
+				}
+			}
+			foreach($locations as $lid) {
+				$query = sprintf("INSERT INTO `artistlocations` (`lid`,`aid`) VALUES (%s,%s)",
+					mysqli_real_escape_string($conn, $lid),
+					mysqli_real_escape_string($conn, $aid)
+				);
+				if (mysqli_query($conn,$query) === FALSE) {
+					$errors[] = "Error saving location $lid for $aid!" .mysqli_error($conn);
+				}
+			}
+			echo "<div class='AdminSuccess'>Artist Information Saved!</div>";
+		} else {
+			$errors[] = "<B>Did not save new artist!</B> Database Failure: ".mysqli_error($conn);
+		}
+	}
+	if (isset($errors)) {
+		echo "<div class='AdminError'><B>There are some missing details preventing us from saving this artist.</B><ul>";
+		foreach ($errors as $error) {
+			echo "<li>$error</li>";
+		}
+		echo "</ul></div>\n";
+	}
+	return($aid); // or null if bad
 }
 
 function AdminArtistSaveMedia() {
@@ -1026,3 +1117,81 @@ function StateOptionsDropDown($active) {
 	}
 	return($string);
 }
+
+function convert_smart_quotes($string) { 
+	$search = array(
+		chr(145), 
+		chr(146), 
+		chr(147), 
+		chr(148), 
+		chr(151)
+	); 
+	$replace = array(
+		"'", 
+		"'", 
+		'"', 
+		'"', 
+		'-'
+	); 
+	return str_replace($search, $replace, $string); 
+} 
+
+function MakeURL($str, $replace=array(), $delimiter='-') {
+	setlocale(LC_ALL, 'en_US.UTF8');
+	if( !empty($replace) ) {
+		$str = str_replace((array)$replace, ' ', $str);
+	}
+	$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+	$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+	$clean = strtolower(trim($clean, '-'));
+	$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
+	return $clean;
+}
+
+//Converts a string to Title Case based on one set of title case rules
+// put <no_parse></no_parse> around content that you don't want to be parsed by the title case rules
+function MakeCase($string) {
+	//remove no_parse content
+	$string_array = preg_split("/(<no_parse>|<\/no_parse>)+/i",$string);
+	$newString = "";
+	for ($k=0; $k<count($string_array); $k=$k+2) {
+		$string = $string_array[$k];
+		//if the entire string is upper case dont perform any title case on it
+		if ($string != strtoupper($string)){
+			//TITLE CASE RULES:
+			//1.) uppercase the first char in every word
+			$new = preg_replace("/(^|\s|\'|'|\"|-){1}([a-z]){1}/ie","''.stripslashes('\\1').''.stripslashes(strtoupper('\\2')).''", $string);
+			//2.) lower case words exempt from title case
+			// Lowercase all articles, coordinate conjunctions ("and", "or", "nor"), and prepositions regardless of length, when they are other than the first or last word.
+			// Lowercase the "to" in an infinitive." - this rule is of course aproximated since it is contex sensitive
+			$matches = array();
+			// perform recusive matching on the following words
+			preg_match_all("/(\sof|\sa|\san|\sthe|\sbut|\sor|\snot|\syet|\sat|\son|\sin|\sover|\sabove|\sunder|\sbelow|\sbehind|\snext\sto|\sbeside|\sby|\samoung|\sbetween|\sby|\still|\ssince|\sdurring|\sfor|\sthroughout|\sto|\sand){2}/i",$new ,$matches);
+			for ($i=0; $i<count($matches); $i++) {
+				for ($j=0; $j<count($matches[$i]); $j++){
+					$new = preg_replace("/(".$matches[$i][$j]."\s)/ise","''.strtolower('\\1').''",$new);
+ 				}
+			}
+			//3.) do not allow upper case appostraphies
+			$new = preg_replace("/(\w'S)/ie","''.strtolower('\\1').''",$new);
+			$new = preg_replace("/(\w'\w)/ie","''.strtolower('\\1').''",$new);
+			$new = preg_replace("/(\W)(of|a|an|the|but|or|not|yet|at|on|in|over|above|under|below|behind|next to| beside|by|amoung|between|by|till|since|durring|for|throughout|to|and)(\W)/ise","'\\1'.strtolower('\\2').'\\3'",$new);
+			//4.) capitalize first letter in the string always
+			$new = preg_replace("/(^[a-z]){1}/ie","''.strtoupper('\\1').''", $new);
+			//5.) replace special cases
+			// SBP add to this as find case specific problems
+			$new = preg_replace("/\sin-/i"," In-",$new);
+			$new = preg_replace("/(\W|^){1}(cross){1}(\s){1}(connection){1}(\W|$){1}/ie","'\\1\\2-\\4\\5'",$new); //always hyphonate cross-connections
+			$new = preg_replace("/(\s|\"|\'){1}(vs\.){1}(\s|,|\.|\"|\'|:|!|\?|\*){1}/ie","'\\1Vs.\\3'",$new);
+			$new = preg_replace("/(\s|\"|\'){1}(on-off){1}(\s|,|\.|\"|\'|:|!|\?|\*){1}/ie","'\\1On-Off\\3'",$new);
+			$new = preg_replace("/(\s|\"|\'){1}(on-site){1}(\s|,|\.|\"|\'|:|!|\?|\*){1}/ie","'\\1On-Site\\3'",$new);
+			$new = stripslashes($new);
+			$string_array[$k] = $new;
+		} 
+	}
+	for ($k=0; $k<count($string_array); $k++){
+		$newString .= $string_array[$k];
+	}
+	return($newString); 
+};
+

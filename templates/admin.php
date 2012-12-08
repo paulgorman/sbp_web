@@ -68,8 +68,7 @@ function AdminArtistListPage($artists,$page) {
 			<div class="clear"></div>
 			<? foreach ($artists as $key => $values) { ?>
 				<div class="AdminCategoryListRow">
-					<div class="AdminCategoryListItemCategory"><?= $values['name'] ?></div>
-					<div class="AdminCategoryListItemURL"><?= $values['url'] ?></div>
+					<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
 					<div class="AdminCategoryListItemDescription"><?= $values['slug'] ?></div>
 				</div>
 			<? } ?>
@@ -422,10 +421,10 @@ function AdminArtistFormNew() {
 			<div class="AdminCategoryListingAddContainer">
 				<div class="AdminCategoryListingAddHeader">ADD NEW ARTIST (Page 1 of 2)</div>
 				<div class="AdminCategoryListingAddItem">Artist/Act/Band Name</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="name" value="<?= htmlspecialchars($_REQUEST['name']); ?>" size="50"></div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="name" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['name']))); ?>" size="50"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">One-Line Summary,<br> Header, Slug</div>
-				<div class="AdminCategoryListingAddValue"><textarea rows="2" cols="50" name="slug" wrap="virtual"><?= htmlspecialchars($_REQUEST['slug']); ?></textarea></div>
+				<div class="AdminCategoryListingAddValue"><textarea rows="2" cols="50" name="slug" wrap="virtual"><?= MakeCase(htmlspecialchars(trim($_REQUEST['slug']))); ?></textarea></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">&nbsp;</div>
 				<div class="clear"></div>
@@ -445,7 +444,7 @@ function AdminArtistFormNew() {
 				</div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Bio</div>
-				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="85" name="bio" wrap="virtual"><?= htmlspecialchars($_REQUEST['bio']); ?></textarea></div>
+				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="85" name="bio" wrap="virtual"><?= htmlspecialchars(trim($_REQUEST['bio'])); ?></textarea></div>
 				<div class="clear"></div>
 
 				<div class="AdminCategoryListingAddItem">
