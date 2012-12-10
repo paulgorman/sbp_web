@@ -257,7 +257,7 @@ function AdminShowCategories ($categorieslist) {
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Category Logo</div>
 				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple=""></div>
-    		<div class="AdminCategoryListingAddItem">Public</div>
+    		<div class="AdminCategoryListingAddItem"><label for="published">Public</label></div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="published" id="published" class="regular-checkbox big-checkbox" CHECKED /><label title="Publicly Displayed in Categories Listing" for="published"></label>
 				</div>
@@ -430,15 +430,15 @@ function AdminArtistFormNew() {
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">&nbsp;</div>
 				<div class="clear"></div>
-				<div class="AdminCategoryListingAddItem">Artist is Active</div>
+				<div class="AdminCategoryListingAddItem"><label for="is_active">Artist is Active</label></div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="is_active" id="is_active" class="regular-checkbox big-checkbox" <?= /* I want default first page to be checked */ ($_REQUEST['is_active'] || !($_REQUEST['formpage']))? 'CHECKED ' : ''; ?>/><label title="Active, available for gigs" for="is_active"></label>
 				</div>
-				<div class="AdminCategoryListingAddItem">Artist is Searchable</div>
+				<div class="AdminCategoryListingAddItem"><label for="is_searchable">Artist is Searchable</label></div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="is_searchable" id="is_searchable" class="regular-checkbox big-checkbox" <?= /* I want default first page to be checked */ ($_REQUEST['is_searchable'] || !($_REQUEST['formpage']))? 'CHECKED ' : ''; ?>/><label title="Artist listed in search results" for="is_searchable"></label>
 				</div>
-				<div class="AdminCategoryListingAddItem">Highlighted on Home Page<br>and Category Listings</div>
+				<div class="AdminCategoryListingAddItem"><label for="is_highlighted">Highlighted on Home Page<br>and Category Listings</label></div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="is_highlighted" id="is_highlighted" class="regular-checkbox big-checkbox" <?= /* I want default first page to be unchecked */ ($_REQUEST['is_highlighted'])? 'CHECKED ' : ''; ?>/><label title="Artist is highlighted on Home Page and Category Listings" for="is_highlighted"></label>
 				</div>
@@ -465,7 +465,7 @@ function AdminArtistFormNew() {
 					</select>
 				</div>
 				<div class="AdminCategoryListingAddItem">
-					<label for="Styles">Available Locations</label>
+					<label for="Locations">Available Locations</label>
 				</div>
 				<div class="AdminCategoryListingAddDropDown">
 					<select id="Locations" multiple="multiple" name="locations[]" title="Locations" class="sminit">
