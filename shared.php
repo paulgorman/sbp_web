@@ -427,7 +427,92 @@ function AdminArtistSaveNew() {
 }
 
 function AdminArtistSaveMedia() {
+	global $conn;
 	// page 2's save artist's media from $_REQUEST['aid']
+	$aid = preg_replace("/[^0-9]/","",$_REQUEST['aid']);
+	// was name changed?
+	// step through each file
+	if (!CheckForFiles()) {
+		$errors[] = "No Media Uploaded.";
+	} else {
+		$newfiles = array();
+		// put all uploaded files into the filesystem 
+		$newfiles = SaveFile("artist"); // should return an array of [fileid, orig name]
+		print_r($newfiles);
+		// step thru each uploaded file and process media
+		foreach($newfiles as $key => $newfileinfo) {
+			echo "process... ";
+			echo $newfiles[$key][0];
+			echo "<br>";
+			// make thumbnail
+			$newfileid = ResizeImage($newfiles[$key][0],"artist"); 
+			echo "back as $newfileid<br>";
+			// XXX: watermark function here?
+	// marker
+			$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['filesToUpload']['name'][$key]);
+			echo "filename: $filename<br>";
+			$mediainfo = MediaInfo($newfileid,"artist"); 
+			// Save the media file to database
+			$query = sprintf("INSERT INTO `media` (`filename`, `filetype`, 
+				`aid`, `name`, `thumbwidth`, `thumbheight`, `width`, `height`, 
+				`vidlength`, `is_highlighted`, `viewable`, `published`
+				) VALUES ( '%s','%s',%s,'%s',%s,%s,%s,%s,%s,%s,%s,'%s')",
+				mysqli_real_escape_string($conn, $newfileid),
+				mysqli_real_escape_string($conn, $mediainfo['filetype']),
+				mysqli_real_escape_string($conn, preg_replace("/[^0-9]/",'',$aid)),
+				mysqli_real_escape_string($conn, $filename),
+				preg_replace("/[^0-9]/",'',$mediainfo['thumbwidth']),
+				preg_replace("/[^0-9]/",'',$mediainfo['thumbheight']),
+				preg_replace("/[^0-9]/",'',$mediainfo['width']),
+				preg_replace("/[^0-9]/",'',$mediainfo['height']),
+				preg_replace("/[^0-9]/",'',$mediainfo['vidlength']),
+				preg_replace("/[^0-1]/",'',$_REQUEST['is_highlighted']),
+				preg_replace("/[^0-1]/",'',$_REQUEST['viewable']),
+				mysqli_real_escape_string($conn, DatePHPtoSQL(time()))
+			);
+			echo "QUERY: $query<br>\n";
+		}
+	}
+	foreach ($errors as $error) { 
+		echo $error; 
+	}
+}
+
+function MediaInfo($fileid,$purpose) {
+	global $dirlocation;
+	//fileid includes confirmed file extension
+	$mediainfo = array();
+	if (preg_match("/\.jpg/",$fileid)) {
+		list($mediainfo['width'], $mediainfo['height'], $filetype, $attr) = getimagesize("$dirlocation/images/$purpose/original-$fileid");
+		list($mediainfo['thumbwidth'], $mediainfo['thumbheight'], $thumbtype, $thumbattr) = getimagesize("$dirlocation/images/$purpose/$fileid");
+		$mediainfo['filetype'] = "jpg";
+		$mediainfo['vidlength'] = 0;
+	} else if (preg_match("/\.png/",$fileid)) {
+		list($mediainfo['width'], $mediainfo['height'], $filetype, $attr) = getimagesize("$dirlocation/images/$purpose/original-$fileid");
+		list($mediainfo['thumbwidth'], $mediainfo['thumbheight'], $thumbtype, $thumbattr) = getimagesize("$dirlocation/images/$purpose/$fileid");
+		$mediainfo['filetype'] = "png";
+		$mediainfo['vidlength'] = 0;
+	} else if (preg_match("/mp4/",$fileid)) {
+		ob_start();
+		passthru("/usr/local/bin/ffmpeg -i $dirlocation/images/$purpose/original-$fileid 2>&1");
+		$ffmpeg = ob_get_contents();
+		ob_end_clean();
+		// duration
+		preg_match("/Duration: (.*?),/",$ffmpeg,$matches);
+		$seconds = explode(":", $matches[1]);
+		$mediainfo['vidlength'] = ($seconds[0] * 3600) + ($seconds[1] * 60) + ((int) preg_replace("/\..*/",'',$seconds[2]));
+		// resolution (yes, this preg crap is crap)
+		preg_match("/Video: (.*?)fps/",$ffmpeg,$matches);
+		preg_match("/ (\d+x\d+) /",$matches[1],$matchesomg);
+		preg_match("/(\d+)x/",$matchesomg[1],$width);
+		preg_match("/x(\d+)/",$matchesomg[1],$height);
+		$mediainfo['width'] = $width[1];
+		$mediainfo['height'] = $height[1];
+		$mediainfo['thumbwidth'] = 0;
+		$mediainfo['thumbheight'] = 0;
+		$mediainfo['filetype'] = "mp4";
+	}
+	return ($mediainfo);
 }
 
 function AdminArtistFormSecondPrepare($aid) {
@@ -932,14 +1017,6 @@ function AdminSaveNewCategory() {
 function ResizeImage($fileid,$purpose) {
 	// Resize image according to its purpose
 	global $dirlocation;
-	if (preg_match("/category/",$purpose)) {
-		$width = 728;
-		$height = 90;
-	}
-	$newimage = imagecreatetruecolor($width,$height);
-	imagesavealpha($newimage, true); 
-	$color = imagecolorallocatealpha($newimage,0x00,0x00,0x00,127);
-	imagefill($newimage, 0, 0, $color); 
 	if (preg_match("/\.jpg/",$fileid)) {
 		$origimage = imagecreatefromjpeg("$dirlocation/images/$purpose/original-$fileid");
 	} elseif (preg_match("/\.png/",$fileid)) {
@@ -947,13 +1024,30 @@ function ResizeImage($fileid,$purpose) {
 		imagealphablending($origimage, true);
 		imagesavealpha($origimage, true); 
 	}
+	if (preg_match("/category/",$purpose)) {
+		$width = 728;
+		$height = 90;
+	}
+	if (preg_match("/artist/",$purpose)) {
+		$height = 450;
+		$width = abs(round( (imagesX($origimage) / imagesY($origimage)) * $height ));
+	}
+	$newimage = imagecreatetruecolor($width,$height);
+	imagesavealpha($newimage, true); 
+	$color = imagecolorallocatealpha($newimage,0x00,0x00,0x00,127);
+	imagefill($newimage, 0, 0, $color); 
 	// dest , src , x dest, y dest , x src , y src , dest w, dest h, src w, src h
 	if (!imagecopyresampled($newimage,$origimage,0, 0, 0, 0, $width, $height, imagesX($origimage), imagesY($origimage))) {
-		echo "<div class='AdminError'>Category Image No Web Resize/Compress WTF $fileid</div>";
+		echo "<div class='AdminError'>Image No Web Resize/Compress WTF $fileid</div>";
 	}
-	//imagejpeg($origimage, "$dirlocation/images/$purpose/$fileid", 80); // http://www.ebrueggeman.com/blog/php_image_optimization
-	$newfilename = substr($fileid,0,-4) . ".png";
-	imagepng($newimage, "$dirlocation/images/$purpose/$newfilename",9);
+	// if its a category, only do a transparent png.  Artist, whatever came in.
+	if (preg_match("/\.jpg/",$fileid) && (!preg_match("/category/",$purpose))) {
+		$newfilename = substr($fileid,0,-4) . ".jpg";
+		imagejpeg($newimage, "$dirlocation/images/$purpose/$newfilename", 80); // http://www.ebrueggeman.com/blog/php_image_optimization
+	} else {
+		$newfilename = substr($fileid,0,-4) . ".png";
+		imagepng($newimage, "$dirlocation/images/$purpose/$newfilename",9);
+	}
 	imagedestroy($origimage);
 	imagedestroy($newimage);
 	return($newfilename);

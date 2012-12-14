@@ -5,7 +5,7 @@
 
 -- DANGER!!! XXX --------------
 -- DROP ALL TABLES FOR A FRESH START HERE 
-DROP TABLE IF EXISTS artists, artistcategories, artistmembers, artistlocations, locations, categories, videos, sitehits, artiststyles, styles;
+DROP TABLE IF EXISTS artists, artistcategories, artistmembers, artistlocations, locations, categories, media, sitehits, artiststyles, styles;
 -- DANGER!!! XXX --------------
 
 CREATE TABLE `sbpweb`.`artists` (
@@ -65,10 +65,19 @@ CREATE TABLE `sbpweb`.`categories` (
 	INDEX(`url`)
 ) ENGINE=InnoDB;
 
-CREATE TABLE `sbpweb`.`videos` (
-	`vid` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE `sbpweb`.`media` (
+	`mid` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`aid` INT NOT NULL,
 	`name` VARCHAR(50),
+	`filename` VARCHAR(80),
+	`filetype` VARCHAR(4),
+	`thumbwidth` INT,
+	`thumbheight` INT,
+	`width` INT,
+	`height` INT,
+	`vidlength` INT,
+	`is_highlighted` BOOLEAN NOT NULL DEFAULT 0,
+	`viewable` BOOLEAN NOT NULL DEFAULT 0,
 	`published` date,
 	INDEX(`aid`)
 ) ENGINE=InnoDB;
