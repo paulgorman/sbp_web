@@ -501,13 +501,11 @@ function MediaInfo($fileid,$purpose) {
 		preg_match("/Duration: (.*?),/",$ffmpeg,$matches);
 		$seconds = explode(":", $matches[1]);
 		$mediainfo['vidlength'] = ($seconds[0] * 3600) + ($seconds[1] * 60) + ((int) preg_replace("/\..*/",'',$seconds[2]));
-		// resolution (yes, this preg crap is crap)
+		// resolution 
 		preg_match("/Video: (.*?)fps/",$ffmpeg,$matches);
-		preg_match("/ (\d+x\d+) /",$matches[1],$matchesomg);
-		preg_match("/(\d+)x/",$matchesomg[1],$width);
-		preg_match("/x(\d+)/",$matchesomg[1],$height);
+		preg_match("/ (\d+)x(\d+) /",$matches[1],$width);
 		$mediainfo['width'] = $width[1];
-		$mediainfo['height'] = $height[1];
+		$mediainfo['height'] = $width[2];
 		$mediainfo['thumbwidth'] = 0;
 		$mediainfo['thumbheight'] = 0;
 		$mediainfo['filetype'] = "mp4";
