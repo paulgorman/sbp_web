@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20121203
+**  Last Edit: 20121214
 ****************************************/
 
 function Init() {
@@ -438,19 +438,12 @@ function AdminArtistSaveMedia() {
 		$newfiles = array();
 		// put all uploaded files into the filesystem 
 		$newfiles = SaveFile("artist"); // should return an array of [fileid, orig name]
-		print_r($newfiles);
 		// step thru each uploaded file and process media
 		foreach($newfiles as $key => $newfileinfo) {
-			echo "process... ";
-			echo $newfiles[$key][0];
-			echo "<br>";
 			// make thumbnail
 			$newfileid = ResizeImage($newfiles[$key][0],"artist"); 
-			echo "back as $newfileid<br>";
 			// XXX: watermark function here?
-	// marker
 			$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['filesToUpload']['name'][$key]);
-			echo "filename: $filename<br>";
 			$mediainfo = MediaInfo($newfileid,"artist"); 
 			// Save the media file to database
 			$query = sprintf("INSERT INTO `media` (`filename`, `filetype`, 
@@ -1030,24 +1023,30 @@ function ResizeImage($fileid,$purpose) {
 		$height = 450;
 		$width = abs(round( (imagesX($origimage) / imagesY($origimage)) * $height ));
 	}
-	$newimage = imagecreatetruecolor($width,$height);
-	imagesavealpha($newimage, true); 
-	$color = imagecolorallocatealpha($newimage,0x00,0x00,0x00,127);
-	imagefill($newimage, 0, 0, $color); 
-	// dest , src , x dest, y dest , x src , y src , dest w, dest h, src w, src h
-	if (!imagecopyresampled($newimage,$origimage,0, 0, 0, 0, $width, $height, imagesX($origimage), imagesY($origimage))) {
-		echo "<div class='AdminError'>Image No Web Resize/Compress WTF $fileid</div>";
+	if ($origimage) {
+		$newimage = imagecreatetruecolor($width,$height);
+		imagesavealpha($newimage, true); 
+		$color = imagecolorallocatealpha($newimage,0x00,0x00,0x00,127);
+		imagefill($newimage, 0, 0, $color); 
+		// dest , src , x dest, y dest , x src , y src , dest w, dest h, src w, src h
+		if (!imagecopyresampled($newimage,$origimage,0, 0, 0, 0, $width, $height, imagesX($origimage), imagesY($origimage))) {
+			echo "<div class='AdminError'>Image No Web Resize/Compress WTF $fileid</div>";
+		}
+		// if its a category, only do a transparent png.  Artist, whatever came in.
+		if (preg_match("/\.jpg/",$fileid) && (!preg_match("/category/",$purpose))) {
+			$newfilename = substr($fileid,0,-4) . ".jpg";
+			imagejpeg($newimage, "$dirlocation/images/$purpose/$newfilename", 80); // http://www.ebrueggeman.com/blog/php_image_optimization
+		} else if (preg_match("/\.png/",$fileid)) {
+			$newfilename = substr($fileid,0,-4) . ".png";
+			imagepng($newimage, "$dirlocation/images/$purpose/$newfilename",9);
+		}
+		imagedestroy($origimage);
+		imagedestroy($newimage);
 	}
-	// if its a category, only do a transparent png.  Artist, whatever came in.
-	if (preg_match("/\.jpg/",$fileid) && (!preg_match("/category/",$purpose))) {
-		$newfilename = substr($fileid,0,-4) . ".jpg";
-		imagejpeg($newimage, "$dirlocation/images/$purpose/$newfilename", 80); // http://www.ebrueggeman.com/blog/php_image_optimization
-	} else {
-		$newfilename = substr($fileid,0,-4) . ".png";
-		imagepng($newimage, "$dirlocation/images/$purpose/$newfilename",9);
+	if (preg_match("/\.mp4/",$fileid)) {
+		// create a thumbnail here?
+		$newfilename = $fileid;
 	}
-	imagedestroy($origimage);
-	imagedestroy($newimage);
 	return($newfilename);
 }
 
