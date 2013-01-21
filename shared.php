@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20121214
+**  Last Edit: 20130121
 ****************************************/
 
 function Init() {
@@ -248,10 +248,6 @@ function ShowAdminPage() {
 				case "add_new":
 					AdminArtistAddNew();
 					break;
-				case "save_new":
-					$aid = AdminArtistSaveNew();
-					AdminArtistViewSingle($aid);
-					break;
 				default:
 					AdminArtistList();
 			}
@@ -264,31 +260,38 @@ function AdminArtistAddNew() {
 		// brand new artist
 		AdminArtistFormNew();
 	} elseif ($_REQUEST['formpage'] == "1") {
-		// attempt to save the first page
+		// attempt to save the artist info and media
 		$aid = AdminArtistSaveNew();
 		if (strlen($aid) > 0) {
-			// there's an $aid, so page two, go!
-			AdminArtistFormSecondPrepare($aid);
+			// there's an $aid from saving basic data, so check that media in
+			if (AdminArtistSaveMedia($aid)) {
+				echo "<div class='AdminSuccess'>New artist added!</div>";
+			} else {
+				echo "<div class='AdminError'>No media was saved. Please add a photo and/or video now.</div>";
+			}
+			// regardless of media, we did save SOMETHING, so sets see it.
+			AdminArtistEditSingle($aid);
 		} else {
 			// Error in first page, redisplay first page.
 			AdminArtistFormNew();
 		}
-	} elseif ($_REQUEST['formpage'] == "2") {
-		// save that media plz	
-		if (AdminArtistSaveMedia()) {
-			// hurray!
-			echo "<div class='AdminSuccess'>New artist added!</div>";
-			AdminArtistViewSingle($aid);
-		} else {
-			// usr plz fix something
-			AdminArtistFormSecondPrepare();
-			echo "<div class='AdminError'>Please check that you're uploading at least a photo or video for this artist.</div>";
-		}
 	}
 }
 
-function AdminArtistViewSingle($aid) {
-	// XXX Show somethign omg
+function AdminArtistEditSingle($aid) {
+	global $conn;
+	echo "I'm the AdminArtistEditSingle page<br>";
+	echo "I love artist ID $aid!";
+	$artistinfo = array();
+	$query = sprintf("SELECT name FROM `artists` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	$artistinfo['name'] = $row['name'];
+	$artistinfo['aid'] = $aid;
+	mysqli_free_result($result);
+	// pull back everything we got so far from database
+	// then send over to the admin template for page 2, media addition
+	AdminArtistFormSingle($artistinfo);
 }
 
 function FigurePageNav($type,$page=1) {
@@ -327,7 +330,7 @@ function FigurePageNav($type,$page=1) {
 
 function AdminArtistSaveNew() {
 	// save artist info, locations, styles, categories.
-	// then go to second page for media uploads
+	// then go to AdminArtistSaveMedia() for the media processing
 	global $conn;
 	(strlen($_REQUEST['name']) > 0)? $name = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['name'])))) : $errors[] = "Please enter the artist or act name.";
 	(strlen($_REQUEST['slug']) > 0)? $slug = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['slug'])))) : $errors[] = "Please provide a descriptive phrase about artist.";
@@ -341,7 +344,7 @@ function AdminArtistSaveNew() {
 			$categories[$key] = preg_replace("/[^0-9]/","",$value);
 		}
 	} else {
-		$errors[] = "Please select at least one category for this artist.";
+		$errors[] = "Please select one or more categories for this artist.";
 	}
 	if (isset($_REQUEST['styles'])) {
 		$styles = array();
@@ -349,7 +352,7 @@ function AdminArtistSaveNew() {
 			$styles[$key] = preg_replace("/[^0-9]/","",$value);
 		}
 	} else {
-		$errors[] = "Please select at least one style of entertainment this artist performs.";
+		$errors[] = "Please select one or more styles of entertainment this artist performs.";
 	}
 	if (isset($_REQUEST['locations'])) {
 		$locations = array();
@@ -426,12 +429,9 @@ function AdminArtistSaveNew() {
 	return($aid); // or null if bad
 }
 
-function AdminArtistSaveMedia() {
+function AdminArtistSaveMedia($aid) {
 	global $conn;
-	// page 2's save artist's media from $_REQUEST['aid']
-	$aid = preg_replace("/[^0-9]/","",$_REQUEST['aid']);
-	// was name changed?
-	// step through each file
+	// page 1's save artist's media
 	if (!CheckForFiles()) {
 		$errors[] = "No Media Uploaded.";
 	} else {
@@ -440,6 +440,9 @@ function AdminArtistSaveMedia() {
 		$newfiles = SaveFile("artist"); // should return an array of [fileid, orig name]
 		// step thru each uploaded file and process media
 		foreach($newfiles as $key => $newfileinfo) {
+			if (strlen($newfiles[$key][0]) < 1) {  // [0] is fileid
+				continue; // XXX: This isn't a file, this is just SaveFile() noise
+			}
 			// make thumbnail
 			$newfileid = ResizeImage($newfiles[$key][0],"artist"); 
 			// XXX: watermark function here?
@@ -464,10 +467,16 @@ function AdminArtistSaveMedia() {
 				mysqli_real_escape_string($conn, DatePHPtoSQL(time()))
 			);
 			echo "QUERY: $query<br>\n";
+			// XXX: DID I SAVE?  PLEASE CHECK NOW.
 		}
 	}
 	foreach ($errors as $error) { 
-		echo $error; 
+		echo "<div class='AdminError'><B>$error</B></div>";
+	}
+	if (count($errors) > 0) {
+		return (0);
+	} else {
+		return (1);
 	}
 }
 
@@ -504,20 +513,6 @@ function MediaInfo($fileid,$purpose) {
 		$mediainfo['filetype'] = "mp4";
 	}
 	return ($mediainfo);
-}
-
-function AdminArtistFormSecondPrepare($aid) {
-	global $conn;
-	$artistinfo = array();
-	$query = sprintf("SELECT name FROM `artists` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
-	$result = mysqli_query($conn,$query);
-	$row = mysqli_fetch_assoc($result);
-	$artistinfo['name'] = $row['name'];
-	$artistinfo['aid'] = $aid;
-	mysqli_free_result($result);
-	// pull back everything we got so far from database
-	// then send over to the admin template for page 2, media addition
-	AdminArtistFormSecond($artistinfo);
 }
 
 function AdminArtistList() {

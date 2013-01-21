@@ -385,6 +385,37 @@ function AdminEditStyle($dataarray) {
 function AdminArtistFormNew() {
 	?>
   <script type="text/javascript">//<![CDATA[
+		var filecounter = 1;
+		function makeFileList() {
+			var input = document.getElementById(filecounter);
+			var ul = document.getElementById("fileList");
+			for (var i = 0; i < input.files.length; i++) {
+				var li = document.createElement("li");
+				li.innerHTML = "(" + filecounter + ") " + input.files[i].name;
+				ul.appendChild(li);
+			}
+			if(!ul.hasChildNodes()) {
+				var li = document.createElement("li");
+				li.innerHTML = 'No Files Selected';
+				ul.appendChild(li);
+			}
+			add_file_field();
+		}
+		function add_file_field(){
+			var input = document.getElementById(filecounter);
+			filecounter = filecounter + 1;
+			var container=document.getElementById('file_container');
+			var file_field=document.createElement('input');
+			file_field.name='filesToUpload[]';
+			file_field.type='file';
+			file_field.onchange='makeFileList();';
+			file_field.setAttribute("onchange", "makeFileList();");
+			file_field.id=filecounter;
+			file_field.setAttribute("id",filecounter);
+			container.appendChild(file_field);
+			//var br_field=document.createElement('br');
+			//container.appendChild(br_field);
+		}
     jQuery(function($) {
       $("#Categories").bsmSelect({
         addItemTarget: 'bottom',
@@ -419,7 +450,7 @@ function AdminArtistFormNew() {
 			<input type="hidden" name="function" value="add_new">
 			<input type="hidden" name="formpage" value="1">
 			<div class="AdminCategoryListingAddContainer">
-				<div class="AdminCategoryListingAddHeader">ADD NEW ARTIST (Page 1 of 2)</div>
+				<div class="AdminCategoryListingAddHeader">ADD NEW ARTIST</div>
 				<div class="AdminCategoryListingAddItem">Artist/Act/Band Name</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="name" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['name']))); ?>" size="50"></div>
 				<div class="clear"></div>
@@ -472,61 +503,9 @@ function AdminArtistFormNew() {
 						<?= AdminSelectLocations(); ?>
 					</select>
 				</div>
+				<div class="AdminCategoryListingAddItem">Select all photos, videos, and documents (song lists &amp; stage plots) to upload for this artist.</div>
 				<div class="clear"></div>
-				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Continue to Page 2"></div>
-				<div class="clear"></div>
-			</div> <!-- class="AdminCategoryListingAddContainer" -->
-		</form>
-	<?
-}
-
-function AdminArtistFormSecond($info) {
-	?>
-		<script type="text/javascript">
-		var filecounter = 1;
-		function makeFileList() {
-			var input = document.getElementById(filecounter);
-			var ul = document.getElementById("fileList");
-			for (var i = 0; i < input.files.length; i++) {
-				var li = document.createElement("li");
-				li.innerHTML = "(" + filecounter + ") " + input.files[i].name;
-				ul.appendChild(li);
-			}
-			if(!ul.hasChildNodes()) {
-				var li = document.createElement("li");
-				li.innerHTML = 'No Files Selected';
-				ul.appendChild(li);
-			}
-			add_file_field();
-		}
-		function add_file_field(){
-			var input = document.getElementById(filecounter);
-			filecounter = filecounter + 1;
-			var container=document.getElementById('file_container');
-			var file_field=document.createElement('input');
-			file_field.name='filesToUpload[]';
-			file_field.type='file';
-			file_field.onchange='makeFileList();';
-			file_field.setAttribute("onchange", "makeFileList();");
-			file_field.id=filecounter;
-			file_field.setAttribute("id",filecounter);
-			container.appendChild(file_field);
-			//var br_field=document.createElement('br');
-			//container.appendChild(br_field);
-		}
-		</script>
-		<form method="POST" action="/admin/artists/add_new" enctype="multipart/form-data">
-			<input type="hidden" name="function" value="add_new">
-			<input type="hidden" name="formpage" value="2">
-			<input type="hidden" name="aid" value="<?= $info['aid']; ?>">
-			<div class="AdminCategoryListingAddContainer">
-				<div class="AdminCategoryListingAddHeader">ADD MEDIA FOR <?= strtoupper($info['name']); ?> (Page 2 of 2)</div>
-				<div class="AdminCategoryListingAddItem">Artist Name:</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="name" value="<?= $info['name']; ?>" size="50"></div>
-				<div class="clear"></div>
-				<div class="AdminCategoryListingAddItem">Select photos, videos, and documents such as song lists and stage plots to upload for <?= $info['name']; ?></div>
-				<div class="clear"></div>
-				<div class="AdminCategoryListingAddItem"><font size="-1">High resolution photos, HQ videos, PDF, Word, Excel, all files will be automatically processed for the web site</font></div>
+				<div class="AdminCategoryListingAddItem"><font size="-1">High resolution photos, HQ videos, PDF, Word, Excel, all files will be automatically processed for the web site.</font></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddFiles">
 					<div id="file_container"><input name="filesToUpload[]" class="filesToUpload" id="1" type="file" multiple="" onchange="makeFileList();" /></div>
@@ -534,10 +513,19 @@ function AdminArtistFormSecond($info) {
 				<div class="clear"></div>
 				<div class="AdminCategoryListingValue"><ul id="fileList"></ul></div>
 				<div class="clear"></div>
-				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Save Artist Media"></div>
 				<div class="clear"></div>
-			</div>
+				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Save New Artist"></div>
+				<div class="clear"></div>
+			</div> <!-- class="AdminCategoryListingAddContainer" -->
 		</form>
+	<?
+}
+
+function AdminArtistFormSingle($artistinfo) {
+	?>
+		I am the AdminArtistFormSingle<br>
+		Artist: <?= $artistinfo['name']; ?><br>
+		ID: <?= $artistinfo['aid']; ?><br>
 	<?
 }
 
