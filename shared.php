@@ -264,8 +264,9 @@ function AdminArtistAddNew() {
 		$aid = AdminArtistSaveNew();
 		if (strlen($aid) > 0) {
 			// there's an $aid from saving basic data, so check that media in
-			if (AdminArtistSaveMedia($aid)) {
-				echo "<div class='AdminSuccess'>New artist added!</div>";
+			$filecount = AdminArtistSaveMedia($aid);
+			if ($filecount > 1) {
+				echo "<div class='AdminSuccess'>New artist added with $filecount media files!</div>";
 			} else {
 				echo "<div class='AdminError'>No media was saved. Please add a photo and/or video now.</div>";
 			}
@@ -431,6 +432,7 @@ function AdminArtistSaveNew() {
 
 function AdminArtistSaveMedia($aid) {
 	global $conn;
+	$savedfilecount = 0;
 	// page 1's save artist's media
 	if (!CheckForFiles()) {
 		$errors[] = "No Media Uploaded.";
@@ -468,6 +470,7 @@ function AdminArtistSaveMedia($aid) {
 			);
 			echo "QUERY: $query<br>\n";
 			// XXX: DID I SAVE?  PLEASE CHECK NOW.
+			$savedfilecount++;
 		}
 	}
 	foreach ($errors as $error) { 
@@ -476,7 +479,7 @@ function AdminArtistSaveMedia($aid) {
 	if (count($errors) > 0) {
 		return (0);
 	} else {
-		return (1);
+		return ($savedfilecount);
 	}
 }
 
@@ -1070,13 +1073,17 @@ function SaveFile($purpose) {
 		8=>"Server PHP extension prevented upload"
 	);
 	foreach ($_FILES['filesToUpload']['tmp_name'] as $ref => $tmp_name) {
+		$gotafile = FALSE;
 		//make the filename safe
 		$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['filesToUpload']['name'][$ref]);
 		$errorIndex = $_FILES['filesToUpload']['error'][$ref];
 		if ($errorIndex > 0) {
-			$error_message = $error_types[$_FILES['filesToUpload']['error'][$ref]]; 
-			echo "<div class='AdminError'>File Upload Error: $error_message.</div>";
+			if ( ($errorIndex != 4) && (!$gotafile) ) {
+				// listen, we got at least one file, so I no longer care about "no file uploaded" errors.
+				$error_message = $error_types[$_FILES['filesToUpload']['error'][$ref]]; 
+				echo "<div class='AdminError'>File Upload Error: $error_message.</div>";
    			$happyuploads[] = array(NULL,NULL);
+			}
 		} else {
 			// XXX: I am a race condition, where my unconfirmed file name is exposed on the webs
 			move_uploaded_file($tmp_name, $dirlocation . "/images/" . $purpose  . "/original-" . $fileid );
@@ -1109,6 +1116,7 @@ function SaveFile($purpose) {
 					$dirlocation . "/images/" . $purpose . "/original-". $newfileid 
 				);
 				$happyuploads[] = array($newfileid,$filename);
+				$gotafile = TRUE;
 			}
 		}
 	}
