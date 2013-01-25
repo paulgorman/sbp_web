@@ -78,7 +78,7 @@ CREATE TABLE `sbpweb`.`media` (
 	`vidlength` INT,
 	`is_highlighted` BOOLEAN NOT NULL DEFAULT 0,
 	`viewable` BOOLEAN NOT NULL DEFAULT 0,
-	`published` date,
+	`published` DATETIME NOT NULL,
 	INDEX(`aid`)
 ) ENGINE=InnoDB;
 

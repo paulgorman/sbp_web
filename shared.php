@@ -464,8 +464,8 @@ function AdminArtistSaveMedia($aid) {
 				preg_replace("/[^0-9]/",'',$mediainfo['width']),
 				preg_replace("/[^0-9]/",'',$mediainfo['height']),
 				preg_replace("/[^0-9]/",'',$mediainfo['vidlength']),
-				preg_replace("/[^0-1]/",'',$_REQUEST['is_highlighted']),
-				preg_replace("/[^0-1]/",'',$_REQUEST['viewable']),
+				"0",	// No, no highlighted.
+				"1",	// Assume yes, is viewable for this initial upload.
 				mysqli_real_escape_string($conn, DatePHPtoSQL(time()))
 			);
 			echo "QUERY: $query<br>\n";
@@ -1061,7 +1061,6 @@ function CheckForFiles() {
 function SaveFile($purpose) {
 	// save a form's files into their purpose's directory as a unique ID, returning back the id and "file name"
 	global $dirlocation;
-	$fileid = uniqid();
 	$happyuploads = array(); // the array of ids & names of the numerous uploaded files
 	$error_types = array(
 		1=>"Your file is too large for the server",
@@ -1085,6 +1084,7 @@ function SaveFile($purpose) {
    			$happyuploads[] = array(NULL,NULL);
 			}
 		} else {
+			$fileid = uniqid();
 			// XXX: I am a race condition, where my unconfirmed file name is exposed on the webs
 			move_uploaded_file($tmp_name, $dirlocation . "/images/" . $purpose  . "/original-" . $fileid );
 			if (filesize($dirlocation . "/images/" . $purpose . "/original-" . $fileid) < 1024) {
