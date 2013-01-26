@@ -468,9 +468,11 @@ function AdminArtistSaveMedia($aid) {
 				"1",	// Assume yes, is viewable for this initial upload.
 				mysqli_real_escape_string($conn, DatePHPtoSQL(time()))
 			);
-			echo "QUERY: $query<br>\n";
-			// XXX: DID I SAVE?  PLEASE CHECK NOW.
-			$savedfilecount++;
+			if (mysqli_query($conn,$query) === TRUE) {
+				$savedfilecount++;
+			} else {
+				echo "<div class='AdminError'>Media file '<B>$filename</B>' not saved in database!<br>". mysqli_error($conn) ."</div>";
+			}
 		}
 	}
 	foreach ($errors as $error) { 
