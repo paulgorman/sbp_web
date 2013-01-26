@@ -67,10 +67,14 @@ function AdminArtistListPage($artists,$page) {
 			</div>
 			<div class="clear"></div>
 			<? foreach ($artists as $key => $values) { ?>
-				<div class="AdminCategoryListRow">
-					<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
-					<div class="AdminCategoryListItemDescription"><?= $values['slug'] ?></div>
-				</div>
+				<form method="POST" action="/admin/artists" name="edit<?= $values['aid']; ?>">
+					<input type="hidden" name="function" value="edit">
+					<input type="hidden" name="aid" value="<?= $values['aid']; ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
+						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= $values['slug'] ?></div>
+					</div>
+				</form>
 			<? } ?>
 			<div class="AdminCategoryListHeader">
 				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_all",$page)); ?></div>

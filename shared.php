@@ -248,6 +248,9 @@ function ShowAdminPage() {
 				case "add_new":
 					AdminArtistAddNew();
 					break;
+				case "edit":
+					AdminArtistEditSingle($_REQUEST['aid']);
+					break;
 				default:
 					AdminArtistList();
 			}
@@ -281,17 +284,38 @@ function AdminArtistAddNew() {
 
 function AdminArtistEditSingle($aid) {
 	global $conn;
+	$aid = preg_replace("/[^0-9]/",'',$aid);
+	// XXX: this could be some massive joined query
 	echo "I'm the AdminArtistEditSingle page<br>";
-	echo "I love artist ID $aid!";
 	$artistinfo = array();
-	$query = sprintf("SELECT name FROM `artists` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
+	$query = sprintf("SELECT * FROM `artists` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
 	$result = mysqli_query($conn,$query);
 	$row = mysqli_fetch_assoc($result);
-	$artistinfo['name'] = $row['name'];
 	$artistinfo['aid'] = $aid;
+	foreach ($row as $key => $value) {
+		$artistinfo[$key] = $value;
+	}
 	mysqli_free_result($result);
-	// pull back everything we got so far from database
-	// then send over to the admin template for page 2, media addition
+	// lemme have hash of category names
+	$categories = array();
+	$query = "SELECT `cid` FROM `artistcategories` WHERE `aid` = $aid";
+	$result = mysqli_query($conn,$query);
+	while ($row = mysqli_fetch_assoc($result)) {
+		$cid = $row['cid'];
+		$query = "SELECT `category` FROM `categories` WHERE `cid` = $cid";
+		$cresult = mysqli_query($conn,$query);
+		$crow = mysqli_fetch_assoc($cresult);
+		$categories[$cid] = $crow['category'];
+	}
+	$artistinfo['categories'] = $categories;
+	mysqli_free_result($result);
+	// lemme have hash of styles
+	mysqli_free_result($result);
+	// lemme have hash of locations
+	mysqli_free_result($result);
+	// lemme have hash of media
+	mysqli_free_result($result);
+
 	AdminArtistFormSingle($artistinfo);
 }
 
