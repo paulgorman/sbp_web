@@ -707,7 +707,7 @@ function AdminSaveSingleStyle() {
 		if (mysqli_query($conn,$query) === TRUE) {
 			echo "<div class='AdminSuccess'>Style Entry <B>$name</B> [$sid] Successfully Updated.</div>";
 		} else {
-			echo "<div class='AdminError'>Category Entry <B>$name</B> [$sid] Failed to Update!<br>". mysqli_error($conn) ."</div>";
+			echo "<div class='AdminError'>Style Entry <B>$name</B> [$sid] Failed to Update!<br>". mysqli_error($conn) ."</div>";
 		}
 	}
 }
@@ -799,10 +799,11 @@ function AdminSaveSingleCategory($cid) {
 			list($old_fileid) = mysqli_fetch_array($result);
 			unlink("$dirlocation/images/category/$old_fileid");
 			unlink("$dirlocation/images/category/original-$old_fileid"); // XXX: we're not deleting jpegs, only png.
-			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `published` = '%s', `image_filename` = '%s', `image_id` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `image_filename` = '%s', `image_id` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
 				mysqli_real_escape_string($conn,$url),
 				mysqli_real_escape_string($conn,$category),
 				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
+				mysqli_real_escape_string($conn,preg_replace("/[^YNI]/","",$_REQUEST['force_display_names'])),
 				mysqli_real_escape_string($conn,$published),
 				mysqli_real_escape_string($conn,$filename),
 				mysqli_real_escape_string($conn,$newfileid),
@@ -810,10 +811,11 @@ function AdminSaveSingleCategory($cid) {
 				mysqli_real_escape_string($conn,$cid)
 			);
 		} else {
-			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `published` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
 				mysqli_real_escape_string($conn,$url),
 				mysqli_real_escape_string($conn,$category),
 				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
+				mysqli_real_escape_string($conn,preg_replace("/[^YNI]/","",$_REQUEST['force_display_names'])),
 				mysqli_real_escape_string($conn,$published),
 				mysqli_real_escape_string($conn,DatePHPtoSQL(time())),
 				mysqli_real_escape_string($conn,$cid)
