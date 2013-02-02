@@ -455,8 +455,11 @@ function AdminArtistFormNew() {
 			<input type="hidden" name="formpage" value="1">
 			<div class="AdminCategoryListingAddContainer">
 				<div class="AdminCategoryListingAddHeader">ADD NEW ARTIST</div>
-				<div class="AdminCategoryListingAddItem">Artist/Act/Band Name</div>
+				<div class="AdminCategoryListingAddItem">Artist/Act/Band Real Name</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="name" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['name']))); ?>" size="50"></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">Artist's Obfuscated Display Name</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="display_name" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['display_name']))); ?>" size="50"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">One-Line Summary,<br> Header, Slug</div>
 				<div class="AdminCategoryListingAddValue"><textarea rows="2" cols="50" name="slug" wrap="virtual"><?= MakeCase(htmlspecialchars(trim($_REQUEST['slug']))); ?></textarea></div>

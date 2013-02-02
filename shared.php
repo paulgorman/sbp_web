@@ -360,6 +360,23 @@ function AdminArtistSaveNew() {
 	(strlen($_REQUEST['name']) > 0)? $name = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['name'])))) : $errors[] = "Please enter the artist or act name.";
 	(strlen($_REQUEST['slug']) > 0)? $slug = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['slug'])))) : $errors[] = "Please provide a descriptive phrase about artist.";
 	(strlen($_REQUEST['bio']) > 0)? $bio = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['bio']))) : $errors[] = "Missing the artist's bio. Please have at least a paragraph describing the artist.";
+	if (strlen($_REQUEST['display_name']) > 0) {
+		$display_name = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['display_name']))));
+	} else {
+		// crappy way of guessing a band's name: first whole word, then first letter of each additional word
+		$words = explode(" ", $name);
+		$display_name = "";
+		$counter = 0;
+		foreach ($words as $word) {
+			if ($counter == 0) {
+				$display_name = "$word ";
+			} else {
+				$display_name .= $substr($word,0,1);
+				$display_name .= ".";
+			}
+		}
+	}
+	$use_display_name = isset($_REQUEST['use_display_name']);
 	$is_active = isset($_REQUEST['is_active']);
 	$is_searchable = isset($_REQUEST['is_searchable']);
 	$is_highlighted = isset($_REQUEST['is_highlighted']);
@@ -400,11 +417,12 @@ function AdminArtistSaveNew() {
 	$url = MakeURL(strtolower($name));
 	// insert into artist table and get the auto_incremented aid
 	if (!isset($errors)) {
-		$query = sprintf("INSERT INTO `artists` (`name`,`url`,`slug`,`bio`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO `artists` (`name`,`url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn, $name),
 			mysqli_real_escape_string($conn, $url),
 			mysqli_real_escape_string($conn, $slug),
 			mysqli_real_escape_string($conn, $bio),
+			mysqli_real_escape_string($conn, $use_display_name),
 			mysqli_real_escape_string($conn, $is_active),
 			mysqli_real_escape_string($conn, $is_highlighted),
 			mysqli_real_escape_string($conn, $is_searchable),
