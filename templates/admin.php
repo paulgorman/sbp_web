@@ -252,14 +252,18 @@ function AdminShowCategories ($categorieslist) {
 			<input type="hidden" name="function" value="add_category">
 			<div class="AdminCategoryListingAddContainer">
 				<div class="AdminCategoryListingAddHeader">ADD NEW CATEGORY</div>
-				<div class="AdminCategoryListingAddItem">URL</div>
+				<div class="AdminCategoryListingAddItem">URL:</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="form_url" size="15" style="text-transform: lowercase"></div>
-				<div class="AdminCategoryListingAddItem">Category Name</div>
+				<div class="AdminCategoryListingAddItem">Category Name:</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="form_category" size="20"></div>
-				<div class="AdminCategoryListingAddItem">Description</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">Description:</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" size="40"></div>
 				<div class="clear"></div>
-				<div class="AdminCategoryListingAddItem">Category Logo</div>
+				<div class="AdminCategoryListingAddItem">Artist Names:</div>
+				<div class="AdminCategoryListingAddValue"><select name="force_display_names"><?= DisplayNamesOptionsDropDown($dataarray['cid']) ?></select></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">Category Logo:</div>
 				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple=""></div>
     		<div class="AdminCategoryListingAddItem"><label for="published">Public</label></div>
     		<div class="AdminCategoryListingCheckBox">
@@ -311,6 +315,9 @@ function AdminEditCategory($dataarray) {
 				<div class="AdminCategoryListingAddValue">
 					<input type="text" name="form_url" size="20" value="<?= $dataarray['url'] ?>" style="text-transform: lowercase">
 				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Artist Names:</div>
+				<div class="AdminCategoryListingAddValue"><select name="force_display_names"><?= DisplayNamesOptionsDropDown($dataarray['cid']) ?></select></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">Stored Image:</div>
 				<div class="AdminCategoryListingShowImage"><img src="/images/category/<?= $dataarray['image_id'] ?>"></div>

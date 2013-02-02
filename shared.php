@@ -417,7 +417,7 @@ function AdminArtistSaveNew() {
 	$url = MakeURL(strtolower($name));
 	// insert into artist table and get the auto_incremented aid
 	if (!isset($errors)) {
-		$query = sprintf("INSERT INTO `artists` (`name`,`url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO `artists` (`name`,`url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn, $name),
 			mysqli_real_escape_string($conn, $url),
 			mysqli_real_escape_string($conn, $slug),
@@ -1030,10 +1030,11 @@ function AdminSaveNewCategory() {
 		} else { 
 			$published = FALSE;
 		}
-		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`published`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`force_display_names`,`published`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn,$url),
 			mysqli_real_escape_string($conn,$category),
 			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description'])))),
+			mysqli_real_escape_string($conn,preg_replace("/[^YNI]/","",$_REQUEST['force_display_names'])),
 			mysqli_real_escape_string($conn,$published),
 			mysqli_real_escape_string($conn,$filename),
 			mysqli_real_escape_string($conn,$newfileid),
@@ -1248,6 +1249,32 @@ function StateCodeToName($code) {
 function StateNameToCode($state) {
 	$states = StatesArray();
 	return(array_search($state, $states)); 
+}
+
+function DisplayNamesOptionsDropDown($cid) {
+	// Show a dropdown of category's "use real or obfuscated display name" per category
+	// N force real names only, I individual artist mode, Y force display names only
+	global $conn;
+	$query = sprintf("SELECT `force_display_names` FROM `categories` WHERE cid = %s",
+		preg_replace("/[^0-9]/","",$cid)
+	);
+	$options = array(
+		"I" => "Use the Individual Artist's Setting",
+		"N" => "Real Names to be used for All artists in this category",
+		"Y" => "Obfuscated Display Names to be used for All artists in this category"
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	$display_mode = $row['force_display_names'];
+	$string = "";
+	foreach ($options as $key => $value) {
+		$string .= sprintf("<option value='%s'%s>%s</option>",
+			$key,
+			($key == $display_mode)? ' selected="SELECTED"' : '',
+			$value
+		);
+	}
+	return ($string);
 }
 
 function StateOptionsDropDown($active) {
