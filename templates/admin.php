@@ -540,6 +540,9 @@ function AdminArtistFormSingle($artistinfo) {
 		I am the AdminArtistFormSingle<br>
 		Artist: <?= $artistinfo['name']; ?><br>
 		ID: <?= $artistinfo['aid']; ?><br>
+		fuking dump: <pre>
+		<?= print_r ($artistinfo); ?>
+		</pre>
 	<?
 }
 

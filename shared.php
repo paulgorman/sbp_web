@@ -296,26 +296,25 @@ function AdminArtistEditSingle($aid) {
 		$artistinfo[$key] = $value;
 	}
 	mysqli_free_result($result);
-	// lemme have hash of category names
-	$categories = array();
-	$query = "SELECT `cid` FROM `artistcategories` WHERE `aid` = $aid";
-	$result = mysqli_query($conn,$query);
-	while ($row = mysqli_fetch_assoc($result)) {
-		$cid = $row['cid'];
-		$query = "SELECT `category` FROM `categories` WHERE `cid` = $cid";
-		$cresult = mysqli_query($conn,$query);
-		$crow = mysqli_fetch_assoc($cresult);
-		$categories[$cid] = $crow['category'];
-	}
-	$artistinfo['categories'] = $categories;
-	mysqli_free_result($result);
-	// lemme have hash of styles
-	mysqli_free_result($result);
-	// lemme have hash of locations
-	mysqli_free_result($result);
+	// AdminSelectCategories($aid) AdminSelectStyles($aid) AdminSelectLocations($aid)
 	// lemme have hash of media
+	$query = sprintf("SELECT * FROM `media` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
+	$result = mysqli_query($conn,$query);
+	$i = 0;
+	while ($row = mysqli_fetch_assoc($result)) {
+		$artistinfo['media']['name'][$i] = $row['name'];
+		$artistinfo['media']['filetype'][$i] = $row['filetype'];
+		$artistinfo['media']['filename'][$i] = $row['filename'];
+		$artistinfo['media']['thumbwidth'][$i] = $row['thumbwidth'];
+		$artistinfo['media']['thumbheight'][$i] = $row['thumbheight'];
+		$artistinfo['media']['width'][$i] = $row['height'];
+		$artistinfo['media']['vidlength'][$i] = $row['vidlength'];
+		$artistinfo['media']['is_highlighted'][$i] = $row['is_highlighted'];
+		$artistinfo['media']['viewable'][$i] = $row['viewable'];
+		$artistinfo['media']['published'][$i] = DateSQLtoPHP($row['published']);
+		$i++;
+	}
 	mysqli_free_result($result);
-
 	AdminArtistFormSingle($artistinfo);
 }
 
@@ -493,6 +492,11 @@ function AdminArtistSaveMedia($aid) {
 			$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['filesToUpload']['name'][$key]);
 			$mediainfo = MediaInfo($newfileid,"artist"); 
 			// Save the media file to database
+			if ($savedfilecount == 0) {
+				$highlightmeplz = "1";	// First uploaded file is highlighted. Crude.
+			} else {
+				$highlightmeplz = "0";	// No, no highlighted.
+			}
 			$query = sprintf("INSERT INTO `media` (`filename`, `filetype`, 
 				`aid`, `name`, `thumbwidth`, `thumbheight`, `width`, `height`, 
 				`vidlength`, `is_highlighted`, `viewable`, `published`
@@ -506,8 +510,8 @@ function AdminArtistSaveMedia($aid) {
 				preg_replace("/[^0-9]/",'',$mediainfo['width']),
 				preg_replace("/[^0-9]/",'',$mediainfo['height']),
 				preg_replace("/[^0-9]/",'',$mediainfo['vidlength']),
-				"0",	// No, no highlighted.
-				"1",	// Assume yes, is viewable for this initial upload.
+				$highlightmeplz,
+				"1",	// Assume yes, media file is viewable for this initial upload.
 				mysqli_real_escape_string($conn, DatePHPtoSQL(time()))
 			);
 			if (mysqli_query($conn,$query) === TRUE) {
