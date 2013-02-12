@@ -416,8 +416,9 @@ function AdminArtistSaveNew() {
 	$url = MakeURL(strtolower($name));
 	// insert into artist table and get the auto_incremented aid
 	if (!isset($errors)) {
-		$query = sprintf("INSERT INTO `artists` (`name`,`url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO `artists` (`name`,`display_name`,`url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn, $name),
+			mysqli_real_escape_string($conn, $display_name),
 			mysqli_real_escape_string($conn, $url),
 			mysqli_real_escape_string($conn, $slug),
 			mysqli_real_escape_string($conn, $bio),
