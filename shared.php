@@ -292,8 +292,8 @@ function AdminArtistEditSingle($aid) {
 	$result = mysqli_query($conn,$query);
 	$row = mysqli_fetch_assoc($result);
 	$artistinfo['aid'] = $aid;
-	foreach ($row as $key => $value) {
-		$artistinfo[$key] = $value;
+	foreach ($row as $fieldname => $value) {
+		$artistinfo[$fieldname] = $value;
 	}
 	mysqli_free_result($result);
 	// AdminSelectCategories($aid) AdminSelectStyles($aid) AdminSelectLocations($aid)
@@ -362,17 +362,23 @@ function AdminArtistSaveNew() {
 	if (strlen($_REQUEST['display_name']) > 0) {
 		$display_name = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['display_name']))));
 	} else {
-		// crappy way of guessing a band's name: first whole word, then first letter of each additional word
+		// crappy way of guessing a band's obfuscated "display" name: first whole word, then first letter of each additional word
+		// logic subject to be totally changed on SB's whim
 		$words = explode(" ", $name);
 		$display_name = "";
 		$counter = 0;
-		foreach ($words as $word) {
-			if ($counter == 0) {
-				$display_name = "$word ";
-			} else {
-				$display_name .= $substr($word,0,1);
-				$display_name .= ".";
+		if (count($words) > 0) {
+			foreach ($words as $word) {
+				if ($counter == 0) {
+					$display_name = "$word ";
+				} else {
+					$display_name .= $substr($word,0,1);
+					$display_name .= ".";
+				}
+				$counter++;
 			}
+		} else {
+			$display_name = $name;	// one word artist name is a one-word artist name.
 		}
 	}
 	$use_display_name = isset($_REQUEST['use_display_name']);
@@ -414,7 +420,7 @@ function AdminArtistSaveNew() {
 	}
 	// XXX: This guess at an URL is pretty weaksauce
 	$url = MakeURL(strtolower($name));
-	$alturl = MakeURL(strtolower($display_name));
+	$alturl = MakeURL(strtolower($display_name));	// what's the URL if we're in use_display_name mode?  XXX: This is pretty retarded. I want full names in URL for SEO.  even specifiying an URL at all is unnecessary since going to just search on name anyways.
 	// insert into artist table and get the auto_incremented aid
 	if (!isset($errors)) {
 		$query = sprintf("INSERT INTO `artists` (`name`,`display_name`,`url`,`alt_url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
