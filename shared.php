@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20130121
+**  Last Edit: 20130213
 ****************************************/
 
 function Init() {
@@ -414,12 +414,14 @@ function AdminArtistSaveNew() {
 	}
 	// XXX: This guess at an URL is pretty weaksauce
 	$url = MakeURL(strtolower($name));
+	$alturl = MakeURL(strtolower($display_name));
 	// insert into artist table and get the auto_incremented aid
 	if (!isset($errors)) {
-		$query = sprintf("INSERT INTO `artists` (`name`,`display_name`,`url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO `artists` (`name`,`display_name`,`url`,`alt_url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn, $name),
 			mysqli_real_escape_string($conn, $display_name),
 			mysqli_real_escape_string($conn, $url),
+			mysqli_real_escape_string($conn, $alt_url),
 			mysqli_real_escape_string($conn, $slug),
 			mysqli_real_escape_string($conn, $bio),
 			mysqli_real_escape_string($conn, $use_display_name),

@@ -13,6 +13,7 @@ CREATE TABLE `sbpweb`.`artists` (
 	`name` VARCHAR(50) NOT NULL,
 	`display_name` VARCHAR(50) NULL,
 	`url` VARCHAR(50) NOT NULL UNIQUE,
+	`alt_url` VARCHAR(50) NOT NULL UNIQUE,
 	`slug` VARCHAR(255) NOT NULL,
 	`bio` TEXT,
 	`use_display_name` BOOLEAN NOT NULL DEFAULT 0,
@@ -21,6 +22,9 @@ CREATE TABLE `sbpweb`.`artists` (
 	`is_searchable` BOOLEAN NOT NULL DEFAULT 0,
 	`last_updated` DATETIME NOT NULL,
 	INDEX(`url`),
+	INDEX(`alt_url`),
+	INDEX(`name`),
+	INDEX(`display_name`),
 	INDEX(`slug`)
 ) ENGINE=InnoDB;
 
