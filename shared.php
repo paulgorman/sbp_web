@@ -268,7 +268,7 @@ function AdminArtistAddNew() {
 		if (strlen($aid) > 0) {
 			// there's an $aid from saving basic data, so check that media in
 			$filecount = AdminArtistSaveMedia($aid);
-			if ($filecount > 1) {
+			if ($filecount >= 1) {
 				echo "<div class='AdminSuccess'>New artist added with $filecount media files!</div>";
 			} else {
 				echo "<div class='AdminError'>No media was saved. Please add a photo and/or video now.</div>";
@@ -372,7 +372,7 @@ function AdminArtistSaveNew() {
 				if ($counter == 0) {
 					$display_name = "$word ";
 				} else {
-					$display_name .= $substr($word,0,1);
+					$display_name .= substr($word,0,1);
 					$display_name .= ".";
 				}
 				$counter++;
@@ -420,7 +420,7 @@ function AdminArtistSaveNew() {
 	}
 	// XXX: This guess at an URL is pretty weaksauce
 	$url = MakeURL(strtolower($name));
-	$alturl = MakeURL(strtolower($display_name));	// what's the URL if we're in use_display_name mode?  XXX: This is pretty retarded. I want full names in URL for SEO.  even specifiying an URL at all is unnecessary since going to just search on name anyways.
+	$alt_url = MakeURL(strtolower($display_name));	// what's the URL if we're in use_display_name mode?  XXX: This is pretty retarded. I want full names in URL for SEO.  even specifiying an URL at all is unnecessary since going to just search on name anyways.
 	// insert into artist table and get the auto_incremented aid
 	if (!isset($errors)) {
 		$query = sprintf("INSERT INTO `artists` (`name`,`display_name`,`url`,`alt_url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
@@ -526,14 +526,14 @@ function AdminArtistSaveMedia($aid) {
 			if (mysqli_query($conn,$query) === TRUE) {
 				$savedfilecount++;
 			} else {
-				echo "<div class='AdminError'>Media file '<B>$filename</B>' not saved in database!<br>". mysqli_error($conn) ."</div>";
+				$errors[] = "Media file '<i>$filename</i>' not saved in database!<br>". mysqli_error($conn);
 			}
 		}
 	}
-	foreach ($errors as $error) { 
-		echo "<div class='AdminError'><B>$error</B></div>";
-	}
 	if (count($errors) > 0) {
+		foreach ($errors as $error) { 
+			echo "<div class='AdminError'><B>$error</B></div>";
+		}
 		return (0);
 	} else {
 		return ($savedfilecount);
