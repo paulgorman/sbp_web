@@ -469,7 +469,7 @@ function AdminArtistFormNew() {
 				<div class="AdminCategoryListingAddValue"><input type="text" name="display_name" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['display_name']))); ?>" size="50"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">One-Line Summary,<br> Header, Slug</div>
-				<div class="AdminCategoryListingAddValue"><textarea rows="2" cols="50" name="slug" wrap="virtual"><?= MakeCase(htmlspecialchars(trim($_REQUEST['slug']))); ?></textarea></div>
+				<div class="AdminCategoryListingAddTextBox"><textarea rows="2" cols="50" name="slug" wrap="virtual"><?= MakeCase(htmlspecialchars(trim($_REQUEST['slug']))); ?></textarea></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">&nbsp;</div>
 				<div class="clear"></div>
@@ -537,12 +537,52 @@ function AdminArtistFormNew() {
 
 function AdminArtistFormSingle($artistinfo) {
 	?>
-		I am the AdminArtistFormSingle<br>
-		Artist: <?= $artistinfo['name']; ?><br>
-		ID: <?= $artistinfo['aid']; ?><br>
-		fuking dump: <pre>
-		<?= print_r ($artistinfo); ?>
-		</pre>
+		I am AdminArtistFormSingle<br>
+		<form method="POST" action="/admin/artists/edit" enctype="multipart/form-data">
+			<input type="hidden" name="function" value="edit">
+			<div class="AdminArtistContainer">
+				<div class="AdminArtistEditHeader">
+					<B><?= $artistinfo['name'] ?></B>
+				</div>
+				<div class="AdminArtistLastUpdateHeader">
+					Last updated <?= nicetime($artistinfo['last_updated']) ?>
+				</div>
+				<div class="clear"></div>
+				<div class="AdminArtistCheckboxLabel"><label for="is_active">Active</label></div>
+    		<div class="AdminCategoryListingCheckBox">
+					<input type="checkbox" id="is_active" name="is_active" class="regular-checkbox big-checkbox" <?= ($artistinfo['is_active']?'CHECKED ':'') ?>/><label title="Artist is Active" for="is_active"></label>
+				</div>
+				<div class="AdminArtistCheckboxLabel"><label for="is_searchable">Searchable</label></div>
+    		<div class="AdminCategoryListingCheckBox">
+					<input type="checkbox" id="is_searchable" name="is_searchable" class="regular-checkbox big-checkbox" <?= ($artistinfo['is_searchable']?'CHECKED ':'') ?>/><label title="Can be found in Search" for="is_searchable"></label>
+				</div>
+				<div class="AdminArtistCheckboxLabel"><label for="is_highlighted">Featured</label></div>
+    		<div class="AdminCategoryListingCheckBox">
+					<input type="checkbox" id="is_highlighted" name="is_highlighted" class="regular-checkbox big-checkbox" <?= ($artistinfo['is_highlighted']?'CHECKED ':'') ?>/><label title="Highlighted as a Featured Artist" for="is_highlighted"></label>
+				</div>
+				<div class="AdminArtistCheckboxLabel"><label for="use_display_name">Obfuscate Name</label></div>
+    		<div class="AdminCategoryListingCheckBox">
+					<input type="checkbox" id="use_display_name" name="use_display_name" class="regular-checkbox big-checkbox" <?= ($artistinfo['use_display_name']?'CHECKED ':'') ?>/><label title="Enforce hiding the artist's Full Name" for="use_display_name"></label>
+				</div>
+				<div class="clear"></div>
+				<div class="AdminArtistLabel">Artist/Act/Band Real Name:</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="name" value="<?= $artistinfo['name']; ?>" size="50"></div>
+				<div class="clear"></div>
+				<div class="AdminArtistLabel">Obfuscated Display Name:</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="display_name" value="<?= $artistinfo['display_name']; ?>" size="50"></div>
+				<div class="clear"></div>
+				<div class="AdminArtistLabel">Summary/Header/Slug:</div>
+				<div class="AdminCategoryListingAddTextBox"><textarea rows="2" cols="50" name="slug" wrap="virtual"><?= $artistinfo['slug']; ?></textarea></div>
+				<div class="clear">&nbsp;</div>
+				<div class="AdminArtistLabel">Bio:</div>
+				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="65" name="bio" wrap="virtual"><?= $artistinfo['bio']; ?></textarea></div>
+				<div class="clear"></div>
+
+
+
+
+
+				<div class="clear"></div><pre><?= print_r ($artistinfo); ?></pre>
 	<?
 }
 

@@ -262,6 +262,16 @@ td {
 	margin-right: auto;
 }
 
+.AdminArtistContainer {
+	color: #00529B;
+	background-color: #BDE5F8;
+	margin-top: 10px;
+	border: 1px solid;
+	width:960px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .AdminCategoryListingAddHeader {
 	background-image:url('/templates/icons/Add.png');
 	background-repeat: no-repeat;
@@ -282,6 +292,24 @@ td {
 	font-weight: bold;
 	font-size: 13px;
 	margin: 2px;
+	float: left;
+	padding-left: 45px;
+	text-align: right;
+}
+
+.AdminArtistLabel{
+	font-weight: bold;
+	font-size: 13px;
+	margin: 2px;
+	float: left;
+	padding-left: 45px;
+	text-align: right;
+}
+
+.AdminArtistCheckboxLabel{
+	font-weight: bold;
+	font-size: 13px;
+	margin: 10px 2px 0px 0px;
 	float: left;
 	padding-left: 45px;
 	text-align: right;
@@ -314,7 +342,7 @@ td {
 .AdminCategoryListingAddTextBox {
 	color: #4F8A10;
 	font-size: 12px;
-	margin: 2px;
+	margin: 2px 0px -10px 2px;
 	border: 0px solid;
 	float: left;
 }
@@ -378,6 +406,29 @@ td {
 	height: 1.5em;
 	margin-bottom: 8px;
 	margin-top: 4px;
+}
+
+.AdminArtistEditHeader {
+	background-image:url('/templates/icons/Valid Blue.png');
+	background-repeat: no-repeat;
+	background-position: 10px top;
+	padding: 10px 0px 0px 0px;
+	text-align: left;
+	font-weight: bold;
+	font-size: 2.5em;
+	padding: 0px 0px 0px 50px;
+	width: auto;
+	height: 1.5em;
+	margin-top: 4px;
+}
+
+.AdminArtistLastUpdateHeader {
+	text-align: left;
+	font-size: 1em;
+	padding: 0px 0px 0px 65px;
+	width: auto;
+	margin-bottom: 8px;
+	margin-top: -0.8em;
 }
 
 .metricsOverviewBlock {
