@@ -490,7 +490,7 @@ function AdminArtistFormNew() {
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Bio</div>
 				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="85" name="bio" wrap="virtual"><?= htmlspecialchars(trim($_REQUEST['bio'])); ?></textarea></div>
-				<div class="clear"></div>
+				<div class="clear">&nbsp;</div>
 
 				<div class="AdminCategoryListingAddItem">
 					<label for="Categories">Website Categories</label>
@@ -537,8 +537,116 @@ function AdminArtistFormNew() {
 
 function AdminArtistFormSingle($artistinfo) {
 	?>
-		I am AdminArtistFormSingle<br>
-		<form method="POST" action="/admin/artists/edit" enctype="multipart/form-data">
+  <script type="text/javascript">//<![CDATA[
+		var filecounter = 1;
+		function makeFileList() {
+			var input = document.getElementById(filecounter);
+			var ul = document.getElementById("fileList");
+			for (var i = 0; i < input.files.length; i++) {
+				var li = document.createElement("li");
+				li.innerHTML = "(" + filecounter + ") " + input.files[i].name;
+				ul.appendChild(li);
+			}
+			if(!ul.hasChildNodes()) {
+				var li = document.createElement("li");
+				li.innerHTML = 'No Files Selected';
+				ul.appendChild(li);
+			}
+			add_file_field();
+		}
+		function add_file_field(){
+			var input = document.getElementById(filecounter);
+			filecounter = filecounter + 1;
+			var container=document.getElementById('file_container');
+			var file_field=document.createElement('input');
+			file_field.name='filesToUpload[]';
+			file_field.type='file';
+			file_field.onchange='makeFileList();';
+			file_field.setAttribute("onchange", "makeFileList();");
+			file_field.id=filecounter;
+			file_field.setAttribute("id",filecounter);
+			container.appendChild(file_field);
+			//var br_field=document.createElement('br');
+			//container.appendChild(br_field);
+		}
+    jQuery(function($) {
+      $("#Categories").bsmSelect({
+        addItemTarget: 'bottom',
+        animate: true,
+        highlight: true,
+        plugins: [
+          $.bsmSelect.plugins.sortable({ axis : 'y', opacity : 0.5 }, { listSortableClass : 'bsmListSortableCustom' }),
+          $.bsmSelect.plugins.compatibility()
+        ]
+      });
+      $("#Styles").bsmSelect({
+        addItemTarget: 'bottom',
+        animate: true,
+        highlight: true,
+        plugins: [
+          $.bsmSelect.plugins.sortable({ axis : 'y', opacity : 0.5 }, { listSortableClass : 'bsmListSortableCustom' }),
+          $.bsmSelect.plugins.compatibility()
+        ]
+      });
+      $("#Locations").bsmSelect({
+        addItemTarget: 'bottom',
+        animate: true,
+        highlight: true,
+        plugins: [
+          $.bsmSelect.plugins.sortable({ axis : 'y', opacity : 0.5 }, { listSortableClass : 'bsmListSortableCustom' }),
+          $.bsmSelect.plugins.compatibility()
+        ]
+			});
+    });
+		HEIGHTS = [];
+		function getheight(images, width) {
+			width -= images.length * 5;
+			var h = 0;
+			for (var i = 0; i < images.length; ++i) {
+				h += $(images[i]).data('width') / $(images[i]).data('height');
+			}
+			return width / h;
+		}
+		function setheight(images, height) {
+			HEIGHTS.push(height);
+			for (var i = 0; i < images.length; ++i) {
+				$(images[i]).css({
+					width: height * $(images[i]).data('width') / $(images[i]).data('height'),
+					height: height
+				});
+				$(images[i]).attr('src', $(images[i]).attr('src').replace(/w[0-9]+-h[0-9]+/, 'w' + $(images[i]).width() + '-h' + $(images[i]).height()));
+			}
+		}
+		function resize(images, width) {
+		  setheight(images, getheight(images, width));
+		}
+		function run(max_height) {
+			var size = window.innerWidth - 50;
+			var n = 0;
+			var images = $('img');
+			w: while (images.length > 0) {
+				for (var i = 1; i < images.length + 1; ++i) {
+					var slice = images.slice(0, i);
+					var h = getheight(slice, size);
+					if (h < max_height) {
+						setheight(slice, h);
+						n++;
+						images = images.slice(i);
+						continue w;
+					}
+				}
+				setheight(slice, Math.min(max_height, h));
+				n++;
+				break;
+			}
+			console.log(n);
+		}
+		window.addEventListener('resize', function () { run(205); });
+		$(function () { run(205); });
+
+		//]]></script>
+		<form method="POST" action="/admin/artists/edit/<?= $artistinfo['aid']; ?>" enctype="multipart/form-data" name="edit<?= $artistinfo['aid']; ?>">
+			<input type="hidden" name="aid" value="<?= $artistinfo['aid']; ?>">
 			<input type="hidden" name="function" value="edit">
 			<div class="AdminArtistContainer">
 				<div class="AdminArtistEditHeader">
@@ -576,13 +684,40 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="clear">&nbsp;</div>
 				<div class="AdminArtistLabel">Bio:</div>
 				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="65" name="bio" wrap="virtual"><?= $artistinfo['bio']; ?></textarea></div>
+				<div class="clear">&nbsp;</div>
+
+				<div class="AdminCategoryListingAddItem">
+					<label for="Categories">Website Categories</label>
+				</div>
+				<div class="AdminCategoryListingAddDropDown">
+					<select id="Categories" multiple="multiple" name="categories[]" title="Categories" class="sminit">
+						<?= AdminSelectCategories($artistinfo['aid']); ?>
+					</select>
+				</div>
 				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">
+					<label for="Styles">Performance Styles</label>
+				</div>
+				<div class="AdminCategoryListingAddDropDown">
+					<select id="Styles" multiple="multiple" name="styles[]" title="Styles" class="sminit">
+						<?= AdminSelectStyles($artistinfo['aid']); ?>
+					</select>
+				</div>
+				<div class="AdminCategoryListingAddItem">
+					<label for="Locations">Available Locations</label>
+				</div>
+				<div class="AdminCategoryListingAddDropDown">
+					<select id="Locations" multiple="multiple" name="locations[]" title="Locations" class="sminit">
+						<?= AdminSelectLocations($artistinfo['aid']); ?>
+					</select>
+				</div>
+				<div class="clear"></div>
+				<div class="AdminImagesPreviewContainer">
+					<?= ShowPhotoArray($artistinfo['media']); ?>
+				</div>
 
 
 
-
-
-				<div class="clear"></div><pre><?= print_r ($artistinfo); ?></pre>
 	<?
 }
 

@@ -136,6 +136,31 @@ td {
 	margin-right: auto;
 }
 
+.AdminImagesPreviewContainer {
+	margin-left: 30px;
+}
+
+.AdminImagesPreviewNormal {
+	margin: 1px 2px 1px 1px;
+	outline: 1px solid #00529B;
+	outline-offset: -1px;
+	background-color: #3F3F3F; /* woo, transparent PNG's aren't powder blue */
+}
+
+.AdminImagesPreviewHighlighted {
+	margin: 1px 2px 1px 1px;
+	outline: 5px solid #4F8A10;
+	outline-offset: -3px;
+	background-color: #DFF2BF; 
+}
+
+.AdminImagesPreviewNotVisible{
+	margin: 1px 2px 1px 1px;
+	outline: 5px solid #D8002C;
+	outline-offset: -3px;
+	background-color: #FFBABA;
+}
+
 .AdminCategoryListHeader {
 	text-align: left;
 	font-weight: bold;
@@ -288,7 +313,6 @@ td {
 }
 
 .AdminCategoryListingAddItem {
-	color: #4F8A10;
 	font-weight: bold;
 	font-size: 13px;
 	margin: 2px;
@@ -326,7 +350,6 @@ td {
 }
 
 .AdminCategoryListingAddDropDown {
-	color: #4F8A10;
 	width: 40em;
 	padding-left: 45px;
 }

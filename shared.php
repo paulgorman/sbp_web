@@ -302,6 +302,7 @@ function AdminArtistEditSingle($aid) {
 	$result = mysqli_query($conn,$query);
 	$i = 0;
 	while ($row = mysqli_fetch_assoc($result)) {
+		$artistinfo['media']['mid'][$i] = $row['mid'];
 		$artistinfo['media']['name'][$i] = $row['name'];
 		$artistinfo['media']['filetype'][$i] = $row['filetype'];
 		$artistinfo['media']['filename'][$i] = $row['filename'];
@@ -914,7 +915,7 @@ function AdminSelectCategories($aid = NULL) {
 	}
 	mysqli_free_result($result);
 	if ($aid) {
-		$query = sprintf("SELECT `cid` FROM `artistcategories` WHERE 'aid' = %s",
+		$query = sprintf("SELECT `cid` FROM `artistcategories` WHERE `aid` = %s",
 			mysqli_real_escape_string($conn,$aid)
 		);
 		$result = mysqli_query($conn,$query);
@@ -956,7 +957,7 @@ function AdminSelectStyles($aid = NULL) {
 	}
 	mysqli_free_result($result);
 	if ($aid) {
-		$query = sprintf("SELECT `sid` FROM `artiststyles` WHERE 'aid' = %s",
+		$query = sprintf("SELECT `sid` FROM `artiststyles` WHERE `aid` = %s",
 			mysqli_real_escape_string($conn,$aid)
 		);
 		$result = mysqli_query($conn,$query);
@@ -995,8 +996,8 @@ function AdminSelectLocations($aid = NULL) {
 	}
 	mysqli_free_result($result);
 	if ($aid) {
-		$query = sprintf("SELECT `lid` FROM `artistlocations` WHERE 'aid' = %s",
-			mysqli_real_escape_string($aid)
+		$query = sprintf("SELECT `lid` FROM `artistlocations` WHERE `aid` = %s",
+			mysqli_real_escape_string($conn,$aid)
 		);
 		$result = mysqli_query($conn,$query);
 		while ($row = mysqli_fetch_assoc($result)) {
@@ -1184,6 +1185,57 @@ function SaveFile($purpose) {
 	// We accepted a positive number of files !
 	return $happyuploads;
 } 
+
+function ShowPhotoArray($mediadata) {
+	// show a bunch of photos
+	global $conn;
+	$photosorder = array();
+	foreach ($mediadata['mid'] as $arraykey => $mid) {
+		 //echo "$arraykey: $mid <br>";
+		 //echo "$mid should be ". $mediadata['mid'][$mid] ."<br>"; // totally fine
+		// only pay attention to jpg and png
+		if ($mediadata['filetype'][$mid] == "png" OR "jpg") {
+// XXX: After this point, $arraykey and $mid are freaking reversed??!?!
+			// check if highlighted is viewable, then put highlighted first
+			if ($mediadata['is_highlighted'][$arraykey] && $mediadata['viewable'][$arraykey]) {
+				$location = $arraykey;
+				$photosorder[$location] = $mediadata['mid'][$arraykey];
+			}
+			// viewable items next, sorted by recent published first
+			if ($mediadata['viewable'][$arraykey] && (!$media['is_highlighted'][$arraykey])) {
+				$location = $arraykey * 100;	// put this mediaID later in the sort index
+				$photosorder[$location] = $mediadata['mid'][$arraykey];
+			}
+			// non-viewable crap, with marker 
+			if (!$mediadata['viewable'][$arraykey]) {
+				$location = $arraykey * 1000;	// put this mediaID later in the sort index
+				$photosorder[$location] = $mediadata['mid'][$arraykey];
+			}
+		 // echo "$mid should be ". $mediadata['mid'][$mid] ."<br>"; // does not work anymore
+		}
+	}
+	ksort($photosorder, SORT_NUMERIC);
+	foreach ($photosorder as $key => $mid) {
+		echo "key: $key, value: $mid<br>";
+		//echo "real mid: ".$mediadata['mid'][$mid] ."<br>";
+		if ($mediadata['is_highlighted'][$mid]) {
+			$highlightclass = "AdminImagesPreviewHighlighted";
+		} elseif ($mediadata['viewable'][$mid] == 0) {
+			$highlightclass = "AdminImagesPreviewNotVisible";
+		} else {
+			$highlightclass = "AdminImagesPreviewNormal";
+		}
+		$string = sprintf("<img class='%s' src='/images/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>",
+			$highlightclass,
+			$mediadata['filename'][$mid],
+			$mediadata['thumbwidth'][$mid],
+			$mediadata['thumbheight'][$mid],
+			$mediadata['name'][$mid],
+			$mediadata['name'][$mid]
+		);
+		echo "$string\n";
+	}
+}
 
 function aasort (&$array, $key) {
 	// sort an array's array by the sub-array's key name
