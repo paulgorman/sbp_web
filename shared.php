@@ -249,7 +249,11 @@ function ShowAdminPage() {
 					AdminArtistAddNew();
 					break;
 				case "edit":
-					AdminArtistEditSingle($_REQUEST['aid']);
+					if ($_REQUEST['listpage'] > 0) {
+						AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['listpage']));
+					} else {
+						AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['aid']));
+					}
 					break;
 				default:
 					AdminArtistList();
@@ -286,7 +290,7 @@ function AdminArtistEditSingle($aid) {
 	global $conn;
 	$aid = preg_replace("/[^0-9]/",'',$aid);
 	// XXX: this could be some massive joined query
-	echo "I'm the AdminArtistEditSingle page<br>";
+	// echo "I'm the AdminArtistEditSingle page<br>";
 	$artistinfo = array();
 	$query = sprintf("SELECT * FROM `artists` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
 	$result = mysqli_query($conn,$query);

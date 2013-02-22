@@ -67,7 +67,7 @@ function AdminArtistListPage($artists,$page) {
 			</div>
 			<div class="clear"></div>
 			<? foreach ($artists as $key => $values) { ?>
-				<form method="POST" action="/admin/artists" name="edit<?= $values['aid']; ?>">
+				<form method="POST" action="/admin/artists/edit/<?= $values['aid']; ?>" name="edit<?= $values['aid']; ?>">
 					<input type="hidden" name="function" value="edit">
 					<input type="hidden" name="aid" value="<?= $values['aid']; ?>">
 					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
