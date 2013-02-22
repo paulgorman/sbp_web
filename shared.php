@@ -300,20 +300,18 @@ function AdminArtistEditSingle($aid) {
 	// lemme have hash of media
 	$query = sprintf("SELECT * FROM `media` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
 	$result = mysqli_query($conn,$query);
-	$i = 0;
 	while ($row = mysqli_fetch_assoc($result)) {
-		$artistinfo['media']['mid'][$i] = $row['mid'];
-		$artistinfo['media']['name'][$i] = $row['name'];
-		$artistinfo['media']['filetype'][$i] = $row['filetype'];
-		$artistinfo['media']['filename'][$i] = $row['filename'];
-		$artistinfo['media']['thumbwidth'][$i] = $row['thumbwidth'];
-		$artistinfo['media']['thumbheight'][$i] = $row['thumbheight'];
-		$artistinfo['media']['width'][$i] = $row['height'];
-		$artistinfo['media']['vidlength'][$i] = $row['vidlength'];
-		$artistinfo['media']['is_highlighted'][$i] = $row['is_highlighted'];
-		$artistinfo['media']['viewable'][$i] = $row['viewable'];
-		$artistinfo['media']['published'][$i] = DateSQLtoPHP($row['published']);
-		$i++;
+		$artistinfo['media']['mid'][$row['mid']] = $row['mid'];
+		$artistinfo['media']['name'][$row['mid']] = $row['name'];
+		$artistinfo['media']['filetype'][$row['mid']] = $row['filetype'];
+		$artistinfo['media']['filename'][$row['mid']] = $row['filename'];
+		$artistinfo['media']['thumbwidth'][$row['mid']] = $row['thumbwidth'];
+		$artistinfo['media']['thumbheight'][$row['mid']] = $row['thumbheight'];
+		$artistinfo['media']['width'][$row['mid']] = $row['height'];
+		$artistinfo['media']['vidlength'][$row['mid']] = $row['vidlength'];
+		$artistinfo['media']['is_highlighted'][$row['mid']] = $row['is_highlighted'];
+		$artistinfo['media']['viewable'][$row['mid']] = $row['viewable'];
+		$artistinfo['media']['published'][$row['mid']] = DateSQLtoPHP($row['published']);
 	}
 	mysqli_free_result($result);
 	AdminArtistFormSingle($artistinfo);
@@ -1191,33 +1189,27 @@ function ShowPhotoArray($mediadata) {
 	global $conn;
 	$photosorder = array();
 	foreach ($mediadata['mid'] as $arraykey => $mid) {
-		 //echo "$arraykey: $mid <br>";
-		 //echo "$mid should be ". $mediadata['mid'][$mid] ."<br>"; // totally fine
-		// only pay attention to jpg and png
 		if ($mediadata['filetype'][$mid] == "png" OR "jpg") {
-// XXX: After this point, $arraykey and $mid are freaking reversed??!?!
 			// check if highlighted is viewable, then put highlighted first
-			if ($mediadata['is_highlighted'][$arraykey] && $mediadata['viewable'][$arraykey]) {
+			if (($mediadata['is_highlighted'][$mid] == 1) && ($mediadata['viewable'][$mid] == 1)) {
 				$location = $arraykey;
-				$photosorder[$location] = $mediadata['mid'][$arraykey];
+				$photosorder[$location] = $mediadata['mid'][$mid];
 			}
 			// viewable items next, sorted by recent published first
-			if ($mediadata['viewable'][$arraykey] && (!$media['is_highlighted'][$arraykey])) {
+			if (($mediadata['viewable'][$mid] == 1) && ($mediadata['is_highlighted'][$mid] == 0)) {
 				$location = $arraykey * 100;	// put this mediaID later in the sort index
-				$photosorder[$location] = $mediadata['mid'][$arraykey];
+				$photosorder[$location] = $mediadata['mid'][$mid];
 			}
 			// non-viewable crap, with marker 
-			if (!$mediadata['viewable'][$arraykey]) {
+			if ($mediadata['viewable'][$mid] == 0) {
 				$location = $arraykey * 1000;	// put this mediaID later in the sort index
-				$photosorder[$location] = $mediadata['mid'][$arraykey];
+				$photosorder[$location] = $mediadata['mid'][$mid];
 			}
-		 // echo "$mid should be ". $mediadata['mid'][$mid] ."<br>"; // does not work anymore
 		}
 	}
 	ksort($photosorder, SORT_NUMERIC);
 	foreach ($photosorder as $key => $mid) {
-		echo "key: $key, value: $mid<br>";
-		//echo "real mid: ".$mediadata['mid'][$mid] ."<br>";
+		//echo "$key = $mid / real mid: ".$mediadata['mid'][$mid] ."<br>";
 		if ($mediadata['is_highlighted'][$mid]) {
 			$highlightclass = "AdminImagesPreviewHighlighted";
 		} elseif ($mediadata['viewable'][$mid] == 0) {
