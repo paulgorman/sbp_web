@@ -737,7 +737,7 @@ function DisplayVideoPlayer($artistinfo) {
 			'author': 'Steve Beyer Productions',
 			'description': '<?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?>',
 			'file': '/m/<?= $artistinfo['media']['filename']; ?>',
-			'image': '/i/artist/<?= $artistinfo['media']['filename']; ?>',
+			'image': '/i/artist/<?= $artistinfo['media']['previewimage']; ?>',
 			'duration': '<?= $artistinfo['media']['vidlength']; ?>',
 			'controlbar': 'over',
 			'shownavigation': 'true',

@@ -352,6 +352,7 @@ function PrepareVideoPlayer($input) {
 					$tempartistinfo['media']['height'] = $artistinfo['media']['height'][$mid];
 				}
 				$tempartistinfo['media']['mid'] = $artistinfo['media']['mid'][$mid];
+				$tempartistinfo['media']['previewimage'] = substr($artistinfo['media']['filename'][$mid],0,-4) . ".jpg";
 				$tempartistinfo['media']['vidlength'] = $artistinfo['media']['vidlength'][$mid];
 				$tempartistinfo['media']['name'] = $artistinfo['media']['name'][$mid];
 				$tempartistinfo['media']['filename'] = $artistinfo['media']['filename'][$mid];
@@ -1195,6 +1196,9 @@ function ResizeImage($fileid,$purpose) {
 	}
 	if (preg_match("/\.mp4/",$fileid)) {
 		// create a thumbnail here?
+		$thumbnailname = substr($fileid,0,-4) . ".jpg";
+		system("/usr/local/bin/ffmpeg -itsoffset -6 -i $dirlocation/m/$fileid.mp4 -vcodec mjpeg -vframes 1 -an -f rawvideo $dirlocation/i/artist/$thumbnailname");
+		echo ("/usr/local/bin/ffmpeg -itsoffset -6 -i $dirlocation/m/$fileid.mp4 -vcodec mjpeg -vframes 1 -an -f rawvideo $dirlocation/i/artist/$thumbnailname");
 		$newfilename = $fileid;
 	}
 	return($newfilename);
