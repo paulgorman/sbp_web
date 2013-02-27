@@ -13,6 +13,7 @@ function Init() {
 	global $conn;
 	global $dirlocation;
 	global $pagination;
+	global $videoheight;
 	error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
@@ -31,6 +32,7 @@ function Init() {
 	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
 	$dirlocation = "/home/presence/samba_public_share/sbp_app";	// no trailing slash.
 	$pagination = "10";	// number of entries per "page"
+	$videoheight = 480;
 }
 
 function RecordHit() {
@@ -311,7 +313,8 @@ function AdminArtistEditSingle($aid) {
 		$artistinfo['media']['filename'][$row['mid']] = $row['filename'];
 		$artistinfo['media']['thumbwidth'][$row['mid']] = $row['thumbwidth'];
 		$artistinfo['media']['thumbheight'][$row['mid']] = $row['thumbheight'];
-		$artistinfo['media']['width'][$row['mid']] = $row['height'];
+		$artistinfo['media']['height'][$row['mid']] = $row['height'];
+		$artistinfo['media']['width'][$row['mid']] = $row['width'];
 		$artistinfo['media']['vidlength'][$row['mid']] = $row['vidlength'];
 		$artistinfo['media']['is_highlighted'][$row['mid']] = $row['is_highlighted'];
 		$artistinfo['media']['viewable'][$row['mid']] = $row['viewable'];
@@ -319,6 +322,91 @@ function AdminArtistEditSingle($aid) {
 	}
 	mysqli_free_result($result);
 	AdminArtistFormSingle($artistinfo);
+}
+
+function PrepareVideoPlayer($input) {
+	// Put video(s) into jwplayer
+	global $conn;
+	global $videoheight;
+	if (is_array($input)) {
+		$artistinfo = $input;
+		$videocount = 0;
+		// I am the artistinfo's media keyed array
+		// If this is used, SHOW ALL (viewable) VIDEOS
+		foreach ($artistinfo['media']['mid'] as $mid) {
+			// if in the admin page, or is viewable, and media is a video, ...
+			if (($_REQUEST['page'] == "admin" OR $artistinfo['media']['viewable'][$mid] == 1) AND ($artistinfo['media']['vidlength'][$mid] > 0)) {
+				$videocount++;
+				// single out the one media ID for the Video Player
+				$tempartistinfo = $artistinfo;
+				unset ($tempartistinfo['media']);	// dump all the media info on this artist, replacing with the one video to display
+				// make video players a reasonable size
+				if ($artistinfo['media']['height'][$mid] > $videoheight) {
+					$width = $artistinfo['media']['width'][$mid];
+					$height = $artistinfo['media']['height'][$mid];
+					$scale = $height / $videoheight; 
+					$tempartistinfo['media']['width'] = ceil($width / $scale);
+					$tempartistinfo['media']['height'] = ceil($height / $scale);
+				} else {
+					$tempartistinfo['media']['width'] = $artistinfo['media']['width'][$mid];
+					$tempartistinfo['media']['height'] = $artistinfo['media']['height'][$mid];
+				}
+				$tempartistinfo['media']['mid'] = $artistinfo['media']['mid'][$mid];
+				$tempartistinfo['media']['vidlength'] = $artistinfo['media']['vidlength'][$mid];
+				$tempartistinfo['media']['name'] = $artistinfo['media']['name'][$mid];
+				$tempartistinfo['media']['filename'] = $artistinfo['media']['filename'][$mid];
+				$tempartistinfo['media']['is_highlighted'] = $artistinfo['media']['is_highlighted'][$mid];
+				$tempartistinfo['media']['viewable'] = $artistinfo['media']['viewable'][$mid];
+				$tempartistinfo['media']['published'] = $artistinfo['media']['published'][$mid];
+				if ($artistinfo['media']['viewable'][$mid] == 1) {
+					$tempartistinfo['classname'] = "VideoPlayer";
+				} else {
+					$tempartistinfo['classname'] = "VideoPlayerNOVIEW";
+				}
+				DisplayVideoPlayer($tempartistinfo);
+			}
+		}
+		if (($_REQUEST['page'] == "admin") && ($videocount == 0)) {
+			echo "<div class='AdminError'>No Videos Available for this Artist!</div>";
+		}
+	} elseif (is_string($input) || is_int($input)) {
+		// I just got a media ID only, lemme populate with all info
+		// If this is used, show THIS ONE video
+		$mid = preg_replace("/[^0-9]/","",$input);
+		$artistinfo = array();
+		$query = sprintf("SELECT * FROM `media` WHERE `mid` = %s",
+			mysqli_real_escape_string($conn,$mid)
+		);
+		$result = mysqli_query($conn,$query);
+		$row = mysqli_fetch_assoc($result);
+		foreach ($row as $fieldname => $value) {
+			$artistinfo['media'][$fieldname] = $value;
+		}
+		mysqli_free_result($result);
+		if ($artistinfo['media']['viewable'] == 0) {
+			echo "<div class='AdminError'>Video not available.</div>";
+		} else {
+			// now lemme get some meta data of the Artist for the player
+			// XXX: duplicated from AdminArtistEditSingle
+			$query = sprintf("SELECT * FROM `artists` WHERE `aid` = %s", mysqli_real_escape_string($conn,$artistinfo['media']['aid']));
+			$result = mysqli_query($conn,$query);
+			$row = mysqli_fetch_assoc($result);
+			$artistinfo['aid'] = $aid;
+			foreach ($row as $fieldname => $value) {
+				$artistinfo[$fieldname] = $value;
+			}
+			mysqli_free_result($result);
+			// scale the video if necessary
+			if ($artistinfo['media']['height'][$mid] > $videoheight) {
+				$width = $artistinfo['media']['width'][$mid];
+				$height = $artistinfo['media']['height'][$mid];
+				$scale = $height / $videoheight; 
+				$artistinfo['media']['width'] = ceil($width / $scale);
+				$artistinfo['media']['height'] = ceil($height / $scale);
+			}
+			DisplayVideoPlayer($artistinfo);
+		}
+	}
 }
 
 function FigurePageNav($type,$page=1) {
@@ -549,18 +637,18 @@ function MediaInfo($fileid,$purpose) {
 	//fileid includes confirmed file extension
 	$mediainfo = array();
 	if (preg_match("/\.jpg/",$fileid)) {
-		list($mediainfo['width'], $mediainfo['height'], $filetype, $attr) = getimagesize("$dirlocation/images/$purpose/original-$fileid");
-		list($mediainfo['thumbwidth'], $mediainfo['thumbheight'], $thumbtype, $thumbattr) = getimagesize("$dirlocation/images/$purpose/$fileid");
+		list($mediainfo['width'], $mediainfo['height'], $filetype, $attr) = getimagesize("$dirlocation/i/$purpose/original-$fileid");
+		list($mediainfo['thumbwidth'], $mediainfo['thumbheight'], $thumbtype, $thumbattr) = getimagesize("$dirlocation/i/$purpose/$fileid");
 		$mediainfo['filetype'] = "jpg";
 		$mediainfo['vidlength'] = 0;
 	} else if (preg_match("/\.png/",$fileid)) {
-		list($mediainfo['width'], $mediainfo['height'], $filetype, $attr) = getimagesize("$dirlocation/images/$purpose/original-$fileid");
-		list($mediainfo['thumbwidth'], $mediainfo['thumbheight'], $thumbtype, $thumbattr) = getimagesize("$dirlocation/images/$purpose/$fileid");
+		list($mediainfo['width'], $mediainfo['height'], $filetype, $attr) = getimagesize("$dirlocation/i/$purpose/original-$fileid");
+		list($mediainfo['thumbwidth'], $mediainfo['thumbheight'], $thumbtype, $thumbattr) = getimagesize("$dirlocation/i/$purpose/$fileid");
 		$mediainfo['filetype'] = "png";
 		$mediainfo['vidlength'] = 0;
 	} else if (preg_match("/mp4/",$fileid)) {
 		ob_start();
-		passthru("/usr/local/bin/ffmpeg -i $dirlocation/images/$purpose/original-$fileid 2>&1");
+		passthru("/usr/local/bin/ffmpeg -i $dirlocation/m/$fileid 2>&1");
 		$ffmpeg = ob_get_contents();
 		ob_end_clean();
 		// duration
@@ -814,8 +902,8 @@ function AdminSaveSingleCategory($cid) {
 			$query = sprintf("SELECT `image_id` FROM `categories` WHERE `cid` = '%s'", mysqli_real_escape_string($conn,$cid));
 			$result = mysqli_query($conn,$query);
 			list($old_fileid) = mysqli_fetch_array($result);
-			unlink("$dirlocation/images/category/$old_fileid");
-			unlink("$dirlocation/images/category/original-$old_fileid"); // XXX: we're not deleting jpegs, only png.
+			unlink("$dirlocation/i/category/$old_fileid");
+			unlink("$dirlocation/i/category/original-$old_fileid"); // XXX: we're not deleting jpegs, only png.
 			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `image_filename` = '%s', `image_id` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
 				mysqli_real_escape_string($conn,$url),
 				mysqli_real_escape_string($conn,$category),
@@ -877,8 +965,8 @@ function AdminDeleteCategoryGo($targetcategoryurl) {
 		mysqli_real_escape_string($conn,$cid)
 	);
 	// delete the category image file from the system
-	unlink("$dirlocation/images/category/$fileid");
-	unlink("$dirlocation/images/category/original-$fileid"); // XXX: we're not deleting jpegs, only png.
+	unlink("$dirlocation/i/category/$fileid");
+	unlink("$dirlocation/i/category/original-$fileid"); // XXX: we're not deleting jpegs, only png.
 	if (mysqli_query($conn,$query) === TRUE) {
 		echo "<div class='AdminSuccess'>The light is green, the trap is clean.</div>";
 	} else {
@@ -1071,9 +1159,9 @@ function ResizeImage($fileid,$purpose) {
 	// Resize image according to its purpose
 	global $dirlocation;
 	if (preg_match("/\.jpg/",$fileid)) {
-		$origimage = imagecreatefromjpeg("$dirlocation/images/$purpose/original-$fileid");
+		$origimage = imagecreatefromjpeg("$dirlocation/i/$purpose/original-$fileid");
 	} elseif (preg_match("/\.png/",$fileid)) {
-		$origimage = imagecreatefrompng("$dirlocation/images/$purpose/original-$fileid");
+		$origimage = imagecreatefrompng("$dirlocation/i/$purpose/original-$fileid");
 		imagealphablending($origimage, true);
 		imagesavealpha($origimage, true); 
 	}
@@ -1097,10 +1185,10 @@ function ResizeImage($fileid,$purpose) {
 		// if its a category, only do a transparent png.  Artist, whatever came in.
 		if (preg_match("/\.jpg/",$fileid) && (!preg_match("/category/",$purpose))) {
 			$newfilename = substr($fileid,0,-4) . ".jpg";
-			imagejpeg($newimage, "$dirlocation/images/$purpose/$newfilename", 80); // http://www.ebrueggeman.com/blog/php_image_optimization
+			imagejpeg($newimage, "$dirlocation/i/$purpose/$newfilename", 80); // http://www.ebrueggeman.com/blog/php_image_optimization
 		} else if (preg_match("/\.png/",$fileid)) {
 			$newfilename = substr($fileid,0,-4) . ".png";
-			imagepng($newimage, "$dirlocation/images/$purpose/$newfilename",9);
+			imagepng($newimage, "$dirlocation/i/$purpose/$newfilename",9);
 		}
 		imagedestroy($origimage);
 		imagedestroy($newimage);
@@ -1150,35 +1238,59 @@ function SaveFile($purpose) {
 		} else {
 			$fileid = uniqid();
 			// XXX: I am a race condition, where my unconfirmed file name is exposed on the webs
-			move_uploaded_file($tmp_name, $dirlocation . "/images/" . $purpose  . "/original-" . $fileid );
-			if (filesize($dirlocation . "/images/" . $purpose . "/original-" . $fileid) < 1024) {
+			move_uploaded_file($tmp_name, $dirlocation . "/i/" . $purpose  . "/original-" . $fileid );
+			if (filesize($dirlocation . "/i/" . $purpose . "/original-" . $fileid) < 1024) {
 				// if the file is smaller than 1kb, I don't trust it.
-				unlink($dirlocation . "/images/" . $purpose . "/original-" . $fileid);
+				unlink($dirlocation . "/i/" . $purpose . "/original-" . $fileid);
 				echo "<div class='AdminError'>File Upload Error: File is invalid due to small size.</div>";
 				$happyuploads[] = array(NULL,NULL);
 			} else {
 				// Yay, its a file!  Lets totally blow off the given file name and replace with my own.
 				$finfo = finfo_open(FILEINFO_MIME);
-				$type = finfo_file($finfo, $dirlocation . "/images/" . $purpose . "/original-" . $fileid);
+				$type = finfo_file($finfo, $dirlocation . "/i/" . $purpose . "/original-" . $fileid);
 				if (preg_match("/jpeg/i",$type)) {
 					$newfileid = "$fileid.jpg";	
+					rename (
+						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+					);
 				} elseif (preg_match("/png/i",$type)) {
 					$newfileid = "$fileid.png";
+					rename (
+						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+					);
 				} elseif (preg_match("/mp4/i",$type)) {
 					$newfileid = "$fileid.mp4";
+					rename (
+						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
+						$dirlocation . "/m/$newfileid"
+					);
 				} elseif (preg_match("/word/i",$type)) {
 					$newfileid = "$fileid.doc";
+					rename (
+						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+					);
 				} elseif (preg_match("/excel/i",$type)) {
 					$newfileid = "$fileid.xls";
+					rename (
+						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+					);
 				} elseif (preg_match("/pdf/i",$type)) {
 					$newfileid = "$fileid.pdf";
+					rename (
+						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+					);
 				} else {
 					$newfileid = $fileid;
+					rename (
+						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+					);
 				}
-				rename (
-					$dirlocation . "/images/" . $purpose . "/original-". $fileid,
-					$dirlocation . "/images/" . $purpose . "/original-". $newfileid 
-				);
 				$happyuploads[] = array($newfileid,$filename);
 				$gotafile = TRUE;
 			}
@@ -1190,10 +1302,11 @@ function SaveFile($purpose) {
 
 function ShowPhotoArray($mediadata) {
 	// show a bunch of photos
+	// argument is just $artistinfo['media']
 	global $conn;
 	$photosorder = array();
 	foreach ($mediadata['mid'] as $arraykey => $mid) {
-		if ($mediadata['filetype'][$mid] == "png" OR "jpg") {
+		if (preg_match("/png|jpg/",$mediadata['filetype'][$mid])) {
 			// check if highlighted is viewable, then put highlighted first
 			if (($mediadata['is_highlighted'][$mid] == 1) && ($mediadata['viewable'][$mid] == 1)) {
 				$location = $arraykey;
@@ -1221,7 +1334,7 @@ function ShowPhotoArray($mediadata) {
 		} else {
 			$highlightclass = "AdminImagesPreviewNormal";
 		}
-		$string = sprintf("<img class='%s' src='/images/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>",
+		$string = sprintf("<img class='%s' src='/i/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>",
 			$highlightclass,
 			$mediadata['filename'][$mid],
 			$mediadata['thumbwidth'][$mid],

@@ -5,13 +5,15 @@ RewriteEngine on
 
 RewriteRule ^server-status - [L]
 RewriteRule ^server-info - [L]
-RewriteRule ^images - [L]
+RewriteRule ^i - [L]
+RewriteRule ^m - [L]
 RewriteRule ^sources - [L]
 RewriteRule ^favicon.ico - [L]
 RewriteRule ^robots.txt - [L]
 RewriteRule ^templates/css/(.*) - [L]
 RewriteRule ^templates/js/(.*) - [L]
 RewriteRule ^templates/icons/(.*) - [L]
+RewriteRule ^templates/jwplayer/(.*) - [L]
 RewriteRule ^favicon.ico - [L]
 
 RewriteRule ^[/]?$ index.php?page=home [QSA,L]

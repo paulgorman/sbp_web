@@ -320,7 +320,7 @@ function AdminEditCategory($dataarray) {
 				<div class="AdminCategoryListingAddValue"><select name="force_display_names"><?= DisplayNamesOptionsDropDown($dataarray['cid']) ?></select></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">Stored Image:</div>
-				<div class="AdminCategoryListingShowImage"><img src="/images/category/<?= $dataarray['image_id'] ?>"></div>
+				<div class="AdminCategoryListingShowImage"><img src="/i/category/<?= $dataarray['image_id'] ?>"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">Image Name:</div>
 				<div class="AdminCategoryListingAddValue"><?= $dataarray['image_filename'] ?></div>
@@ -715,9 +715,37 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="AdminImagesPreviewContainer">
 					<?= ShowPhotoArray($artistinfo['media']); ?>
 				</div>
+				<div class="clear"></div>
+				<div class="AdminImagesPreviewContainer">
+					<?= PrepareVideoPlayer($artistinfo); ?>
+				</div>
 
+	<?
+}
 
-
+function DisplayVideoPlayer($artistinfo) {
+	?>
+	<script type="text/javascript" src="/templates/jwplayer/jwplayer.js"></script>
+	<div class="<?= $artistinfo['classname']; ?>" id="container<?= $artistinfo['media']['mid']; ?>">Loading video for <?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?></div>
+	<script type="text/javascript">
+		jwplayer('container<?= $artistinfo['media']['mid']; ?>').setup({
+			'modes': [
+				{type: 'html5'},
+				{type: 'flash', src: '/templates/jwplayer/player.swf'},
+				{type: 'download'}
+			],
+			'author': 'Steve Beyer Productions',
+			'description': '<?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?>',
+			'file': '/m/<?= $artistinfo['media']['filename']; ?>',
+			'image': '/i/artist/<?= $artistinfo['media']['filename']; ?>',
+			'duration': '<?= $artistinfo['media']['vidlength']; ?>',
+			'controlbar': 'over',
+			'shownavigation': 'true',
+			'icons': false,
+			'width': '<?= $artistinfo['media']['width']; ?>',
+			'height': '<?= $artistinfo['media']['height']; ?>'
+		});
+	</script>
 	<?
 }
 
