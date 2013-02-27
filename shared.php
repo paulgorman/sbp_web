@@ -344,7 +344,7 @@ function PrepareVideoPlayer($input) {
 				if ($artistinfo['media']['height'][$mid] > $videoheight) {
 					$width = $artistinfo['media']['width'][$mid];
 					$height = $artistinfo['media']['height'][$mid];
-					$scale = $height / $videoheight; 
+					$scale = $height / $videoheight;
 					$tempartistinfo['media']['width'] = ceil($width / $scale);
 					$tempartistinfo['media']['height'] = ceil($height / $scale);
 				} else {
@@ -401,7 +401,7 @@ function PrepareVideoPlayer($input) {
 			if ($artistinfo['media']['height'][$mid] > $videoheight) {
 				$width = $artistinfo['media']['width'][$mid];
 				$height = $artistinfo['media']['height'][$mid];
-				$scale = $height / $videoheight; 
+				$scale = $height / $videoheight;
 				$artistinfo['media']['width'] = ceil($width / $scale);
 				$artistinfo['media']['height'] = ceil($height / $scale);
 			}
@@ -424,7 +424,7 @@ function FigurePageNav($type,$page=1) {
 	if ($page ==  1) {
 		$previous = 1;
 	} else {
-		$previous = abs($page - 1); 
+		$previous = abs($page - 1);
 	}
 	// get next page
 	if ($maximum > $page) {
@@ -581,7 +581,7 @@ function AdminArtistSaveMedia($aid) {
 		$errors[] = "No Media Uploaded.";
 	} else {
 		$newfiles = array();
-		// put all uploaded files into the filesystem 
+		// put all uploaded files into the filesystem
 		$newfiles = SaveFile("artist"); // should return an array of [fileid, orig name]
 		// step thru each uploaded file and process media
 		foreach($newfiles as $key => $newfileinfo) {
@@ -589,18 +589,18 @@ function AdminArtistSaveMedia($aid) {
 				continue; // XXX: This isn't a file, this is just SaveFile() noise
 			}
 			// make thumbnail
-			$newfileid = ResizeImage($newfiles[$key][0],"artist"); 
+			$newfileid = ResizeImage($newfiles[$key][0],"artist");
 			// XXX: watermark function here?
 			$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['filesToUpload']['name'][$key]);
-			$mediainfo = MediaInfo($newfileid,"artist"); 
+			$mediainfo = MediaInfo($newfileid,"artist");
 			// Save the media file to database
 			if ($savedfilecount == 0) {
 				$highlightmeplz = "1";	// First uploaded file is highlighted. Crude.
 			} else {
 				$highlightmeplz = "0";	// No, no highlighted.
 			}
-			$query = sprintf("INSERT INTO `media` (`filename`, `filetype`, 
-				`aid`, `name`, `thumbwidth`, `thumbheight`, `width`, `height`, 
+			$query = sprintf("INSERT INTO `media` (`filename`, `filetype`,
+				`aid`, `name`, `thumbwidth`, `thumbheight`, `width`, `height`,
 				`vidlength`, `is_highlighted`, `viewable`, `published`
 				) VALUES ( '%s','%s',%s,'%s',%s,%s,%s,%s,%s,%s,%s,'%s')",
 				mysqli_real_escape_string($conn, $newfileid),
@@ -624,7 +624,7 @@ function AdminArtistSaveMedia($aid) {
 		}
 	}
 	if (count($errors) > 0) {
-		foreach ($errors as $error) { 
+		foreach ($errors as $error) {
 			echo "<div class='AdminError'><B>$error</B></div>";
 		}
 		return (0);
@@ -656,7 +656,7 @@ function MediaInfo($fileid,$purpose) {
 		preg_match("/Duration: (.*?),/",$ffmpeg,$matches);
 		$seconds = explode(":", $matches[1]);
 		$mediainfo['vidlength'] = ($seconds[0] * 3600) + ($seconds[1] * 60) + ((int) preg_replace("/\..*/",'',$seconds[2]));
-		// resolution 
+		// resolution
 		preg_match("/Video: (.*?)fps/",$ffmpeg,$matches);
 		preg_match("/ (\d+)x(\d+) /",$matches[1],$width);
 		$mediainfo['width'] = $width[1];
@@ -728,7 +728,7 @@ function AdminSaveNewLocation() {
 			mysqli_real_escape_string($conn,$city),
 			mysqli_real_escape_string($conn,$state)
 		); // XXX: there may be two legitimate cities named the same, but in different states.  Not allowed currently.
-		$statename = StateCodeToName($state); 
+		$statename = StateCodeToName($state);
 		if (mysqli_query($conn,$query) === TRUE) {
 			echo "<div class='AdminSuccess'><B>$city, $statename</B> Successfully Added.</div>";
 		} else {
@@ -783,7 +783,7 @@ function AdminSaveSingleLocation() {
 		$lid = preg_replace("/[^0-9]/","",$_REQUEST['lid']); // input sanitization -- only numbers
 		$city = htmlspecialchars(ucwords(trim($_REQUEST['city'])));
 		$state = htmlspecialchars(strtoupper(trim($_REQUEST['state'])));
-		$statename = StateCodeToName($state); 
+		$statename = StateCodeToName($state);
 		$query = sprintf("UPDATE `locations` SET `city` = '%s', `state` = '%s' WHERE `lid` = '%s'",
 			mysqli_real_escape_string($conn,$city),
 			mysqli_real_escape_string($conn,$state),
@@ -895,7 +895,7 @@ function AdminSaveSingleCategory($cid) {
 		$category = htmlspecialchars(trim($_REQUEST['form_category']));
 		if (strlen($_REQUEST['published'])) {
 			$published = TRUE;
-		} else { 
+		} else {
 			$published = FALSE;
 		}
 		if ($filename) {
@@ -905,7 +905,7 @@ function AdminSaveSingleCategory($cid) {
 			list($old_fileid) = mysqli_fetch_array($result);
 			unlink("$dirlocation/i/category/$old_fileid");
 			unlink("$dirlocation/i/category/original-$old_fileid"); // XXX: we're not deleting jpegs, only png.
-			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `image_filename` = '%s', `image_id` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `image_filename` = '%s', `image_id` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'",
 				mysqli_real_escape_string($conn,$url),
 				mysqli_real_escape_string($conn,$category),
 				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
@@ -917,7 +917,7 @@ function AdminSaveSingleCategory($cid) {
 				mysqli_real_escape_string($conn,$cid)
 			);
 		} else {
-			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'", 
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'",
 				mysqli_real_escape_string($conn,$url),
 				mysqli_real_escape_string($conn,$category),
 				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
@@ -1057,7 +1057,7 @@ function AdminSelectStyles($aid = NULL) {
 		}
 	}
 	foreach($styleslist as $sid => $name) {
-		$s = 0; 
+		$s = 0;
 		if ($artiststyles[$sid]) {
 			$s++;
 		}
@@ -1135,7 +1135,7 @@ function AdminSaveNewCategory() {
 		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
 		if (strlen($_REQUEST['published'])) {
 			$published = TRUE;
-		} else { 
+		} else {
 			$published = FALSE;
 		}
 		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`force_display_names`,`published`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
@@ -1164,7 +1164,7 @@ function ResizeImage($fileid,$purpose) {
 	} elseif (preg_match("/\.png/",$fileid)) {
 		$origimage = imagecreatefrompng("$dirlocation/i/$purpose/original-$fileid");
 		imagealphablending($origimage, true);
-		imagesavealpha($origimage, true); 
+		imagesavealpha($origimage, true);
 	}
 	if (preg_match("/category/",$purpose)) {
 		$width = 728;
@@ -1176,9 +1176,9 @@ function ResizeImage($fileid,$purpose) {
 	}
 	if ($origimage) {
 		$newimage = imagecreatetruecolor($width,$height);
-		imagesavealpha($newimage, true); 
+		imagesavealpha($newimage, true);
 		$color = imagecolorallocatealpha($newimage,0x00,0x00,0x00,127);
-		imagefill($newimage, 0, 0, $color); 
+		imagefill($newimage, 0, 0, $color);
 		// dest , src , x dest, y dest , x src , y src , dest w, dest h, src w, src h
 		if (!imagecopyresampled($newimage,$origimage,0, 0, 0, 0, $width, $height, imagesX($origimage), imagesY($origimage))) {
 			echo "<div class='AdminError'>Image No Web Resize/Compress WTF $fileid</div>";
@@ -1234,7 +1234,7 @@ function SaveFile($purpose) {
 		if ($errorIndex > 0) {
 			if ( ($errorIndex != 4) && (!$gotafile) ) {
 				// listen, we got at least one file, so I no longer care about "no file uploaded" errors.
-				$error_message = $error_types[$_FILES['filesToUpload']['error'][$ref]]; 
+				$error_message = $error_types[$_FILES['filesToUpload']['error'][$ref]];
 				echo "<div class='AdminError'>File Upload Error: $error_message.</div>";
    			$happyuploads[] = array(NULL,NULL);
 			}
@@ -1255,13 +1255,13 @@ function SaveFile($purpose) {
 					$newfileid = "$fileid.jpg";	
 					rename (
 						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
-						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid
 					);
 				} elseif (preg_match("/png/i",$type)) {
 					$newfileid = "$fileid.png";
 					rename (
 						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
-						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid
 					);
 				} elseif (preg_match("/mp4/i",$type)) {
 					$newfileid = "$fileid.mp4";
@@ -1273,25 +1273,25 @@ function SaveFile($purpose) {
 					$newfileid = "$fileid.doc";
 					rename (
 						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
-						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid
 					);
 				} elseif (preg_match("/excel/i",$type)) {
 					$newfileid = "$fileid.xls";
 					rename (
 						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
-						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid
 					);
 				} elseif (preg_match("/pdf/i",$type)) {
 					$newfileid = "$fileid.pdf";
 					rename (
 						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
-						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid
 					);
 				} else {
 					$newfileid = $fileid;
 					rename (
 						$dirlocation . "/i/" . $purpose . "/original-". $fileid,
-						$dirlocation . "/i/" . $purpose . "/original-". $newfileid 
+						$dirlocation . "/i/" . $purpose . "/original-". $newfileid
 					);
 				}
 				$happyuploads[] = array($newfileid,$filename);
@@ -1301,7 +1301,7 @@ function SaveFile($purpose) {
 	}
 	// We accepted a positive number of files !
 	return $happyuploads;
-} 
+}
 
 function ShowPhotoArray($mediadata) {
 	// show a bunch of photos
@@ -1320,7 +1320,7 @@ function ShowPhotoArray($mediadata) {
 				$location = $arraykey * 100;	// put this mediaID later in the sort index
 				$photosorder[$location] = $mediadata['mid'][$mid];
 			}
-			// non-viewable crap, with marker 
+			// non-viewable crap, with marker
 			if ($mediadata['viewable'][$mid] == 0) {
 				$location = $arraykey * 1000;	// put this mediaID later in the sort index
 				$photosorder[$location] = $mediadata['mid'][$mid];
@@ -1428,7 +1428,7 @@ function StateCodeToName($code) {
 
 function StateNameToCode($state) {
 	$states = StatesArray();
-	return(array_search($state, $states)); 
+	return(array_search($state, $states));
 }
 
 function DisplayNamesOptionsDropDown($cid) {
@@ -1466,28 +1466,28 @@ function StateOptionsDropDown($active) {
 			$code,
 			($active == $code)? ' selected="SELECTED"' : '', // yeah bitches
 			$state
-		);	
+		);
 	}
 	return($string);
 }
 
-function convert_smart_quotes($string) { 
+function convert_smart_quotes($string) {
 	$search = array(
-		chr(145), 
-		chr(146), 
-		chr(147), 
-		chr(148), 
+		chr(145),
+		chr(146),
+		chr(147),
+		chr(148),
 		chr(151)
-	); 
+	);
 	$replace = array(
-		"'", 
-		"'", 
-		'"', 
-		'"', 
+		"'",
+		"'",
+		'"',
+		'"',
 		'-'
-	); 
-	return str_replace($search, $replace, $string); 
-} 
+	);
+	return str_replace($search, $replace, $string);
+}
 
 function MakeURL($str, $replace=array(), $delimiter='-') {
 	setlocale(LC_ALL, 'en_US.UTF8');
@@ -1523,7 +1523,7 @@ function MakeCase($string) {
 			for ($i=0; $i<count($matches); $i++) {
 				for ($j=0; $j<count($matches[$i]); $j++){
 					$new = preg_replace("/(".$matches[$i][$j]."\s)/ise","''.strtolower('\\1').''",$new);
- 				}
+				}
 			}
 			//3.) do not allow upper case appostraphies
 			$new = preg_replace("/(\w'S)/ie","''.strtolower('\\1').''",$new);
@@ -1540,11 +1540,11 @@ function MakeCase($string) {
 			$new = preg_replace("/(\s|\"|\'){1}(on-site){1}(\s|,|\.|\"|\'|:|!|\?|\*){1}/ie","'\\1On-Site\\3'",$new);
 			$new = stripslashes($new);
 			$string_array[$k] = $new;
-		} 
+		}
 	}
 	for ($k=0; $k<count($string_array); $k++){
 		$newString .= $string_array[$k];
 	}
-	return($newString); 
+	return($newString);
 };
 

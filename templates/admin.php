@@ -27,14 +27,14 @@ function AdminHead($curfunction,$adminfunctions) {
 
 function AdminNav($curfunction,$adminfunctions) {
 	echo "<nav class='adminNavHolder'>";
-	foreach ($adminfunctions as $nicename => $url) { 
-		if ($curfunction == $url) { 
+	foreach ($adminfunctions as $nicename => $url) {
+		if ($curfunction == $url) {
 			?>
 					<div class='adminNavItemSelected'>
 						<a href='/admin/<?= $url ?>'><B><?= strtoupper($nicename) ?></B></a>
 					</div>
 			<?
-		} else { 
+		} else {
 			?>
 					<div class='adminNavItem'>
 						<a href='/admin/<?= $url ?>'><?= strtoupper($nicename) ?></a>
