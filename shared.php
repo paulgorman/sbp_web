@@ -1197,8 +1197,7 @@ function ResizeImage($fileid,$purpose) {
 	if (preg_match("/\.mp4/",$fileid)) {
 		// create a thumbnail here?
 		$thumbnailname = substr($fileid,0,-4) . ".jpg";
-		system("/usr/local/bin/ffmpeg -itsoffset -6 -i $dirlocation/m/$fileid.mp4 -vcodec mjpeg -vframes 1 -an -f rawvideo $dirlocation/i/artist/$thumbnailname");
-		echo ("/usr/local/bin/ffmpeg -itsoffset -6 -i $dirlocation/m/$fileid.mp4 -vcodec mjpeg -vframes 1 -an -f rawvideo $dirlocation/i/artist/$thumbnailname");
+		system("/usr/local/bin/ffmpeg -itsoffset -6 -i $dirlocation/m/$fileid -vcodec mjpeg -vframes 1 -an -f rawvideo $dirlocation/i/artist/$thumbnailname");
 		$newfilename = $fileid;
 	}
 	return($newfilename);
