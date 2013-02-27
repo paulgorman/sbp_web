@@ -7,12 +7,18 @@ Wooot!
 Install
 -------
 mkdir i
+
 mkdir i/artist
+
 mkdir i/category
+
 mkdir m
+
 mysql sbp_web < sbp_schema.sql
 
+
 then edit db.php for environment
+
 
 Notes
 -----
