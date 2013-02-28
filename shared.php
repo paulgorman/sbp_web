@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20130213
+**  Last Edit: 20130227
 ****************************************/
 
 function Init() {
@@ -1345,11 +1345,32 @@ function ShowPhotoArray($mediadata) {
 		} else {
 			$adminimageicon = "AdminImageIconLowRes";
 		}
+		if ($mediadata['is_highlighted'][$mid] == 1) {
+			$highlighted = "Remove Highlight";
+		} else {
+			$highlighted = "Highlight This";
+		}
+		if ($mediadata['viewable'][$mid] == 1) {
+			$viewable = "Hide";
+		} else {
+			$viewable = "Show";
+		}
 		$string = sprintf("<div class='CheckBoxImageContainer'>".
+			"<a href='/i/artist/%s' target='_new' border='0'>".
 			"<img class='%s' src='/i/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>".
+			"</a>".
 			"<div class='%s'></div>".
-			"<select name='1234' class='DropDownImage' id='%s'><option>Features</option><option>Highlight</option><option>Hide</option><option>Remove</option><optgroup label='info'><option>Size is: 123x456</option><option>uploaded: 12 days ago</option></select></div>",
-			//"<input type='checkbox' id='1234' class='CheckBoxImage' id='%s'><label title='asdf' for='1234'></label></div>",
+			"<select name='1234' class='DropDownImage' id='%s'>".
+			"<option>Image Features</option>".
+			"<option>%s</option>".
+			"<option>%s</option>".
+			"<option>Remove</option>".
+			"<optgroup disabled='disabled' label='Image Info'>".
+			"<option disabled='disabled'>%s</option>".
+			"<option disabled='disabled'>Size: %sx%s</option>".
+			"<option disabled='disabled'>Uploaded: %s</option>".
+			"</select></div>\n",
+			"original-".$mediadata['filename'][$mid],
 			$highlightclass,
 			$mediadata['filename'][$mid],
 			$mediadata['thumbwidth'][$mid],
@@ -1357,7 +1378,13 @@ function ShowPhotoArray($mediadata) {
 			$mediadata['name'][$mid],
 			$mediadata['name'][$mid],
 			$adminimageicon,
-			$mediadata['mid'][$mid]
+			$mediadata['mid'][$mid],
+			$highlighted,
+			$viewable,
+			htmlspecialchars($mediadata['name'][$mid]),
+			$mediadata['width'][$mid],
+			$mediadata['height'][$mid],
+			date("M d, Y",$mediadata['published'][$mid])
 		);
 		echo "$string\n";
 	}
