@@ -32,7 +32,7 @@ function Init() {
 	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
 	$dirlocation = "/home/presence/samba_public_share/sbp_app";	// no trailing slash.
 	$pagination = "10";	// number of entries per "page"
-	$videoheight = 480;
+	$videoheight = 300;
 }
 
 function RecordHit() {
@@ -1337,13 +1337,27 @@ function ShowPhotoArray($mediadata) {
 		} else {
 			$highlightclass = "AdminImagesPreviewNormal";
 		}
-		$string = sprintf("<img class='%s' src='/i/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>",
+		$megapixels = $mediadata['width'][$mid] * $mediadata['height'][$mid];
+		// if image is over 1 megapixel, call it "high-res"
+		// XXX: what about DPI? This is a bad way and a bad place to do this.
+		if ($megapixels > 1000000) {
+			$adminimageicon = "AdminImageIconHighRes";
+		} else {
+			$adminimageicon = "AdminImageIconLowRes";
+		}
+		$string = sprintf("<div class='CheckBoxImageContainer'>".
+			"<img class='%s' src='/i/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>".
+			"<div class='%s'></div>".
+			"<select name='1234' class='DropDownImage' id='%s'><option>Features</option><option>Highlight</option><option>Hide</option><option>Remove</option><optgroup label='info'><option>Size is: 123x456</option><option>uploaded: 12 days ago</option></select></div>",
+			//"<input type='checkbox' id='1234' class='CheckBoxImage' id='%s'><label title='asdf' for='1234'></label></div>",
 			$highlightclass,
 			$mediadata['filename'][$mid],
 			$mediadata['thumbwidth'][$mid],
 			$mediadata['thumbheight'][$mid],
 			$mediadata['name'][$mid],
-			$mediadata['name'][$mid]
+			$mediadata['name'][$mid],
+			$adminimageicon,
+			$mediadata['mid'][$mid]
 		);
 		echo "$string\n";
 	}
