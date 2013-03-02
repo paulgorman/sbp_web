@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20130227
+**  Last Edit: 20130301
 ****************************************/
 
 function Init() {
@@ -651,7 +651,7 @@ function MediaInfo($fileid,$purpose) {
 		$mediainfo['vidlength'] = 0;
 	} else if (preg_match("/mp4/",$fileid)) {
 		$ffmpeg = new ffmpeg_movie("$dirlocation/m/$fileid");
-		$mediainfo['vidlength'] = $ffmpeg->getDuration();
+		$mediainfo['vidlength'] = ceil($ffmpeg->getDuration());
 		$mediainfo['width'] = $ffmpeg->getFrameWidth();
 		$mediainfo['height'] = $ffmpeg->getFrameHeight();
 		$mediainfo['thumbwidth'] = 0;
@@ -1358,6 +1358,11 @@ function ShowPhotoArray($mediadata) {
 		} else {
 			$viewable = "Show";
 		}
+		if (strlen($mediadata['name'][$mid]) > 18) {
+			$filename = htmlspecialchars(substr($mediadata['name'][$mid],0,18) . "...");
+		} else {
+			$filename = htmlspecialchars($mediadata['name'][$mid]);
+		}
 		$string = sprintf("<div class='CheckBoxImageContainer'>".
 			"<a href='/i/artist/%s' target='_new' border='0'>".
 			"<img class='%s' src='/i/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>".
@@ -1384,7 +1389,7 @@ function ShowPhotoArray($mediadata) {
 			$mediadata['mid'][$mid],
 			$highlighted,
 			$viewable,
-			htmlspecialchars($mediadata['name'][$mid]),
+			$filename,
 			$mediadata['width'][$mid],
 			$mediadata['height'][$mid],
 			date("M d, Y",$mediadata['published'][$mid])

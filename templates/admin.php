@@ -752,11 +752,12 @@ function DisplayVideoPlayer($artistinfo) {
 }
 
 function AdminVideoPreviewChooser($artistinfo) {
+	// using div in-line style background to show the images because img tag is taken by ShowPhotoArray()'s css image array resizer
 	?>
 	<div class="AdminVideoPreviewChooserContainer">
 		<? for ($i = 1; $i < 5; $i++) { ?>
 			<div class="CheckBoxImageContainer">
-				<label for="<?= $artistinfo['media']['mid'] . "-$i"; ?>"><img class="AdminVideoPreviewChooserImage" src="/i/artist/<?= $artistinfo['media']['fileid']. "-$i.jpg"; ?>" height="54"></label>
+				<label for="<?= $artistinfo['media']['mid'] . "-$i"; ?>"><div class="AdminVideoPreviewChooserImage" style="background: url('/i/artist/<?= $artistinfo['media']['fileid']. "-$i.jpg"; ?>'); background-size:contain; background-repeat: no-repeat;"></div></label>
 				<div class="CheckBoxImage"><input type="radio" name="radio-<?= $artistinfo['media']['mid']; ?>" id="<?= $artistinfo['media']['mid']."-$i"; ?>" value="<?= $i; ?>"></div>
 			</div>
 		<? } ?>
