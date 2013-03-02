@@ -356,6 +356,7 @@ function PrepareVideoPlayer($input) {
 				$tempartistinfo['media']['vidlength'] = $artistinfo['media']['vidlength'][$mid];
 				$tempartistinfo['media']['name'] = $artistinfo['media']['name'][$mid];
 				$tempartistinfo['media']['filename'] = $artistinfo['media']['filename'][$mid];
+				$tempartistinfo['media']['fileid'] = substr($artistinfo['media']['filename'][$mid], 0, -4);
 				$tempartistinfo['media']['is_highlighted'] = $artistinfo['media']['is_highlighted'][$mid];
 				$tempartistinfo['media']['viewable'] = $artistinfo['media']['viewable'][$mid];
 				$tempartistinfo['media']['published'] = $artistinfo['media']['published'][$mid];
@@ -365,6 +366,7 @@ function PrepareVideoPlayer($input) {
 					$tempartistinfo['classname'] = "VideoPlayerNOVIEW";
 				}
 				DisplayVideoPlayer($tempartistinfo);
+				AdminVideoPreviewChooser($tempartistinfo);
 			}
 		}
 		if (($_REQUEST['page'] == "admin") && ($videocount == 0)) {
@@ -648,19 +650,10 @@ function MediaInfo($fileid,$purpose) {
 		$mediainfo['filetype'] = "png";
 		$mediainfo['vidlength'] = 0;
 	} else if (preg_match("/mp4/",$fileid)) {
-		ob_start();
-		passthru("/usr/local/bin/ffmpeg -i $dirlocation/m/$fileid 2>&1");
-		$ffmpeg = ob_get_contents();
-		ob_end_clean();
-		// duration
-		preg_match("/Duration: (.*?),/",$ffmpeg,$matches);
-		$seconds = explode(":", $matches[1]);
-		$mediainfo['vidlength'] = ($seconds[0] * 3600) + ($seconds[1] * 60) + ((int) preg_replace("/\..*/",'',$seconds[2]));
-		// resolution
-		preg_match("/Video: (.*?)fps/",$ffmpeg,$matches);
-		preg_match("/ (\d+)x(\d+) /",$matches[1],$width);
-		$mediainfo['width'] = $width[1];
-		$mediainfo['height'] = $width[2];
+		$ffmpeg = new ffmpeg_movie("$dirlocation/m/$fileid");
+		$mediainfo['vidlength'] = $ffmpeg->getDuration();
+		$mediainfo['width'] = $ffmpeg->getFrameWidth();
+		$mediainfo['height'] = $ffmpeg->getFrameHeight();
 		$mediainfo['thumbwidth'] = 0;
 		$mediainfo['thumbheight'] = 0;
 		$mediainfo['filetype'] = "mp4";
@@ -1195,9 +1188,19 @@ function ResizeImage($fileid,$purpose) {
 		imagedestroy($newimage);
 	}
 	if (preg_match("/\.mp4/",$fileid)) {
-		// create a thumbnail here?
-		$thumbnailname = substr($fileid,0,-4) . ".jpg";
-		system("/usr/local/bin/ffmpeg -itsoffset -6 -i $dirlocation/m/$fileid -vcodec mjpeg -vframes 1 -an -f rawvideo $dirlocation/i/artist/$thumbnailname");
+		// create a thumbnail
+		$ffmpeg = new ffmpeg_movie("$dirlocation/m/$fileid");
+		$totalframes = $ffmpeg->getFrameCount();
+		// XXX: This takes some time to render
+		for ($i = 1; $i < 5; $i++) {
+			$thumbnailname = substr($fileid,0,-4) . "-$i.jpg";
+			$frame = $ffmpeg->getFrame(ceil($totalframes*($i * "0.1"))); // make four thumbnails every 100 frames
+			$gd_image = $frame->toGDImage();
+			imagejpeg($gd_image, "$dirlocation/i/$purpose/$thumbnailname");
+			imagedestroy($gd_image);
+		}
+		// whatever image is fileid.jpg is the visible thumbnail, others just there for backup wasting space
+		copy ("$dirlocation/i/$purpose/".substr($fileid,0,-4) . "-1.jpg", "$dirlocation/i/$purpose/". substr($fileid,0,-4) .".jpg");
 		$newfilename = $fileid;
 	}
 	return($newfilename);
@@ -1369,7 +1372,7 @@ function ShowPhotoArray($mediadata) {
 			"<option disabled='disabled'>%s</option>".
 			"<option disabled='disabled'>Size: %sx%s</option>".
 			"<option disabled='disabled'>Uploaded: %s</option>".
-			"</select></div>\n",
+			"</select></div>",
 			"original-".$mediadata['filename'][$mid],
 			$highlightclass,
 			$mediadata['filename'][$mid],

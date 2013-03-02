@@ -719,6 +719,8 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="AdminImagesPreviewContainer">
 					<?= PrepareVideoPlayer($artistinfo); ?>
 				</div>
+				<div class="clear"></div>
+				<div class="clear"></div>
 
 	<?
 }
@@ -749,3 +751,14 @@ function DisplayVideoPlayer($artistinfo) {
 	<?
 }
 
+function AdminVideoPreviewChooser($artistinfo) {
+	?>
+	<div class="AdminVideoPreviewChooserContainer">
+		<? for ($i = 1; $i < 5; $i++) { ?>
+			<div class="CheckBoxImageContainer">
+				<label for="<?= $artistinfo['media']['mid'] . "-$i"; ?>"><img class="AdminVideoPreviewChooserImage" src="/i/artist/<?= $artistinfo['media']['fileid']. "-$i.jpg"; ?>" height="54"></label>
+				<div class="CheckBoxImage"><input type="radio" name="radio-<?= $artistinfo['media']['mid']; ?>" id="<?= $artistinfo['media']['mid']."-$i"; ?>" value="<?= $i; ?>"></div>
+			</div>
+		<? } ?>
+	<?
+}

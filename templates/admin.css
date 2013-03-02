@@ -152,6 +152,18 @@ td {
 	right: 10px;
 }
 
+.AdminVideoPreviewChooserContainer {
+	margin-top: 5px;
+	padding-top: 5px;
+	float: left;
+	background-color: #AACEDF;
+	
+}
+
+.AdminVideoPreviewChooserImage {
+	margin-right: 5px;
+}
+
 .AdminImageIconHighRes {
 	position: absolute;
 	z-index: 1;
