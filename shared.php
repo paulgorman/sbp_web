@@ -1568,7 +1568,7 @@ function MakeCase($string) {
 			// Lowercase the "to" in an infinitive." - this rule is of course aproximated since it is contex sensitive
 			$matches = array();
 			// perform recusive matching on the following words
-			preg_match_all("/(\sof|\sa|\san|\sthe|\sbut|\sor|\snot|\syet|\sat|\son|\sin|\sover|\sabove|\sunder|\sbelow|\sbehind|\snext\sto|\sbeside|\sby|\samoung|\sbetween|\sby|\still|\ssince|\sdurring|\sfor|\sthroughout|\sto|\sand){2}/i",$new ,$matches);
+			preg_match_all("/(\sof|\sis|\sa|\san|\sthe|\sbut|\sor|\snot|\syet|\sat|\son|\sin|\sover|\sabove|\sunder|\sbelow|\sbehind|\snext\sto|\sbeside|\sby|\samoung|\sbetween|\sby|\still|\ssince|\sdurring|\sfor|\sthroughout|\sto|\sand){2}/i",$new ,$matches);
 			for ($i=0; $i<count($matches); $i++) {
 				for ($j=0; $j<count($matches[$i]); $j++){
 					$new = preg_replace("/(".$matches[$i][$j]."\s)/ise","''.strtolower('\\1').''",$new);

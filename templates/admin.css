@@ -382,6 +382,32 @@ td {
 	margin-top: 4px;
 }
 
+.AdminSaveButtonContainer {
+	float: right;
+	padding-right: 100px;
+}
+.AdminSaveLabel {
+	font-weight: bold;
+	font-size: 16px;
+	margin: 10px 2px 0px 0px;
+	float: left;
+	padding-left: 45px;
+	text-align: right;
+}
+
+.AdminSaveButton {
+	border: none;
+	width: 32px;
+	height: 32px;
+	background: url("/templates/icons/Valid Green.png");
+	cursor: pointer;
+	text-indent: 480px;    /* hack to hide the text */
+}
+
+.AdminSaveButton:hover {
+	background: url("/templates/icons/Valid Blue.png");
+}
+
 .AdminCategoryListingAddItem {
 	font-weight: bold;
 	font-size: 13px;
@@ -505,14 +531,27 @@ td {
 	background-image:url('/templates/icons/Valid Blue.png');
 	background-repeat: no-repeat;
 	background-position: 10px top;
-	padding: 10px 0px 0px 0px;
+	background-color: #AACEDF;
 	text-align: left;
 	font-weight: bold;
 	font-size: 2.5em;
 	padding: 0px 0px 0px 50px;
 	width: auto;
+	height: 2.0em;
+}
+
+.AdminArtistEditSubHeader {
+	background-image:url('/templates/icons/Info.png');
+	background-repeat: no-repeat;
+	background-color: #AACEDF;
+	background-position: 10px top;
+	text-align: left;
+	font-weight: bold;
+	font-size: 24px;
+	padding: 2px 0px 0px 50px;
+	width: auto;
 	height: 1.5em;
-	margin-top: 4px;
+	margin: 2px 0px 10px 0px;
 }
 
 .AdminArtistLastUpdateHeader {
@@ -521,7 +560,7 @@ td {
 	padding: 0px 0px 0px 65px;
 	width: auto;
 	margin-bottom: 8px;
-	margin-top: -0.8em;
+	margin-top: -1.9em;
 }
 
 .metricsOverviewBlock {

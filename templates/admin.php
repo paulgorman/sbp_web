@@ -649,6 +649,12 @@ function AdminArtistFormSingle($artistinfo) {
 			<input type="hidden" name="aid" value="<?= $artistinfo['aid']; ?>">
 			<input type="hidden" name="function" value="edit">
 			<div class="AdminArtistContainer">
+				<div class="AdminSaveButtonContainer">
+					<div class="AdminSaveLabel"><label for="save_me">Save Updates</label></div>
+    			<div class="AdminCategoryListingCheckBox">
+						<input type="submit" name="executeButton" value="update-<?= $artistinfo['aid']; ?>" class="AdminSaveButton" alt="Update <?= $artistinfo['name']; ?>" id="save_me" />
+					</div>
+				</div>
 				<div class="AdminArtistEditHeader">
 					<B><?= $artistinfo['name'] ?></B>
 				</div>
@@ -671,6 +677,12 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="AdminArtistCheckboxLabel"><label for="use_display_name">Obfuscate Name</label></div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" id="use_display_name" name="use_display_name" class="regular-checkbox big-checkbox" <?= ($artistinfo['use_display_name']?'CHECKED ':'') ?>/><label title="Enforce hiding the artist's Full Name" for="use_display_name"></label>
+				</div>
+				<div class="AdminSaveButtonContainer">
+					<div class="AdminArtistCheckboxLabel"><label for="delete_me">Delete Artist</label></div>
+    			<div class="AdminCategoryListingCheckBox">
+						<input type="image" src="/templates/icons/Remove Red.png" name="executeButton" value="delete-<?= $artistinfo['aid']; ?>" alt="Delete <?= $artistinfo['name']; ?>" id="delete_me" style="width: 30px; height: 30px;" /><label title="Delete <?= $artistinfo['name']; ?>" for="delete_me"></label>
+					</div>
 				</div>
 				<div class="clear"></div>
 				<div class="AdminArtistLabel">Artist/Act/Band Real Name:</div>
@@ -712,6 +724,14 @@ function AdminArtistFormSingle($artistinfo) {
 					</select>
 				</div>
 				<div class="clear"></div>
+				<div class="AdminSaveButtonContainer">
+					<div class="AdminSaveLabel"><label for="save_me">Save Updates</label></div>
+    			<div class="AdminCategoryListingCheckBox">
+						<input type="submit" name="executeButton" value="update-<?= $artistinfo['aid']; ?>" class="AdminSaveButton" alt="Update <?= $artistinfo['name']; ?>" id="save_me" />
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="AdminArtistEditSubHeader">Media for <?= $artistinfo['name']; ?></div>
 				<div class="AdminImagesPreviewContainer">
 					<?= ShowPhotoArray($artistinfo['media']); ?>
 				</div>
@@ -720,6 +740,12 @@ function AdminArtistFormSingle($artistinfo) {
 					<?= PrepareVideoPlayer($artistinfo); ?>
 				</div>
 				<div class="clear"></div>
+				<div class="AdminSaveButtonContainer">
+					<div class="AdminSaveLabel"><label for="save_me">Save Updates</label></div>
+    			<div class="AdminCategoryListingCheckBox">
+						<input type="submit" name="executeButton" value="update-<?= $artistinfo['aid']; ?>" class="AdminSaveButton" alt="Update <?= $artistinfo['name']; ?>" id="save_me" />
+					</div>
+				</div>
 				<div class="clear"></div>
 
 	<?
