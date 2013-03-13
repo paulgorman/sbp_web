@@ -13,12 +13,14 @@ Install
 * chown -R www:www sbp_web/m sbp_web/i
 * mysql sbp_web < sbp_web/sbp_schema.sql
 * edit sbp_web/db.php for environment
-* edit system httpd.conf and add```
+* edit system httpd.conf and add
+```
 	<LocationMatch "/(i|m)/.*\.(php|cgi)$">
 		Order Deny,Allow
 		Deny from All
 	</LocationMatch>
-	```
+```
+
 * check sbp_web/php.ini
 
 Notes
