@@ -787,5 +787,7 @@ function AdminVideoPreviewChooser($artistinfo) {
 				<div class="CheckBoxImage"><input type="radio" name="radio-<?= $artistinfo['media']['mid']; ?>" id="<?= $artistinfo['media']['mid']."-$i"; ?>" value="<?= $i; ?>"></div>
 			</div>
 		<? } ?>
+		</div>
+		Video Size:<br><strong><?= $artistinfo['media']['realdimensions']; ?></strong>
 	<?
 }

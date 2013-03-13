@@ -351,6 +351,7 @@ function PrepareVideoPlayer($input) {
 					$tempartistinfo['media']['width'] = $artistinfo['media']['width'][$mid];
 					$tempartistinfo['media']['height'] = $artistinfo['media']['height'][$mid];
 				}
+				$tempartistinfo['media']['realdimensions'] = $artistinfo['media']['width'][$mid] . "x" . $artistinfo['media']['height'][$mid];
 				$tempartistinfo['media']['mid'] = $artistinfo['media']['mid'][$mid];
 				$tempartistinfo['media']['previewimage'] = substr($artistinfo['media']['filename'][$mid],0,-4) . ".jpg";
 				$tempartistinfo['media']['vidlength'] = $artistinfo['media']['vidlength'][$mid];

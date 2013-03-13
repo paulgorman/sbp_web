@@ -6,19 +6,19 @@ Wooot!
 
 Install
 -------
-mkdir i
-
-mkdir i/artist
-
-mkdir i/category
-
-mkdir m
-
-mysql sbp_web < sbp_schema.sql
-
-
-then edit db.php for environment
-
+* git clone git://github.com/paulgorman/sbp_web.git
+* mkdir -p sbp_web/i/artist
+* mkdir sbp_web/i/category
+* mkdir sbp_web/m
+* chown -R www:www sbp_web/m sbp_web/i
+* mysql sbp_web < sbp_web/sbp_schema.sql
+* edit sbp_web/db.php for environment
+* edit system httpd.conf and add
+	<LocationMatch "/(i|m)/.*\.(php|cgi)$">
+		Order Deny,Allow
+		Deny from All
+	</LocationMatch>
+* check sbp_web/php.ini
 
 Notes
 -----
