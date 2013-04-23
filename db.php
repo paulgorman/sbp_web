@@ -1,4 +1,0 @@
-<?
-	$user = "presence";
-	$pass = "inner";
-?>
