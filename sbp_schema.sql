@@ -1,7 +1,6 @@
 -- MySQL Schema for SBP Web App Database
--- Presence 2012
---  mysql> grant usage on *.* to username@localhost identified by 'pass';
---  mysql> grant all privileges on sbpweb.* to username@localhost;
+-- Presence 2013
+--  mysql> GRANT ALL PRIVILEGES ON sbpweb.* TO username@'localhost' IDENTIFIED BY 'password';
 
 -- DANGER!!! XXX --------------
 -- DROP ALL TABLES FOR A FRESH START HERE 

@@ -11,8 +11,11 @@ Install
 * mkdir sbp_web/i/category
 * mkdir sbp_web/m
 * chown -R www:www sbp_web/m sbp_web/i
+* mysqladmin create sbpweb
+* GRANT ALL PRIVILEGES ON sbpweb.* TO username@'localhost' IDENTIFIED BY 'password';
+* FLUSH PRIVILEGES
 * mysql sbp_web < sbp_web/sbp_schema.sql
-* edit sbp_web/db.php for environment
+* edit sbp_web/db.php: $user and $pass
 * edit system httpd.conf and add
 ```
 	<LocationMatch "/(i|m)/.*\.(php|cgi)$">
