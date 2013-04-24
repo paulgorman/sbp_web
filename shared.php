@@ -26,11 +26,11 @@ function Init() {
 	$_SESSION['last_activity'] = time(); // update last activity time stamp
 	// lets count how many pages visitor's looked at
 	isset($_SESSION['count']) ? $_SESSION['count']++ : $_SESSION['count'] = 0;
+	$dirlocation = "/home/presence/sbp_app";	// no trailing slash.
 	$host  = "localhost";
 	$db    = "sbpweb";
 	require_once("db.php");
 	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
-	$dirlocation = "/home/presence/samba_public_share/sbp_app";	// no trailing slash.
 	$pagination = "10";	// number of entries per "page"
 	$videoheight = 300;
 }
@@ -1485,17 +1485,19 @@ function DisplayNamesOptionsDropDown($cid) {
 	// Show a dropdown of category's "use real or obfuscated display name" per category
 	// N force real names only, I individual artist mode, Y force display names only
 	global $conn;
-	$query = sprintf("SELECT `force_display_names` FROM `categories` WHERE cid = %s",
-		preg_replace("/[^0-9]/","",$cid)
-	);
+	if ($cid) {
+		$query = sprintf("SELECT `force_display_names` FROM `categories` WHERE `cid` = %s",
+			preg_replace("/[^0-9]/","",$cid)
+		);
+		$result = mysqli_query($conn,$query);
+		$row = mysqli_fetch_assoc($result);
+	}
+	$display_mode = $row['force_display_names'];
 	$options = array(
 		"I" => "Use the Individual Artist's Setting",
 		"N" => "Real Names to be used for All artists in this category",
 		"Y" => "Obfuscated Display Names to be used for All artists in this category"
 	);
-	$result = mysqli_query($conn,$query);
-	$row = mysqli_fetch_assoc($result);
-	$display_mode = $row['force_display_names'];
 	$string = "";
 	foreach ($options as $key => $value) {
 		$string .= sprintf("<option value='%s'%s>%s</option>",
