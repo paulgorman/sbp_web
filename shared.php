@@ -1403,15 +1403,17 @@ function aasort (&$array, $key) {
 	// sort an array's array by the sub-array's key name
 	$sorter=array();
 	$ret=array();
-	reset($array);
-	foreach ($array as $ii => $va) {
-		$sorter[$ii]=$va[$key];
+	if (isset($array)) {
+		reset($array);
+		foreach ($array as $ii => $va) {
+			$sorter[$ii]=$va[$key];
+		}
+		asort($sorter);
+		foreach ($sorter as $ii => $va) {
+			$ret[$ii]=$array[$ii];
+		}
+		$array=$ret;
 	}
-	asort($sorter);
-	foreach ($sorter as $ii => $va) {
-		$ret[$ii]=$array[$ii];
-	}
-	$array=$ret;
 }
 
 //Takes a password and returns the salted hash

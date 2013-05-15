@@ -107,7 +107,7 @@ function AdminShowLocations($locations) {
 				<div class="AdminCategoryListItemURL">Locations</div>
 			</div>
 			<div class="clear"></div>
-			<? foreach ($locations as $key => $values) { ?>
+			<? if (isset($locations)) { foreach ($locations as $key => $values) { ?>
 				<div class="AdminCategoryListRow">
 					<form method="POST" action="/admin/locations_list" name="edit<?= $values['lid']; ?>">
 						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['lid']; ?>'].submit(); return false;"><?=$values['city'] ?></div>
@@ -134,7 +134,7 @@ function AdminShowLocations($locations) {
 						</form>
 					</div>
 				</div>  <!-- class="AdminCategoryListRow" -->
-			<? } ?>
+			<? } } ?>
 		</div> <!-- AdminCategoryListContainer -->
 		<div class="clear"></div>
 		<form method="POST" action="/admin/locations_list" enctype="multipart/form-data">
@@ -159,7 +159,7 @@ function AdminShowStyles($styles,$quantity) {
 				<div class="AdminCategoryListItemURL">Styles (<?= $quantity ?>)</div>
 			</div>
 			<div class="clear"></div>
-			<? foreach ($styles as $key => $values) { ?>
+			<? if (isset($styles)) { foreach ($styles as $key => $values) { ?>
 				<div class="AdminCategoryListRow">
 					<form method="POST" action="/admin/styles_list" name="edit<?= $values['sid']; ?>">
 						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['sid']; ?>'].submit(); return false;"><?=$values['name'] ?></div>
@@ -186,7 +186,7 @@ function AdminShowStyles($styles,$quantity) {
 						</form>
 					</div>
 				</div>  <!-- class="AdminCategoryListRow" -->
-			<? } ?>
+			<? } } ?>
 		</div> <!-- AdminCategoryListContainer -->
 		<div class="clear"></div>
 		<form method="POST" action="/admin/styles_list" enctype="multipart/form-data">
