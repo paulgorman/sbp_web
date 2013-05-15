@@ -26,7 +26,7 @@ function Init() {
 	$_SESSION['last_activity'] = time(); // update last activity time stamp
 	// lets count how many pages visitor's looked at
 	isset($_SESSION['count']) ? $_SESSION['count']++ : $_SESSION['count'] = 0;
-	$dirlocation = "/home/presence/sbp_app";	// no trailing slash.
+	$dirlocation = "/home/presence/sbp_web";	// no trailing slash.
 	$host  = "localhost";
 	$db    = "sbpweb";
 	require_once("db.php");
