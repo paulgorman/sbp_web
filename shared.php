@@ -267,8 +267,9 @@ function ShowAdminPage() {
 								AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['aid']));
 							}
 					}
+					break;
 				case "del_artist_for_reals":
-					AdminArtistDeleteGo($_REQUEST['aid']);
+					AdminArtistDeleteGo($_REQUEST['targetcategoryurl']); // yeah, it's really the aid
 					AdminArtistList();
 					break;
 				default:
@@ -279,10 +280,14 @@ function ShowAdminPage() {
 }
 
 function AdminArtistDelete($aid) {
+	global $conn;
 	$nextfunction = "del_artist_for_reals";
 	$urlDo = "artists";
 	$urlCancel = "artists/edit/$aid";
-	$desc = $aid;
+	$query = sprintf("SELECT `name` FROM `artists` WHERE `aid` = %s", preg_replace("/[^0-9]/","",$aid));
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	$desc = $row['name'];
 	AdminShowDeleteConfirmation($aid,$desc,$urlDo,$urlCancel,$nextfunction);
 }
 
@@ -977,8 +982,29 @@ function AdminDeleteCategory($targetcategoryurl) {
 function AdminArtistDeleteGo($aid) {
 	global $conn;
 	global $dirlocation;
-	// delte from database
-	// delete mid stuff (video/photo)
+	$aid = preg_replace("/[^0-9]/","",$aid);
+	// Delete media files from filesystem
+	$query = "SELECT `filename`,`filetype` FROM `media` WHERE `aid` = $aid";
+	$result = mysqli_query($conn, $query);	
+	while ($row = mysqli_fetch_assoc($result)) {
+		($row['filetype'] == "mp4")? $type = "m" : $type = "i";
+		$filename = $row['filename'];
+		unlink ("$dirlocation/$type/artist/$filename");
+		unlink ("$dirlocation/$type/artist/original-$filename");
+	}
+	// delete from database tables
+	$tables = array("artiststyles","artistcategories","artistlocations","artistmembers","media","artists");
+	$error = 0;
+	foreach ($tables as $table) {
+		$query = "DELETE FROM `$table` WHERE `aid` = $aid";
+		if (mysqli_query($conn,$query) === FALSE) {
+			echo "<div class='AdminError'>Error deleting $aid from $table: ". mysqli_error($conn) ."</div>";
+			$error++;
+		}
+	}
+	if ($error == 0) {
+		echo "<div class='AdminSuccess'>Who? What? Them be gone, Man.</div>";
+	}
 }
 
 function AdminDeleteCategoryGo($targetcategoryurl) {
