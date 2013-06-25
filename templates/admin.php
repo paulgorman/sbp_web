@@ -264,7 +264,7 @@ function AdminShowCategories ($categorieslist) {
 				<div class="AdminCategoryListingAddValue"><select name="force_display_names"><?= DisplayNamesOptionsDropDown($dataarray['cid']) ?></select></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Category Logo:</div>
-				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple=""></div>
+				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple="" accept="image/png"></div>
     		<div class="AdminCategoryListingAddItem"><label for="published">Public</label></div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="published" id="published" class="regular-checkbox big-checkbox" CHECKED /><label title="Publicly Displayed in Categories Listing" for="published"></label>
@@ -276,15 +276,14 @@ function AdminShowCategories ($categorieslist) {
 	<?
 }
 
-function AdminShowDeleteConfirmation($targetcategoryurl,$url,$nextfunction) {
+function AdminShowDeleteConfirmation($id,$desc,$urlDo,$urlCancel,$nextfunction) {
 	?>
 		<div class="AdminWarning">
-			<form method="POST" action="/admin/<?= $url ?>">
-				<input type="hidden" name="targetcategoryurl" value="<?= $targetcategoryurl ?>">
+			<form method="POST" action="/admin/<?= $urlDo ?>">
+				<input type="hidden" name="targetcategoryurl" value="<?= $id ?>">
 				<input type="hidden" name="function" value="<?= $nextfunction ?>">
-				Are you sure you want to delete <B><?= $targetcategoryurl ?></B>?<br>
-				Proceding will have this feature removed from any artists possessing the feature.<br>
-				<input type="submit" value="Delete"><input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/<?= $url ?>'">
+				Are you sure you want to delete <B><?= $desc ?></B>?<br>
+				<input type="submit" value="Delete"> <input type="button" name="Cancel" value="Oops, no, totally not! Go Back! Cancel!" onclick="window.location='/admin/<?= $urlCancel ?>'">
 			</form>
 		</div>
 	<?
@@ -652,7 +651,7 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="AdminSaveButtonContainer">
 					<div class="AdminSaveLabel"><label for="save_me">Save Updates</label></div>
     			<div class="AdminCategoryListingCheckBox">
-						<input type="submit" name="executeButton" value="update-<?= $artistinfo['aid']; ?>" class="AdminSaveButton" alt="Update <?= $artistinfo['name']; ?>" id="save_me" />
+						<input type="submit" name="executeButton" value="update" class="AdminSaveButton" alt="Update <?= $artistinfo['name']; ?>" id="save_me" />
 					</div>
 				</div>
 				<div class="AdminArtistEditHeader">
@@ -681,7 +680,7 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="AdminSaveButtonContainer">
 					<div class="AdminArtistCheckboxLabel"><label for="delete_me">Delete Artist</label></div>
     			<div class="AdminCategoryListingCheckBox">
-						<input type="image" src="/templates/icons/Remove Red.png" name="executeButton" value="delete-<?= $artistinfo['aid']; ?>" alt="Delete <?= $artistinfo['name']; ?>" id="delete_me" style="width: 30px; height: 30px;" /><label title="Delete <?= $artistinfo['name']; ?>" for="delete_me"></label>
+						<input type="submit" class="AdminDeleteButton" name="executeButton" value="delete" alt="Delete <?= $artistinfo['name']; ?>" id="delete_me" style="width: 30px; height: 30px;" /><label title="Delete <?= $artistinfo['name']; ?>" for="delete_me"></label>
 					</div>
 				</div>
 				<div class="clear"></div>
@@ -727,7 +726,7 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="AdminSaveButtonContainer">
 					<div class="AdminSaveLabel"><label for="save_me">Save Updates</label></div>
     			<div class="AdminCategoryListingCheckBox">
-						<input type="submit" name="executeButton" value="update-<?= $artistinfo['aid']; ?>" class="AdminSaveButton" alt="Update <?= $artistinfo['name']; ?>" id="save_me" />
+						<input type="submit" name="executeButton" value="update" class="AdminSaveButton" alt="Update <?= $artistinfo['name']; ?>" id="save_me" />
 					</div>
 				</div>
 				<div class="clear"></div>
@@ -743,7 +742,7 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="AdminSaveButtonContainer">
 					<div class="AdminSaveLabel"><label for="save_me">Save Updates</label></div>
     			<div class="AdminCategoryListingCheckBox">
-						<input type="submit" name="executeButton" value="update-<?= $artistinfo['aid']; ?>" class="AdminSaveButton" alt="Update <?= $artistinfo['name']; ?>" id="save_me" />
+						<input type="submit" name="executeButton" value="update" class="AdminSaveButton" alt="Update <?= $artistinfo['name']; ?>" id="save_me" />
 					</div>
 				</div>
 				<div class="clear"></div>

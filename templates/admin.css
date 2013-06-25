@@ -404,6 +404,19 @@ td {
 	text-indent: 480px;    /* hack to hide the text */
 }
 
+.AdminDeleteButton {
+	border: none;
+	width: 32px;
+	height: 32px;
+	background: url("/templates/icons/Remove Red.png");
+	cursor: pointer;
+	text-indent: 480px;    /* hack to hide the text */
+}
+
+.AdminDeleteButton:hover {
+	background: url("/templates/icons/Attention.png");
+}
+
 .AdminSaveButton:hover {
 	background: url("/templates/icons/Valid Blue.png");
 }

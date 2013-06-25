@@ -169,7 +169,7 @@ function ShowAdminPage() {
 	include("templates/admin.php");
 	AdminHead($_REQUEST['url'],$adminfunctions);
 	AdminNav($_REQUEST['url'],$adminfunctions);
-	if ((strlen($_REQUEST['url']) == 0) || ($_REQUEST['url'] == "web_stats")) {
+	if ((strlen($_REQUEST['url']) === 0) || ((string)$_REQUEST['url'] === "web_stats")) {
 		AdminDisplaySiteStats();
 	} else {
 		if ($_REQUEST['url'] == "categories_list") {
@@ -251,11 +251,25 @@ function ShowAdminPage() {
 					AdminArtistAddNew();
 					break;
 				case "edit":
-					if ($_REQUEST['listpage'] > 0) {
-						AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['listpage']));
-					} else {
-						AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['aid']));
+					switch ($_REQUEST['executeButton']) {
+						case "delete":
+							AdminArtistDelete($_REQUEST['aid']);	// XXX: it's actually the AID, not url, but whatever.
+							break;
+						case "update":
+							// XXX ASDF DO ME
+							echo "yay updates";
+							AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['aid']));
+							break;
+						default:
+							if ($_REQUEST['listpage'] > 0) {
+								AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['listpage'])); // hack for direct URL access
+							} else {
+								AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['aid']));
+							}
 					}
+				case "del_artist_for_reals":
+					AdminArtistDeleteGo($_REQUEST['aid']);
+					AdminArtistList();
 					break;
 				default:
 					AdminArtistList();
@@ -264,11 +278,19 @@ function ShowAdminPage() {
 	}
 }
 
+function AdminArtistDelete($aid) {
+	$nextfunction = "del_artist_for_reals";
+	$urlDo = "artists";
+	$urlCancel = "artists/edit/$aid";
+	$desc = $aid;
+	AdminShowDeleteConfirmation($aid,$desc,$urlDo,$urlCancel,$nextfunction);
+}
+
 function AdminArtistAddNew() {
 	if (!isset($_REQUEST['formpage'])) {
 		// brand new artist
 		AdminArtistFormNew();
-	} elseif ($_REQUEST['formpage'] == "1") {
+	} elseif ((string)$_REQUEST['formpage'] === "1") {
 		// attempt to save the artist info and media
 		$aid = AdminArtistSaveNew();
 		if (strlen($aid) > 0) {
@@ -321,7 +343,16 @@ function AdminArtistEditSingle($aid) {
 		$artistinfo['media']['published'][$row['mid']] = DateSQLtoPHP($row['published']);
 	}
 	mysqli_free_result($result);
+	// Before showing this mess, mebe we should check for any updates that were maybe submitted?
+	$artistinfo = AdminArtistFormSingleSaveChanges($artistinfo);
 	AdminArtistFormSingle($artistinfo);
+}
+
+function AdminArtistFormSingleSaveChanges($artistinfo) {
+	// compare any $_REQUEST stuff with existing database, update.
+	// check for new file uploads, deal with.
+	// return the (adjusted) $artistinfo hash
+	return($artistinfo);
 }
 
 function PrepareVideoPlayer($input) {
@@ -335,7 +366,7 @@ function PrepareVideoPlayer($input) {
 		// If this is used, SHOW ALL (viewable) VIDEOS
 		foreach ($artistinfo['media']['mid'] as $mid) {
 			// if in the admin page, or is viewable, and media is a video, ...
-			if (($_REQUEST['page'] == "admin" OR $artistinfo['media']['viewable'][$mid] == 1) AND ($artistinfo['media']['vidlength'][$mid] > 0)) {
+			if (((string)$_REQUEST['page'] === 'admin' OR (string)$artistinfo['media']['viewable'][$mid] == '1') AND ($artistinfo['media']['vidlength'][$mid] > 0)) {
 				$videocount++;
 				// single out the one media ID for the Video Player
 				$tempartistinfo = $artistinfo;
@@ -361,7 +392,7 @@ function PrepareVideoPlayer($input) {
 				$tempartistinfo['media']['is_highlighted'] = $artistinfo['media']['is_highlighted'][$mid];
 				$tempartistinfo['media']['viewable'] = $artistinfo['media']['viewable'][$mid];
 				$tempartistinfo['media']['published'] = $artistinfo['media']['published'][$mid];
-				if ($artistinfo['media']['viewable'][$mid] == 1) {
+				if ((string)$artistinfo['media']['viewable'][$mid] === '1') {
 					$tempartistinfo['classname'] = "VideoPlayer";
 				} else {
 					$tempartistinfo['classname'] = "VideoPlayerNOVIEW";
@@ -370,7 +401,7 @@ function PrepareVideoPlayer($input) {
 				AdminVideoPreviewChooser($tempartistinfo);
 			}
 		}
-		if (($_REQUEST['page'] == "admin") && ($videocount == 0)) {
+		if (($_REQUEST['page'] === 'admin') && ((string)$videocount === '0')) {
 			echo "<div class='AdminError'>No Videos Available for this Artist!</div>";
 		}
 	} elseif (is_string($input) || is_int($input)) {
@@ -459,22 +490,30 @@ function AdminArtistSaveNew() {
 		$display_name = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['display_name']))));
 	} else {
 		// crappy way of guessing a band's obfuscated "display" name: first whole word, then first letter of each additional word
+		// unless only two words, then initials all the way
 		// logic subject to be totally changed on SB's whim
 		$words = explode(" ", $name);
 		$display_name = "";
 		$counter = 0;
 		if (count($words) > 0) {
-			foreach ($words as $word) {
-				if ($counter == 0) {
-					$display_name = "$word ";
-				} else {
+			if (count($words) == 1) {
+				$display_name = $name;	// one word artist name is a one-word artist name.
+			} elseif (count($words) == 2) {
+				foreach ($words as $word) {
 					$display_name .= substr($word,0,1);
 					$display_name .= ".";
 				}
-				$counter++;
+			} elseif (count($words) >= 3) {
+				foreach ($words as $word) {
+					if ($counter == 0) {
+						$display_name = "$word ";
+					} else {
+						$display_name .= substr($word,0,1);
+						$display_name .= ".";
+					}
+					$counter++;
+				}
 			}
-		} else {
-			$display_name = $name;	// one word artist name is a one-word artist name.
 		}
 	}
 	$use_display_name = isset($_REQUEST['use_display_name']);
@@ -932,7 +971,14 @@ function AdminSaveSingleCategory($cid) {
 function AdminDeleteCategory($targetcategoryurl) {
 	$nextfunction = "del_category_for_reals";
 	$url = "categories_list";
-	AdminShowDeleteConfirmation($targetcategoryurl,$url,$nextfunction);
+	AdminShowDeleteConfirmation($targetcategoryurl,$targetcategoryurl,$url,$url,$nextfunction);  
+}
+
+function AdminArtistDeleteGo($aid) {
+	global $conn;
+	global $dirlocation;
+	// delte from database
+	// delete mid stuff (video/photo)
 }
 
 function AdminDeleteCategoryGo($targetcategoryurl) {
