@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20130423
+**  Last Edit: 20130625
 ****************************************/
 
 function Init() {
@@ -189,7 +189,7 @@ function ShowAdminPage() {
 					AdminEditSingleCategory($_REQUEST['categoryurl']);
 					break;
 				case "save_category":
-					AdminSaveSingleCategory();
+					AdminSaveSingleCategory($_REQUEST['form_cid']);
 					AdminEditCategories();
 					break;
 				default:
@@ -251,21 +251,21 @@ function ShowAdminPage() {
 					AdminArtistAddNew();
 					break;
 				case "edit":
+					if ($_REQUEST['listpage'] > 0) {
+						$aid = (preg_replace("/[^0-9]/","",$_REQUEST['listpage'])); // hack for direct URL access
+					} else {
+						$aid = (preg_replace("/[^0-9]/","",$_REQUEST['aid']));
+					}
 					switch ($_REQUEST['executeButton']) {
 						case "delete":
-							AdminArtistDelete($_REQUEST['aid']);	// XXX: it's actually the AID, not url, but whatever.
+							AdminArtistDelete($aid);
 							break;
 						case "update":
-							// XXX ASDF DO ME
-							echo "yay updates";
-							AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['aid']));
+							AdminArtistSaveSingle();
+							AdminArtistEditSingle($aid);
 							break;
 						default:
-							if ($_REQUEST['listpage'] > 0) {
-								AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['listpage'])); // hack for direct URL access
-							} else {
-								AdminArtistEditSingle(preg_replace("/[^0-9]/","",$_REQUEST['aid']));
-							}
+							AdminArtistEditSingle($aid);
 					}
 					break;
 				case "del_artist_for_reals":
@@ -315,7 +315,7 @@ function AdminArtistAddNew() {
 	}
 }
 
-function AdminArtistEditSingle($aid) {
+function GatherArtistInfo($aid) {
 	global $conn;
 	$aid = preg_replace("/[^0-9]/",'',$aid);
 	// XXX: this could be some massive joined query
@@ -348,16 +348,158 @@ function AdminArtistEditSingle($aid) {
 		$artistinfo['media']['published'][$row['mid']] = DateSQLtoPHP($row['published']);
 	}
 	mysqli_free_result($result);
-	// Before showing this mess, mebe we should check for any updates that were maybe submitted?
-	$artistinfo = AdminArtistFormSingleSaveChanges($artistinfo);
+	return $artistinfo;
+}
+
+function AdminArtistEditSingle($aid) {
+	$artistinfo = GatherArtistInfo($aid);
 	AdminArtistFormSingle($artistinfo);
 }
 
-function AdminArtistFormSingleSaveChanges($artistinfo) {
+function ObfuscateArtistNameAutomatically($name) {
+	// crappy way of guessing a band's obfuscated "display" name: first whole word, then first letter of each additional word
+	// unless only two words, then initials all the way
+	// logic subject to be totally changed on SB's whim
+	$words = explode(" ", $name);
+	$display_name = "";
+	$counter = 0;
+	if (count($words) > 0) {
+		if (count($words) == 1) {
+			$display_name = $name;	// one word artist name is a one-word artist name.
+		} elseif (count($words) == 2) {
+			foreach ($words as $word) {
+				$display_name .= substr($word,0,1);
+				$display_name .= ".";
+			}
+		} elseif (count($words) >= 3) {
+			foreach ($words as $word) {
+				if ($counter == 0) {
+					$display_name = "$word ";
+				} else {
+					$display_name .= substr($word,0,1);
+					$display_name .= ".";
+				}
+				$counter++;
+			}
+		}
+	}
+	return ($display_name);
+}
+
+function AdminArtistSaveSingle() {
+	// Updated an artist's data from within the artist editor
+	global $conn;
+	$aid = preg_replace("/[^0-9]/",'',$_REQUEST['aid']);
+	$artistinfo = GatherArtistInfo($aid);
 	// compare any $_REQUEST stuff with existing database, update.
 	// check for new file uploads, deal with.
 	// return the (adjusted) $artistinfo hash
-	return($artistinfo);
+	(strlen($_REQUEST['name']) > 0)? $name = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['name']))) : $errors[] = "Please enter the artist or act name.";
+	(strlen($_REQUEST['slug']) > 0)? $slug = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['slug']))) : $errors[] = "Please provide a descriptive phrase about artist.";
+	// XXX: we don't deal with CR/newlines or html/markup at all in bio field yet!
+	(strlen($_REQUEST['bio']) > 0)? $bio = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['bio']))) : $errors[] = "Missing the artist's bio. Please have at least a paragraph describing the artist.";
+	if (strlen($_REQUEST['display_name']) > 0) {
+		$display_name = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['display_name'])));
+	} else {
+		$display_name = ObfuscateArtistNameAutomatically(htmlspecialchars(convert_smart_quotes(trim($_REQUEST['display_name']))));
+	}
+	$use_display_name = isset($_REQUEST['use_display_name']);
+	$is_active = isset($_REQUEST['is_active']);
+	$is_searchable = isset($_REQUEST['is_searchable']);
+	$is_highlighted = isset($_REQUEST['is_highlighted']);
+	if (isset($_REQUEST['categories'])) {
+		$categories = array();
+		foreach ($_REQUEST['categories'] as $key => $value) {
+			$categories[$key] = preg_replace("/[^0-9]/","",$value);
+		}
+	} else {
+		$errors[] = "Please select one or more categories for this artist.";
+	}
+	if (isset($_REQUEST['styles'])) {
+		$styles = array();
+		foreach ($_REQUEST['styles'] as $key => $value) {
+			$styles[$key] = preg_replace("/[^0-9]/","",$value);
+		}
+	} else {
+		$errors[] = "Please select one or more styles of entertainment this artist performs.";
+	}
+	if (isset($_REQUEST['locations'])) {
+		$locations = array();
+		foreach ($_REQUEST['locations'] as $key => $value) {
+			$locations[$key] = preg_replace("/[^0-9]/","",$value);
+		}
+	} else {
+		$errors[] = "Please select one or more cities that this artist is local to.";
+	}
+	// check if this is a duplicate // being a real jerk by including the "cleaned" URL text
+	$query = sprintf("SELECT `name` FROM `artists` WHERE `name` = '%s' OR `url` = '%s'",
+		mysqli_real_escape_string($conn, $name),
+		mysqli_real_escape_string($conn, $url)
+	);
+	$result = mysqli_query($conn,$query);
+	if (mysqli_num_rows($result) > 0) {
+		$errors[] = "This artist may already exist in the database! Please check the artist's name carefully.";
+	}
+	$url = MakeURL(strtolower($name));
+	$alt_url = GetAltUrl(MakeURL(strtolower($display_name)));	// what's the URL if we're in use_display_name mode?  
+	// XXX: This URL thing is pretty retarded. I want full names in URL for SEO.  even specifiying an URL at all is unnecessary since going to just search on name anyways.
+	// insert into artist table and get the auto_incremented aid
+	if (!isset($errors)) {
+		$query = sprintf("INSERT INTO `artists` (`name`,`display_name`,`url`,`alt_url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($conn, $name),
+			mysqli_real_escape_string($conn, $display_name),
+			mysqli_real_escape_string($conn, $url),
+			mysqli_real_escape_string($conn, $alt_url),
+			mysqli_real_escape_string($conn, $slug),
+			mysqli_real_escape_string($conn, $bio),
+			mysqli_real_escape_string($conn, $use_display_name),
+			mysqli_real_escape_string($conn, $is_active),
+			mysqli_real_escape_string($conn, $is_highlighted),
+			mysqli_real_escape_string($conn, $is_searchable),
+			mysqli_real_escape_string($conn, DatePHPtoSQL(time()))
+		);
+		if (mysqli_query($conn,$query) === TRUE) {
+			$aid = mysqli_insert_id($conn);
+			foreach($categories as $cid) {
+				$query = sprintf("INSERT INTO `artistcategories` (`cid`,`aid`) VALUES (%s,%s)",
+					mysqli_real_escape_string($conn, $cid),
+					mysqli_real_escape_string($conn, $aid)
+				);
+				if (mysqli_query($conn,$query) === FALSE) {
+					$errors[] = "Error saving category $cid for $aid!" .mysqli_error($conn);
+				}
+			}
+			foreach($styles as $sid) {
+				$query = sprintf("INSERT INTO `artiststyles` (`sid`,`aid`) VALUES (%s,%s)",
+					mysqli_real_escape_string($conn, $sid),
+					mysqli_real_escape_string($conn, $aid)
+				);
+				if (mysqli_query($conn,$query) === FALSE) {
+					$errors[] = "Error saving style $sid for $aid!" .mysqli_error($conn);
+				}
+			}
+			foreach($locations as $lid) {
+				$query = sprintf("INSERT INTO `artistlocations` (`lid`,`aid`) VALUES (%s,%s)",
+					mysqli_real_escape_string($conn, $lid),
+					mysqli_real_escape_string($conn, $aid)
+				);
+				if (mysqli_query($conn,$query) === FALSE) {
+					$errors[] = "Error saving location $lid for $aid!" .mysqli_error($conn);
+				}
+			}
+			echo "<div class='AdminSuccess'>Artist information for <B>$name</B> saved!</div>";
+		} else {
+			$errors[] = "<B>Did not save new artist!</B> Database Failure: ".mysqli_error($conn);
+		}
+	}
+	if (isset($errors)) {
+		echo "<div class='AdminError'><B>There are some missing details preventing us from saving this artist.</B><ul>";
+		foreach ($errors as $error) {
+			echo "<li>$error</li>";
+		}
+		echo "</ul></div>\n";
+	}
+	return($aid); // or null if bad
 }
 
 function PrepareVideoPlayer($input) {
@@ -494,32 +636,7 @@ function AdminArtistSaveNew() {
 	if (strlen($_REQUEST['display_name']) > 0) {
 		$display_name = htmlspecialchars(MakeCase(convert_smart_quotes(trim($_REQUEST['display_name']))));
 	} else {
-		// crappy way of guessing a band's obfuscated "display" name: first whole word, then first letter of each additional word
-		// unless only two words, then initials all the way
-		// logic subject to be totally changed on SB's whim
-		$words = explode(" ", $name);
-		$display_name = "";
-		$counter = 0;
-		if (count($words) > 0) {
-			if (count($words) == 1) {
-				$display_name = $name;	// one word artist name is a one-word artist name.
-			} elseif (count($words) == 2) {
-				foreach ($words as $word) {
-					$display_name .= substr($word,0,1);
-					$display_name .= ".";
-				}
-			} elseif (count($words) >= 3) {
-				foreach ($words as $word) {
-					if ($counter == 0) {
-						$display_name = "$word ";
-					} else {
-						$display_name .= substr($word,0,1);
-						$display_name .= ".";
-					}
-					$counter++;
-				}
-			}
-		}
+		$display_name = ObfuscateArtistNameAutomatically(htmlspecialchars(convert_smart_quotes(trim($_REQUEST['display_name']))));
 	}
 	$use_display_name = isset($_REQUEST['use_display_name']);
 	$is_active = isset($_REQUEST['is_active']);
@@ -560,7 +677,7 @@ function AdminArtistSaveNew() {
 	}
 	// XXX: This guess at an URL is pretty weaksauce
 	$url = MakeURL(strtolower($name));
-	$alt_url = MakeURL(strtolower($display_name));	// what's the URL if we're in use_display_name mode?  XXX: This is pretty retarded. I want full names in URL for SEO.  even specifiying an URL at all is unnecessary since going to just search on name anyways.
+	$alt_url = GetAltUrl(MakeURL(strtolower($display_name)));	// what's the URL if we're in use_display_name mode?  XXX: This is pretty retarded. I want full names in URL for SEO.  even specifiying an URL at all is unnecessary since going to just search on name anyways.
 	// insert into artist table and get the auto_incremented aid
 	if (!isset($errors)) {
 		$query = sprintf("INSERT INTO `artists` (`name`,`display_name`,`url`,`alt_url`,`slug`,`bio`,`use_display_name`,`is_active`,`is_highlighted`,`is_searchable`,`last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
@@ -605,19 +722,38 @@ function AdminArtistSaveNew() {
 					$errors[] = "Error saving location $lid for $aid!" .mysqli_error($conn);
 				}
 			}
-			echo "<div class='AdminSuccess'>Artist information for <B>$name</B> saved!</div>";
+			echo "<div class='AdminSuccess'>Artist information for <B>$name</B> updated!</div>";
 		} else {
-			$errors[] = "<B>Did not save new artist!</B> Database Failure: ".mysqli_error($conn);
+			$errors[] = "<B>Did not update artist!</B> Database Failure: ".mysqli_error($conn);
 		}
 	}
 	if (isset($errors)) {
-		echo "<div class='AdminError'><B>There are some missing details preventing us from saving this artist.</B><ul>";
+		echo "<div class='AdminError'><B>There are some missing details preventing us from updating this artist.</B><ul>";
 		foreach ($errors as $error) {
 			echo "<li>$error</li>";
 		}
 		echo "</ul></div>\n";
 	}
 	return($aid); // or null if bad
+}
+
+function GetAltUrl($alturl) {
+	global $conn;
+	$query = sprintf("SELECT `alt_url` FROM `artists` WHERE `alt_url` = '%s'", mysqli_real_escape_string($conn,$alturl));
+	$result = mysqli_query($conn,$query);
+	if (mysqli_num_rows($result) == 0) {
+		return ($alturl);
+	} else {
+		// go loop for a new alturl
+		$number = 1;
+		while (!$done) {
+			$alturl = "$alturl$number";
+			$query = sprintf("SELECT `alt_url` FROM `artists` WHERE `alt_url` = %s", mysqli_real_escape_string($conn,$alturl));
+			$result = mysqli_query($conn,$query);
+			(mysql_num_rows($result) == 0)? $done++ : $number++; 
+		}
+		return ($alturl);
+	}
 }
 
 function AdminArtistSaveMedia($aid) {
@@ -928,7 +1064,7 @@ function AdminSaveSingleCategory($cid) {
 	if (strlen($_REQUEST['form_url']) == 0 || strlen($_REQUEST['form_category']) == 0 || strlen($_REQUEST['form_description']) == 0) {
 		echo "<div class='AdminError'>Please fill in all three Category fields</div>";
 	} else {
-		$cid = preg_replace("/\[^0-9]/","",trim($_REQUEST['form_cid']));
+		$cid = preg_replace("/\[^0-9]/","",trim($cid));
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
 		$category = htmlspecialchars(trim($_REQUEST['form_category']));
 		if (strlen($_REQUEST['published'])) {
@@ -1615,7 +1751,8 @@ function convert_smart_quotes($string) {
 	return str_replace($search, $replace, $string);
 }
 
-function MakeURL($str, $replace=array(), $delimiter='-') {
+function MakeURL($str, $replace=array(), $delimiter='_') {
+	// XXX: Using underscore for spaces per LeviV
 	setlocale(LC_ALL, 'en_US.UTF8');
 	if( !empty($replace) ) {
 		$str = str_replace((array)$replace, ' ', $str);

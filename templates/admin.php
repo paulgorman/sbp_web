@@ -697,6 +697,12 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="65" name="bio" wrap="virtual"><?= $artistinfo['bio']; ?></textarea></div>
 				<div class="clear">&nbsp;</div>
 
+				<div class="AdminArtistLabel">URL:</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_url" value="<?= $artistinfo['url']; ?>" size="30"></div>
+				<div class="AdminArtistLabel">Alt-URL:</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="alt_url" value="<?= $artistinfo['alt_url']; ?>" size="30"></div>
+				<div class="clear">&nbsp;</div>
+
 				<div class="AdminCategoryListingAddItem">
 					<label for="Categories">Website Categories</label>
 				</div>
