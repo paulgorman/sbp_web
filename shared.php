@@ -569,7 +569,6 @@ function AdminArtistSaveSingle() {
 						$errors[] = "Error saving category $cid for $aid!" .mysqli_error($conn);
 					}
 				}
-			} else {
 			}// else no category/style/locaiton changes
 		}
 	} // else there are errors!
