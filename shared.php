@@ -386,27 +386,28 @@ function ObfuscateArtistNameAutomatically($name) {
 			$display_name = $name;	// one word artist name is a one-word artist name.
 		} elseif (count($words) == 2) {
 			foreach ($words as $word) {
-				$display_name .= substr($word,0,1);
+				$display_name .= strtoupper(substr($word,0,1));
 				$display_name .= ".";
 			}
 		} elseif (count($words) >= 3) {
 			foreach ($words as $word) {
-				if (preg_match("/(the|group|band|of|a|an)/i",$word)) {
-					// XXX ASDF SOMETHING IS BROKEN HERE IN THIS REG MATCH FASDFSADF
+				if (preg_match("/\b(the|group|band|of|a|an|and)\b/i",$word)) {
 					$display_name .= "$word ";
 				} else {
 					if ($counter == 0) {
-						$display_name = "$word ";
+						$display_name .= strtoupper(substr($word,0,1));
+						$display_name .= ". ";
+						//$display_name = "$word ";
 					} else {
-						$display_name .= substr($word,0,1);
-						$display_name .= ".";
+						$display_name .= strtoupper(substr($word,0,1));
+						$display_name .= ". ";
 					}
 				}
 				$counter++;
 			}
 		}
 	}
-	return (trim($display_name));
+	return (makeCase(trim($display_name)));
 }
 
 function AdminArtistSaveSingle() {
@@ -422,7 +423,7 @@ function AdminArtistSaveSingle() {
 	if (isEmpty($_REQUEST['name'])) { 
 		$errors[] = "Please enter the artist or act name.";
 	} else {
-		$name = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['name'])));
+		$name = makeCase(htmlspecialchars(convert_smart_quotes(trim($_REQUEST['name']))));
 		if ($name !== $artistinfo['name']) {
 			$artistsave['name'] = $name;
 			$url = MakeURL(strtolower($name));
@@ -466,8 +467,16 @@ function AdminArtistSaveSingle() {
 		$display_name = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['display_name'])));
 	}
 	if ($display_name !== $artistinfo['display_name']) {
-			$alt_url = GetAltUrl(MakeURL(strtolower($display_name)));	// what's the URL if we're in use_display_name mode?  
+			$artistsave['alt_url'] = GetAltUrl(MakeURL(strtolower($display_name)));
 			$artistsave['display_name'] = $display_name;
+	}
+	// alt-url standalone change
+	if (isEmpty($artistsave['alt_url'])) {
+		if (!isEmpty($_REQUEST['alt_url'])) {
+			$artistsave['alt_url'] = MakeURL(htmlspecialchars(strtolower(trim($_REQUEST['alt_url']))));
+		} else {
+			$artistsave['alt_url'] = GetAltUrl(MakeURL(strtolower($display_name)));
+		}
 	}
 	// use display
 	$use_display_name = isset($_REQUEST['use_display_name']);
