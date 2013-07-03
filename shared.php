@@ -391,21 +391,22 @@ function ObfuscateArtistNameAutomatically($name) {
 			}
 		} elseif (count($words) >= 3) {
 			foreach ($words as $word) {
-				if (preg_match("/(\bthe\b|\bgroup\b|\bband\b|\bof\b|\ba\b|\ban\b)/",$word)) {
+				if (preg_match("/(the|group|band|of|a|an)/i",$word)) {
+					// XXX ASDF SOMETHING IS BROKEN HERE IN THIS REG MATCH FASDFSADF
 					$display_name .= "$word ";
-					continue;
-				}
-				if ($counter == 0) {
-					$display_name = "$word ";
 				} else {
-					$display_name .= substr($word,0,1);
-					$display_name .= ".";
+					if ($counter == 0) {
+						$display_name = "$word ";
+					} else {
+						$display_name .= substr($word,0,1);
+						$display_name .= ".";
+					}
 				}
 				$counter++;
 			}
 		}
 	}
-	return ($display_name);
+	return (trim($display_name));
 }
 
 function AdminArtistSaveSingle() {
@@ -464,9 +465,9 @@ function AdminArtistSaveSingle() {
 	} else {
 		$display_name = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['display_name'])));
 	}
-	if ($display_name !== $artistinfo['displaY_name']) {
-		
+	if ($display_name !== $artistinfo['display_name']) {
 			$alt_url = GetAltUrl(MakeURL(strtolower($display_name)));	// what's the URL if we're in use_display_name mode?  
+			$artistsave['display_name'] = $display_name;
 	}
 	// use display
 	$use_display_name = isset($_REQUEST['use_display_name']);
