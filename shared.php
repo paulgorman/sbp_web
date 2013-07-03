@@ -467,7 +467,7 @@ function AdminArtistSaveSingle() {
 		$display_name = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['display_name'])));
 	}
 	if ($display_name !== $artistinfo['display_name']) {
-			$artistsave['alt_url'] = GetAltUrl(MakeURL(strtolower($display_name)));
+			$artistsave['alt_url'] = GetAltUrl(MakeURL(preg_replace("/\.\s/","",strtolower($display_name))));
 			$artistsave['display_name'] = $display_name;
 	}
 	// alt-url standalone change
@@ -601,41 +601,43 @@ function PrepareVideoPlayer($input) {
 		$videocount = 0;
 		// I am the artistinfo's media keyed array
 		// If this is used, SHOW ALL (viewable) VIDEOS
-		foreach ($artistinfo['media']['mid'] as $mid) {
-			// if in the admin page, or is viewable, and media is a video, ...
-			if (((string)$_REQUEST['page'] === 'admin' OR (string)$artistinfo['media']['viewable'][$mid] == '1') AND ($artistinfo['media']['vidlength'][$mid] > 0)) {
-				$videocount++;
-				// single out the one media ID for the Video Player
-				$tempartistinfo = $artistinfo;
-				unset ($tempartistinfo['media']);	// dump all the media info on this artist, replacing with the one video to display
-				// make video players a reasonable size
-				if ($artistinfo['media']['height'][$mid] > $videoheight) {
-					$width = $artistinfo['media']['width'][$mid];
-					$height = $artistinfo['media']['height'][$mid];
-					$scale = $height / $videoheight;
-					$tempartistinfo['media']['width'] = ceil($width / $scale);
-					$tempartistinfo['media']['height'] = ceil($height / $scale);
-				} else {
-					$tempartistinfo['media']['width'] = $artistinfo['media']['width'][$mid];
-					$tempartistinfo['media']['height'] = $artistinfo['media']['height'][$mid];
+		if (is_array($artistinfo['media'])) { // are there videos here (fixes error on the foreach line below)
+			foreach ($artistinfo['media']['mid'] as $mid) {
+				// if in the admin page, or is viewable, and media is a video, ...
+				if (((string)$_REQUEST['page'] === 'admin' OR (string)$artistinfo['media']['viewable'][$mid] == '1') AND ($artistinfo['media']['vidlength'][$mid] > 0)) {
+					$videocount++;
+					// single out the one media ID for the Video Player
+					$tempartistinfo = $artistinfo;
+					unset ($tempartistinfo['media']);	// dump all the media info on this artist, replacing with the one video to display
+					// make video players a reasonable size
+					if ($artistinfo['media']['height'][$mid] > $videoheight) {
+						$width = $artistinfo['media']['width'][$mid];
+						$height = $artistinfo['media']['height'][$mid];
+						$scale = $height / $videoheight;
+						$tempartistinfo['media']['width'] = ceil($width / $scale);
+						$tempartistinfo['media']['height'] = ceil($height / $scale);
+					} else {
+						$tempartistinfo['media']['width'] = $artistinfo['media']['width'][$mid];
+						$tempartistinfo['media']['height'] = $artistinfo['media']['height'][$mid];
+					}
+					$tempartistinfo['media']['realdimensions'] = $artistinfo['media']['width'][$mid] . "x" . $artistinfo['media']['height'][$mid];
+					$tempartistinfo['media']['mid'] = $artistinfo['media']['mid'][$mid];
+					$tempartistinfo['media']['previewimage'] = substr($artistinfo['media']['filename'][$mid],0,-4) . ".jpg";
+					$tempartistinfo['media']['vidlength'] = $artistinfo['media']['vidlength'][$mid];
+					$tempartistinfo['media']['name'] = $artistinfo['media']['name'][$mid];
+					$tempartistinfo['media']['filename'] = $artistinfo['media']['filename'][$mid];
+					$tempartistinfo['media']['fileid'] = substr($artistinfo['media']['filename'][$mid], 0, -4);
+					$tempartistinfo['media']['is_highlighted'] = $artistinfo['media']['is_highlighted'][$mid];
+					$tempartistinfo['media']['viewable'] = $artistinfo['media']['viewable'][$mid];
+					$tempartistinfo['media']['published'] = $artistinfo['media']['published'][$mid];
+					if ((string)$artistinfo['media']['viewable'][$mid] === '1') {
+						$tempartistinfo['classname'] = "VideoPlayer";
+					} else {
+						$tempartistinfo['classname'] = "VideoPlayerNOVIEW";
+					}
+					DisplayVideoPlayer($tempartistinfo);
+					AdminVideoPreviewChooser($tempartistinfo);
 				}
-				$tempartistinfo['media']['realdimensions'] = $artistinfo['media']['width'][$mid] . "x" . $artistinfo['media']['height'][$mid];
-				$tempartistinfo['media']['mid'] = $artistinfo['media']['mid'][$mid];
-				$tempartistinfo['media']['previewimage'] = substr($artistinfo['media']['filename'][$mid],0,-4) . ".jpg";
-				$tempartistinfo['media']['vidlength'] = $artistinfo['media']['vidlength'][$mid];
-				$tempartistinfo['media']['name'] = $artistinfo['media']['name'][$mid];
-				$tempartistinfo['media']['filename'] = $artistinfo['media']['filename'][$mid];
-				$tempartistinfo['media']['fileid'] = substr($artistinfo['media']['filename'][$mid], 0, -4);
-				$tempartistinfo['media']['is_highlighted'] = $artistinfo['media']['is_highlighted'][$mid];
-				$tempartistinfo['media']['viewable'] = $artistinfo['media']['viewable'][$mid];
-				$tempartistinfo['media']['published'] = $artistinfo['media']['published'][$mid];
-				if ((string)$artistinfo['media']['viewable'][$mid] === '1') {
-					$tempartistinfo['classname'] = "VideoPlayer";
-				} else {
-					$tempartistinfo['classname'] = "VideoPlayerNOVIEW";
-				}
-				DisplayVideoPlayer($tempartistinfo);
-				AdminVideoPreviewChooser($tempartistinfo);
 			}
 		}
 		if (($_REQUEST['page'] === 'admin') && ((string)$videocount === '0')) {
@@ -1610,23 +1612,29 @@ function ShowPhotoArray($mediadata) {
 	// argument is just $artistinfo['media']
 	global $conn;
 	$photosorder = array();
-	foreach ($mediadata['mid'] as $arraykey => $mid) {
-		if (preg_match("/png|jpg/",$mediadata['filetype'][$mid])) {
-			// check if highlighted is viewable, then put highlighted first
-			if (($mediadata['is_highlighted'][$mid] == 1) && ($mediadata['viewable'][$mid] == 1)) {
-				$location = $arraykey;
-				$photosorder[$location] = $mediadata['mid'][$mid];
+	if (is_array($mediadata)) {
+		foreach ($mediadata['mid'] as $arraykey => $mid) {
+			if (preg_match("/png|jpg/",$mediadata['filetype'][$mid])) {
+				// check if highlighted is viewable, then put highlighted first
+				if (($mediadata['is_highlighted'][$mid] == 1) && ($mediadata['viewable'][$mid] == 1)) {
+					$location = $arraykey;
+					$photosorder[$location] = $mediadata['mid'][$mid];
+				}
+				// viewable items next, sorted by recent published first
+				if (($mediadata['viewable'][$mid] == 1) && ($mediadata['is_highlighted'][$mid] == 0)) {
+					$location = $arraykey * 100;	// put this mediaID later in the sort index
+					$photosorder[$location] = $mediadata['mid'][$mid];
+				}
+				// non-viewable crap, with marker
+				if ($mediadata['viewable'][$mid] == 0) {
+					$location = $arraykey * 1000;	// put this mediaID later in the sort index
+					$photosorder[$location] = $mediadata['mid'][$mid];
+				}
 			}
-			// viewable items next, sorted by recent published first
-			if (($mediadata['viewable'][$mid] == 1) && ($mediadata['is_highlighted'][$mid] == 0)) {
-				$location = $arraykey * 100;	// put this mediaID later in the sort index
-				$photosorder[$location] = $mediadata['mid'][$mid];
-			}
-			// non-viewable crap, with marker
-			if ($mediadata['viewable'][$mid] == 0) {
-				$location = $arraykey * 1000;	// put this mediaID later in the sort index
-				$photosorder[$location] = $mediadata['mid'][$mid];
-			}
+		}
+	} else {
+		if ($_REQUEST['page'] === 'admin') {
+			echo "<div class='AdminError'>No Photos Available for this Artist!</div>";
 		}
 	}
 	ksort($photosorder, SORT_NUMERIC);
