@@ -9,9 +9,7 @@ function AdminHead($curfunction,$adminfunctions) {
 				<meta http-equiv="X-UA-Compatible" content="IE=edge">
 				<meta charset="utf-8">
 				<title>SBP Admin - <?= $tempadminfunctionsflipped[$curfunction]; ?></title>
-	<?			
-		readfile("templates/admin.css");
-	?>
+				<link rel="stylesheet" type="text/css" href="/templates/css/admin.css">
 	  		<link rel="stylesheet" type="text/css" href="/templates/css/jquery.bsmselect.css" />
 	  		<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
 	  		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
