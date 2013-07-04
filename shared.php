@@ -462,7 +462,7 @@ function AdminArtistSaveSingle() {
 	}
 	// display name
 	if (isEmpty($_REQUEST['display_name'])) {
-		$display_name = ObfuscateArtistNameAutomatically(htmlspecialchars(convert_smart_quotes(trim($_REQUEST['name']))));
+		$display_name = MakeCase(ObfuscateArtistNameAutomatically(htmlspecialchars(convert_smart_quotes(trim($_REQUEST['name'])))));
 	} else {
 		$display_name = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['display_name'])));
 	}
@@ -1919,6 +1919,7 @@ function makeCase($string) {
 			$new = preg_replace("/\sin-/i"," In-",$new);
 			$new = preg_replace("/(\W|^){1}(cross){1}(\s){1}(connection){1}(\W|$){1}/ie","'\\1\\2-\\4\\5'",$new); //always hyphonate cross-connections
 			$new = preg_replace("/(\s|\"|\'){1}(vs\.){1}(\s|,|\.|\"|\'|:|!|\?|\*){1}/ie","'\\1Vs.\\3'",$new);
+			$new = preg_replace("/(\s|\"|\'){1}(a\.){1}(\s|,|\.|\"|\'|:|!|\?|\*){1}/ie","'\\1A.\\3'",$new); // Caps for "A."
 			$new = preg_replace("/(\s|\"|\'){1}(on-off){1}(\s|,|\.|\"|\'|:|!|\?|\*){1}/ie","'\\1On-Off\\3'",$new);
 			$new = preg_replace("/(\s|\"|\'){1}(on-site){1}(\s|,|\.|\"|\'|:|!|\?|\*){1}/ie","'\\1On-Site\\3'",$new);
 			$new = stripslashes($new);
