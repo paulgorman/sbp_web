@@ -1705,6 +1705,18 @@ function ShowPhotoArray($mediadata) {
 	}
 }
 
+function UploadProgress() {
+	$key = ini_get("session.upload_progress.prefix") . "sbpform";
+	if (!empty($_SESSION[$key])) {
+		$current = $_SESSION[$key]["bytes_processed"];
+		$total = $_SESSION[$key]["content_length"];
+		echo $current < $total ? ceil($current / $total * 100) : 100;
+	}
+	else {
+		echo 100;
+	}
+}
+
 function aasort (&$array, $key) {
 	// sort an array's array by the sub-array's key name
 	$sorter=array();
@@ -1919,3 +1931,8 @@ function makeCase($string) {
 	return($newString);
 };
 
+function ScriptTime($starttime) {
+	$mtime = microtime(); $mtime = explode(" ",$mtime); $mtime = $mtime[1] + $mtime[0]; $endtime = $mtime; $totaltime = ($endtime - $starttime) * 1000;
+	$totaltime = sprintf("%.2f", $totaltime);
+	echo "<!-- This page was created in ".$totaltime." milliseconds -->"; 
+}

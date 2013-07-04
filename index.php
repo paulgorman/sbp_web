@@ -5,12 +5,14 @@
 	switch($_REQUEST['page']) {
 		case "admin":
 			ShowAdminPage();
+			ScriptTime($starttime);
+			break;
+		case "uploadprogress":
+			UploadProgress();
 			break;
 		default:
 			RecordHit();
 			DebugShow();
+			ScriptTime($starttime);
 	}
-	$mtime = microtime(); $mtime = explode(" ",$mtime); $mtime = $mtime[1] + $mtime[0]; $endtime = $mtime; $totaltime = ($endtime - $starttime) * 1000;
-	$totaltime = sprintf("%.2f", $totaltime);
-	echo "<!-- This page was created in ".$totaltime." milliseconds -->"; 
 ?>

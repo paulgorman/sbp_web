@@ -456,9 +456,10 @@ function AdminArtistFormNew() {
 			});
     });
   //]]></script>
-		<form method="POST" action="/admin/artists/add_new" enctype="multipart/form-data">
+			<form method="POST" action="/admin/artists/add_new" enctype="multipart/form-data" id="sbpform">
 			<input type="hidden" name="function" value="add_new">
 			<input type="hidden" name="formpage" value="1">
+			<input type="hidden" value="sbpform" name="<?= ini_get("session.upload_progress.name"); ?>">
 			<div class="AdminCategoryListingAddContainer">
 				<div class="AdminCategoryListingAddHeader">ADD NEW ARTIST</div>
 				<div class="AdminCategoryListingAddItem">Artist/Act/Band Real Name</div>
@@ -528,9 +529,14 @@ function AdminArtistFormNew() {
 				<div class="clear"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Save New Artist"></div>
+				<div id="bar_blank">
+					<div id="status"></div>
+					<div id="bar_color"></div>
+				</div>
 				<div class="clear"></div>
 			</div> <!-- class="AdminCategoryListingAddContainer" -->
 		</form>
+		<script type="text/javascript" src="/templates/js/upload.js"></script>
 	<?
 }
 

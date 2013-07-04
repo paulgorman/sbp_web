@@ -770,4 +770,34 @@ label {
 }
 /* ----=== End BSM Multiselect === ----- */
 
+/* ---=== upload progress bar ===--- */
+#bar_container {
+	margin-left: 300px;
+}
+
+#bar_blank {
+	margin-left: 300px;
+	border: solid 1px #000;
+	height: 20px;
+	width: 300px;
+}
+
+#status {
+	color: #000;
+	position: relative; 
+	float: right;
+	margin-left: 10px;
+	margin-right: 2px;
+}
+
+#bar_color {
+	background-color: #006666;
+	height: 20px;
+	width: 0px;
+}
+
+#bar_blank, #hidden_iframe {
+	display: none;
+}
+
 </style>

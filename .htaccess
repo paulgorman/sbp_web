@@ -25,6 +25,9 @@ RewriteRule ^[/]?$ index.php?page=home [QSA,L]
 RewriteRule ^artist[s]?[/]?([a-zA-Z0-9_-]+)? index.php?page=artist&url=$1 [QSA,L,NC]
 RewriteRule ^(category|categories)[/]?([a-zA-Z0-9_-]+)? index.php?page=categories&url=$2 [QSA,L,NC] 
 
+# File upload progress bar
+RewriteRule ^uploadprogress[/]? index.php?page=uploadprogress [QSA,L,NC]
+
 # static pages just a couple possible typos
 RewriteRule ^tag/([a-zA-Z0-9_-]+) index.php?page=findbytag&tag=$1 [QSA,L,NC]
 RewriteRule ^about[/]? index.php?page=about [QSA,L,NC]
@@ -32,7 +35,6 @@ RewriteRule ^production[/]? index.php?page=production [QSA,L,NC]
 RewriteRule ^contact[/]? index.php?page=contact [QSA,L,NC]
 RewriteRule ^admin[/]?([a-z_-]+)?[/]?([a-z_-]+)?[/]?([0-9]+)? /index.php?page=admin&url=$1&function=$2&listpage=$3 [QSA,L,NC]
 RewriteRule ^(.*)$ index.php?page=404 [QSA,L,NC]
-
 
 <Files ".ht*">
 deny from all
