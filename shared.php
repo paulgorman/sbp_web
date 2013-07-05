@@ -325,8 +325,12 @@ function GatherArtistInfo($aid) {
 	$result = mysqli_query($conn,$query);
 	$row = mysqli_fetch_assoc($result);
 	$artistinfo['aid'] = $aid;
-	foreach ($row as $fieldname => $value) {
-		$artistinfo[$fieldname] = $value;
+	if (isEmpty($row['aid'])) {
+		echo "<div class='AdminError'>No record available for ID Number $aid.</div>";
+	} else {
+		foreach ($row as $fieldname => $value) {
+			$artistinfo[$fieldname] = $value;
+		}
 	}
 	mysqli_free_result($result);
 	// AdminSelectCategories($aid) AdminSelectStyles($aid) AdminSelectLocations($aid)
@@ -1861,8 +1865,9 @@ function convert_smart_quotes($string) {
 	return str_replace($search, $replace, $string);
 }
 
-function MakeURL($str, $replace=array(), $delimiter='_') {
+function MakeURL($str, $replace=array(), $delimiter='-') {
 	// XXX: Using underscore for spaces per LeviV
+	// XXX: Back to using dashes, since Google SEO prefers it.
 	setlocale(LC_ALL, 'en_US.UTF8');
 	if( !empty($replace) ) {
 		$str = str_replace((array)$replace, ' ', $str);
