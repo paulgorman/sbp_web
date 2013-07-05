@@ -16,7 +16,7 @@ function createRequestObject() {
 
 function sendRequest() {
     var http = createRequestObject();
-    http.open("GET", "/uploadprogress");
+    http.open("GET", "/uploadprogress", false);
     http.onreadystatechange = function () { handleResponse(http); };
     http.send(null);
 }
