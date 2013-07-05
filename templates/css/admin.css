@@ -486,6 +486,13 @@ td {
 	float: left;
 }
 
+.AdminCategoryListingAddFilesSingle {
+	font-size: 12px;
+	margin: 2px;
+	padding-left: 3em;
+	border: 0px solid;
+}
+
 .AdminCategoryListingCheckBox {
 	color: #4F8A10;
 	margin: 2px;

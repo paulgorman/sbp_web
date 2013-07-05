@@ -552,7 +552,7 @@ function AdminArtistFormSingle($artistinfo) {
 			}
 			if(!ul.hasChildNodes()) {
 				var li = document.createElement("li");
-				li.innerHTML = 'No Files Selected';
+				li.innerHTML = 'Upload Additional Media';
 				ul.appendChild(li);
 			}
 			add_file_field();
@@ -648,9 +648,10 @@ function AdminArtistFormSingle($artistinfo) {
 		$(function () { run(205); });
 
 		//]]></script>
-		<form method="POST" action="/admin/artists/edit/<?= $artistinfo['aid']; ?>" enctype="multipart/form-data" name="edit<?= $artistinfo['aid']; ?>">
+		<form method="POST" action="/admin/artists/edit/<?= $artistinfo['aid']; ?>" enctype="multipart/form-data" id="sbpform" name="edit<?= $artistinfo['aid']; ?>">
 			<input type="hidden" name="aid" value="<?= $artistinfo['aid']; ?>">
 			<input type="hidden" name="function" value="edit">
+			<input type="hidden" value="sbpform" name="<?= ini_get("session.upload_progress.name"); ?>">
 			<div class="AdminArtistContainer">
 				<div class="AdminSaveButtonContainer">
 					<div class="AdminSaveLabel"><label for="save_me">Save Updates</label></div>
@@ -740,7 +741,14 @@ function AdminArtistFormSingle($artistinfo) {
 					</div>
 				</div>
 				<div class="clear"></div>
-				<div class="AdminArtistEditSubHeader">Media for <?= $artistinfo['name']; ?></div>
+				<div class="AdminArtistEditSubHeader">Media for <?= $artistinfo['name']; ?>
+				<div class="clear"></div>
+				</div>
+					<div class="AdminCategoryListingAddFilesSingle">
+						<div id="file_container"><input name="filesToUpload[]" value="ASDF" class="filesToUpload" id="1" type="file" multiple="" onchange="makeFileList();" /></div>
+						<div class="AdminCategoryListingValue"><ul id="fileList"></ul></div>
+					</div>
+				<div class="clear"></div>
 				<div class="AdminImagesPreviewContainer">
 					<?= ShowPhotoArray($artistinfo['media']); ?>
 				</div>
