@@ -749,6 +749,12 @@ function AdminArtistFormSingle($artistinfo) {
 						<div class="AdminCategoryListingValue"><ul id="fileList"></ul></div>
 					</div>
 				<div class="clear"></div>
+				<div id="bar_blank">
+					<div id="status"></div>
+					<div id="bar_color"></div>
+				</div>
+				<script type="text/javascript" src="/templates/js/upload.js"></script>
+				<div class="clear"></div>
 				<div class="AdminImagesPreviewContainer">
 					<?= ShowPhotoArray($artistinfo['media']); ?>
 				</div>
@@ -764,6 +770,8 @@ function AdminArtistFormSingle($artistinfo) {
 					</div>
 				</div>
 				<div class="clear"></div>
+			</div>
+		</form>
 
 	<?
 }

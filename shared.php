@@ -585,6 +585,20 @@ function AdminArtistSaveSingle() {
 				}
 			}// else no category/style/locaiton changes
 		}
+		// Save Uploaded Files
+		$filecount = AdminArtistSaveMedia($aid);
+		if ($filecount >= 1) {
+			echo "<div class='AdminSuccess'>Added $filecount additional media files!</div>";
+		}
+		// Modify existing photos
+		// ASDF
+		print_r ($_REQUEST['ImageFeatures']);
+		if (isset($_REQUEST['ImageFeatures'])) {
+			echo "Making changes to images...";
+		} else {
+			echo "no image changes";
+		}
+		// Modify video screen shot
 	} // else there are errors!
 	if (isset($errors)) { // not included above since new errors could have been introduced
 		echo "<div class='AdminError'><B>There are some missing details preventing us from saving this artist.</B><ul>";
@@ -856,9 +870,7 @@ function AdminArtistSaveMedia($aid) {
 	global $conn;
 	$savedfilecount = 0;
 	// page 1's save artist's media
-	if (!CheckForFiles()) {
-		$errors[] = "No Media Uploaded.";
-	} else {
+	if (CheckForFiles()) {
 		$newfiles = array();
 		// put all uploaded files into the filesystem
 		$newfiles = SaveFile("artist"); // should return an array of [fileid, orig name]
@@ -872,12 +884,6 @@ function AdminArtistSaveMedia($aid) {
 			// XXX: watermark function here?
 			$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['filesToUpload']['name'][$key]);
 			$mediainfo = MediaInfo($newfileid,"artist");
-			// Save the media file to database
-			if ($savedfilecount == 0) {
-				$highlightmeplz = "1";	// First uploaded file is highlighted. Crude.
-			} else {
-				$highlightmeplz = "0";	// No, no highlighted.
-			}
 			$query = sprintf("INSERT INTO `media` (`filename`, `filetype`,
 				`aid`, `name`, `thumbwidth`, `thumbheight`, `width`, `height`,
 				`vidlength`, `is_highlighted`, `viewable`, `published`
@@ -891,7 +897,7 @@ function AdminArtistSaveMedia($aid) {
 				preg_replace("/[^0-9]/",'',$mediainfo['width']),
 				preg_replace("/[^0-9]/",'',$mediainfo['height']),
 				preg_replace("/[^0-9]/",'',$mediainfo['vidlength']),
-				$highlightmeplz,
+				"0",	// XXX: we don't highlight on upload, user gotta select one manually.
 				"1",	// Assume yes, media file is viewable for this initial upload.
 				mysqli_real_escape_string($conn, DatePHPtoSQL(time()))
 			);
@@ -1661,13 +1667,17 @@ function ShowPhotoArray($mediadata) {
 		}
 		if ($mediadata['is_highlighted'][$mid] == 1) {
 			$highlighted = "Remove Highlight";
+			$highlightstatus = "Highlighted";
 		} else {
 			$highlighted = "Highlight This";
+			$highlightstatus = "Not Highlighted";
 		}
 		if ($mediadata['viewable'][$mid] == 1) {
-			$viewable = "Hide";
+			$viewable = "Make Hidden";
+			$viewablestatus = "Visible";
 		} else {
-			$viewable = "Show";
+			$viewable = "Make Visible";
+			$viewablestatus = "Hidden";
 		}
 		if (strlen($mediadata['name'][$mid]) > 18) {
 			$filename = htmlspecialchars(substr($mediadata['name'][$mid],0,18) . "...");
@@ -1679,16 +1689,18 @@ function ShowPhotoArray($mediadata) {
 			"<img class='%s' src='/i/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>".
 			"</a>".
 			"<div class='%s'></div>".
-			"<select name='1234' class='DropDownImage' id='%s'>".
-			"<option>Image Features</option>".
-			"<option>%s</option>".
-			"<option>%s</option>".
-			"<option>Remove</option>".
+			"<select name='ImageFeatures[%s]' class='DropDownImage'>".
+			"<option value='' disabled='disabled' selected='selected'>Image Features</option>".
+			"<option value='ToggleHighlight'>%s</option>".
+			"<option value='ToggleHidden'>%s</option>".
+			"<option value='Remove'>Delete Image</option>".
 			"<optgroup disabled='disabled' label='Image Info'>".
-			"<option disabled='disabled'>%s</option>".
-			"<option disabled='disabled'>Size: %sx%s</option>".
-			"<option disabled='disabled'>Uploaded: %s</option>".
-			"</select></div>",
+			"<option value='' disabled='disabled'>%s</option>".	// filename
+			"<option value='' disabled='disabled'>%s</option>".	// highlightstatus
+			"<option value='' disabled='disabled'>%s</option>".	// viewablestatus
+			"<option value='' disabled='disabled'>Size: %sx%s</option>".
+			"<option value='' disabled='disabled'>Uploaded: %s</option>".
+			"</select></div>\n",
 			"original-".$mediadata['filename'][$mid],
 			$highlightclass,
 			$mediadata['filename'][$mid],
@@ -1701,6 +1713,8 @@ function ShowPhotoArray($mediadata) {
 			$highlighted,
 			$viewable,
 			$filename,
+			$highlightstatus,
+			$viewablestatus,
 			$mediadata['width'][$mid],
 			$mediadata['height'][$mid],
 			date("M d, Y",$mediadata['published'][$mid])
