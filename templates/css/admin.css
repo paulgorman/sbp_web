@@ -155,7 +155,6 @@ td {
 	padding-top: 5px;
 	float: left;
 	background-color: #AACEDF;
-	
 }
 
 .AdminVideoPreviewChooserImage {
@@ -163,6 +162,13 @@ td {
 	height: 54px;
 	width: 85px;
 	background-size: contain;
+}
+
+.VideoSize {
+	float: left;
+	width: 85px;
+	height: 54px;
+	padding: 5px;
 }
 
 .AdminImageIconHighRes {

@@ -805,7 +805,7 @@ function DisplayVideoPlayer($artistinfo) {
 function AdminVideoPreviewChooser($artistinfo) {
 	// using div in-line style background to show the images because img tag is taken by ShowPhotoArray()'s css image array resizer
 	?>
-	<div class="AdminVideoPreviewChooserContainer">
+		<div class="AdminVideoPreviewChooserContainer">
 		<? for ($i = 1; $i < 5; $i++) { ?>
 			<div class="CheckBoxImageContainer">
 				<label for="<?= $artistinfo['media']['mid'] . "-$i"; ?>"><div class="AdminVideoPreviewChooserImage" style="background: url('/i/artist/<?= $artistinfo['media']['fileid']. "-$i.jpg"; ?>'); background-size:contain; background-repeat: no-repeat;"></div></label>
@@ -813,6 +813,14 @@ function AdminVideoPreviewChooser($artistinfo) {
 			</div>
 		<? } ?>
 		</div>
-		Video Size:<br><strong><?= $artistinfo['media']['realdimensions']; ?></strong>
+		<div class="VideoSize">
+			Video Size:<br><strong><?= $artistinfo['media']['realdimensions']; ?></strong>
+			<select name="videoaction[<?= $artistinfo['media']['mid']; ?>]">
+				<option value='' selected="SELECTED" disabled="disabled">Actions</option>
+				<?= ((int)$artistinfo['media']['viewable'] === 1)? '<option value="0">Make Hidden</option>' : '<option value="1">Make Visible</option>'; ?>
+				<option value="delete">Remove Video</option>
+			</select>
+		</div>
+		<div class="clear"></div>
 	<?
 }

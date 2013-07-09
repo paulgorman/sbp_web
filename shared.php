@@ -637,6 +637,35 @@ function AdminArtistSaveSingle() {
 				}
 			}
 		}
+		// process video actions
+		if (isset($_REQUEST['videoaction'])) {
+			foreach ($_REQUEST['videoaction'] as $mid => $change) {
+				$mid = preg_replace("/[^0-9]/","",$mid);
+				if ($artistinfo['media']['mid'][$mid] !== $mid) {
+					echo "<div class='AdminError'>Media request is not valid.</div>";
+				} else {
+					if ($_REQUEST['videoaction'][$mid] === "delete") {
+						$fileid = substr($artistinfo['media']['filename'][$mid], 0, -4);
+						unlink ("$dirlocation/m/". $artistinfo['media']['filename'][$mid]);
+						unlink ("$dirlocation/i/artist/$fileid.jpg");	// video screenies are always jpeg.
+						unlink ("$dirlocation/i/artist/$fileid-1.jpg");
+						unlink ("$dirlocation/i/artist/$fileid-2.jpg");
+						unlink ("$dirlocation/i/artist/$fileid-3.jpg");
+						unlink ("$dirlocation/i/artist/$fileid-4.jpg");
+						$query = sprintf("DELETE FROM `media` WHERE `mid` = %s", mysqli_real_escape_string($conn,$mid));
+					} else {
+						$value = preg_replace("/[^01]/","",$_REQUEST['videoaction'][$mid]);
+						$query = sprintf("UPDATE `media` SET `viewable` = %s WHERE `mid` = %s",
+							mysqli_real_escape_string($conn,$value),
+							mysqli_real_escape_string($conn,$mid)
+						);
+					}
+					if (mysqli_query($conn,$query) === FALSE) {
+							$errors[] = "Error updating video status $mid!" .mysqli_error($conn);
+					}
+				}
+			}
+		} // no video changes
 	} // else there are errors!
 	if (isset($errors)) { // not included above since new errors could have been introduced
 		echo "<div class='AdminError'><B>There are some missing details preventing us from saving this artist.</B><ul>";
@@ -691,6 +720,7 @@ function PrepareVideoPlayer($input) {
 					} else {
 						$tempartistinfo['classname'] = "VideoPlayerNOVIEW";
 					}
+					echo '<div class="clear"><hr></div>';	// XXX: display hack
 					DisplayVideoPlayer($tempartistinfo);
 					AdminVideoPreviewChooser($tempartistinfo);
 				}
