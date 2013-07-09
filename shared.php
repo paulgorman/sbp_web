@@ -1757,7 +1757,7 @@ function ShowPhotoArray($mediadata) {
 			"<img class='%s' src='/i/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>".
 			"</a>".
 			"<div class='%s'></div>".
-			"<select name='ImageFeatures[%s]' class='DropDownImage'>".
+			"<select name='ImageFeatures[%s]' class='DropDownImage' %s>". // final %s colors list pink if not viewable
 			"<option value='' disabled='disabled' selected='selected'>Image Features</option>".
 			"<option value='ToggleHighlight'>%s</option>".
 			"<option value='ToggleHidden'>%s</option>".
@@ -1778,6 +1778,7 @@ function ShowPhotoArray($mediadata) {
 			$mediadata['name'][$mid],
 			$adminimageicon,
 			$mediadata['mid'][$mid],
+			((int)$mediadata['viewable'][$mid] === 0)? 'style="background-color: #FFBABA" ' : '',
 			$highlighted,
 			$viewable,
 			$filename,
