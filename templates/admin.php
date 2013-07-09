@@ -809,7 +809,7 @@ function AdminVideoPreviewChooser($artistinfo) {
 		<? for ($i = 1; $i < 5; $i++) { ?>
 			<div class="CheckBoxImageContainer">
 				<label for="<?= $artistinfo['media']['mid'] . "-$i"; ?>"><div class="AdminVideoPreviewChooserImage" style="background: url('/i/artist/<?= $artistinfo['media']['fileid']. "-$i.jpg"; ?>'); background-size:contain; background-repeat: no-repeat;"></div></label>
-				<div class="CheckBoxImage"><input type="radio" name="radio-<?= $artistinfo['media']['mid']; ?>" id="<?= $artistinfo['media']['mid']."-$i"; ?>" value="<?= $i; ?>"></div>
+				<div class="CheckBoxImage"><input type="radio" name="radio[<?= $artistinfo['media']['mid']; ?>]" id="<?= $artistinfo['media']['mid']."-$i"; ?>" value="<?= $i; ?>"></div>
 			</div>
 		<? } ?>
 		</div>

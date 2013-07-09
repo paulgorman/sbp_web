@@ -417,6 +417,7 @@ function ObfuscateArtistNameAutomatically($name) {
 function AdminArtistSaveSingle() {
 	// Updated an artist's data from within the artist editor
 	global $conn;
+	global $dirlocation;
 	$aid = preg_replace("/[^0-9]/",'',$_REQUEST['aid']);
 	$artistinfo = GatherArtistInfo($aid);
 	$artistsave = array("aid" => $aid);
@@ -591,14 +592,52 @@ function AdminArtistSaveSingle() {
 			echo "<div class='AdminSuccess'>Added $filecount additional media files!</div>";
 		}
 		// Modify existing photos
-		// ASDF
-		print_r ($_REQUEST['ImageFeatures']);
 		if (isset($_REQUEST['ImageFeatures'])) {
-			echo "Making changes to images...";
-		} else {
-			echo "no image changes";
+			foreach ($_REQUEST['ImageFeatures'] as $mid => $change) {
+				$mid = preg_replace("/[^0-9]/","",$mid);
+				if ($artistinfo['media']['mid'][$mid] !== $mid) {
+					echo "<div class='AdminError'>Media request is not valid.</div>";
+				} else {
+					// legit media id, do the request
+					foreach (array("ToggleHighlight" => "is_highlighted", "ToggleHidden" => "viewable", "Remove" => "") as $action => $column) {
+						if ($_REQUEST['ImageFeatures'][$mid] === $action) {
+							if ($action === "Remove") {
+								unlink($dirlocation . "/i/artist/original-" . $artistinfo['media']['filename'][$mid]);
+								unlink($dirlocation . "/i/artist/" . $artistinfo['media']['filename'][$mid]);
+								$query = sprintf("DELETE FROM `media` WHERE `mid` = '%s'", mysqli_real_escape_string($conn,$mid));
+							} else {
+								($artistinfo['media'][$column][$mid] == 1)? $switcheroo = 0 : $switcheroo = 1;
+								$query = sprintf("UPDATE `media` SET `%s` = '%s' WHERE `mid` = '%s'",
+									mysqli_real_escape_string($conn, $column),
+									mysqli_real_escape_string($conn, $switcheroo),
+									mysqli_real_escape_string($conn, $mid)
+								);
+							}
+							if (mysqli_query($conn,$query) === FALSE) {
+								$errors[] = "Error updating image status $mid!" .mysqli_error($conn);
+							}
+						}
+					}
+				}
+			}
 		}
+		// ASDF
 		// Modify video screen shot
+		if (isset($_REQUEST['radio'])) {
+			foreach ($_REQUEST['radio'] as $mid => $change) {
+				$mid = preg_replace("/[^0-9]/","",$mid);
+				if ($artistinfo['media']['mid'][$mid] !== $mid) {
+					echo "<div class='AdminError'>Media request is not valid.</div>";
+				} else {
+					$change = preg_replace("/[^0-9]/","",$change);
+					$fileid = substr($artistinfo['media']['filename'][$mid], 0, -4);
+					// preview images are in jpg format from ResizeImage() and ffmpeg thumbnailer
+					if (!copy("$dirlocation/i/artist/$fileid-$change.jpg","$dirlocation/i/artist/$fileid.jpg")) {
+						$errors[] = "Failed to replace video thumbnail.";
+					}
+				}
+			}
+		}
 	} // else there are errors!
 	if (isset($errors)) { // not included above since new errors could have been introduced
 		echo "<div class='AdminError'><B>There are some missing details preventing us from saving this artist.</B><ul>";
