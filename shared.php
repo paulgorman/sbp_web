@@ -621,7 +621,6 @@ function AdminArtistSaveSingle() {
 				}
 			}
 		}
-		// ASDF
 		// Modify video screen shot
 		if (isset($_REQUEST['radio'])) {
 			foreach ($_REQUEST['radio'] as $mid => $change) {
@@ -1509,15 +1508,15 @@ function ResizeImage($fileid,$purpose) {
 		imagealphablending($origimage, true);
 		imagesavealpha($origimage, true);
 	}
-	if (preg_match("/category/",$purpose)) {
-		$width = 728;
-		$height = 90;
-	}
-	if (preg_match("/artist/",$purpose)) {
-		$height = 450;
-		$width = abs(round( (imagesX($origimage) / imagesY($origimage)) * $height ));
-	}
 	if ($origimage) {
+		if (preg_match("/category/",$purpose)) {
+			$width = 728;
+			$height = 90;
+		}
+		if (preg_match("/artist/",$purpose)) {
+			$height = 450;
+			$width = abs(round( (imagesX($origimage) / imagesY($origimage)) * $height ));
+		}
 		$newimage = imagecreatetruecolor($width,$height);
 		imagesavealpha($newimage, true);
 		$color = imagecolorallocatealpha($newimage,0x00,0x00,0x00,127);
