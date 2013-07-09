@@ -815,7 +815,7 @@ function AdminVideoPreviewChooser($artistinfo) {
 		</div>
 		<div class="VideoSize">
 			Video Size:<br><strong><?= $artistinfo['media']['realdimensions']; ?></strong>
-			<select name="videoaction[<?= $artistinfo['media']['mid']; ?>]">
+			<select name="videoaction[<?= $artistinfo['media']['mid']; ?>]" <?= ((int)$artistinfo['media']['viewable'] === 0)? "style='background-color: #FFBABA;' " : ""; ?>>
 				<option value='' selected="SELECTED" disabled="disabled">Actions</option>
 				<?= ((int)$artistinfo['media']['viewable'] === 1)? '<option value="0">Make Hidden</option>' : '<option value="1">Make Visible</option>'; ?>
 				<option value="delete">Remove Video</option>
