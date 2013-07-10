@@ -192,6 +192,9 @@ function ShowAdminPage() {
 					AdminSaveSingleCategory($_REQUEST['form_cid']);
 					AdminEditCategories();
 					break;
+				case "search_category":
+					AdminListArtistsByCategory();
+					break;
 				default:
 					AdminEditCategories();
 			}
@@ -246,6 +249,15 @@ function ShowAdminPage() {
 					break;
 				case "list_all":
 					AdminArtistList();
+					break;
+				case "list_new":
+					AdminArtistListNew();
+					break;
+				case "list_feat":
+					AdminArtistListFeat();
+					break;
+				case "list_secret":
+					AdminArtistListSecret();
 					break;
 				case "add_new":
 					AdminArtistAddNew();
@@ -772,11 +784,30 @@ function PrepareVideoPlayer($input) {
 function FigurePageNav($type,$page=1) {
 	global $conn;
 	global $pagination;
-	if ($type == "list_all") {
+	if ($type === "list_all" || $type === "list_new") {
 		$query = "SELECT COUNT(*) FROM `artists`";
+	} else if ($type === "list_feat") {
+		$query = "SELECT COUNT(*) FROM `artists` WHERE `is_highlighted` = 1";
+	} else if ($type === "list_secret") {
+		$query = "SELECT COUNT(*) FROM `artists` WHERE `is_searchable` = 0 OR `is_active` = 0";
+	} else if ($type === "list_by_category") {
+		// figure out the cid from submitted categoryurl name
+		$query = sprintf(
+			"SELECT `cid` FROM `categories` WHERE `url` = '%s'",
+			mysqli_real_escape_string($conn,$_REQUEST['categoryurl'])
+		);
+		$result = mysqli_query($conn,$query);
+		$row = mysqli_fetch_assoc($result);
+		mysqli_free_result($result);
+		// count up all the aid's associated with the one cid
+		$query = sprintf(
+			"SELECT count(`aid`) FROM `artistcategories` WHERE `cid` = %s",
+			mysqli_real_escape_string($conn,$row['cid'])
+		);
 	}
 	$result = mysqli_query($conn,$query);
 	list($count) = mysqli_fetch_array($result);
+	mysqli_free_result($result);
 	// get maximum number of pages
 	$maximum = ceil($count/$pagination); // round up to a whole page number
 	// get previous page
@@ -1031,6 +1062,95 @@ function AdminArtistList() {
 	$result = mysqli_query($conn,$query);
 	$row = mysqli_fetch_assoc($result);
 	AdminArtistListPage($result,$page);
+	mysqli_free_result($result);
+}
+
+function AdminArtistListNew() {
+	global $conn;
+	global $pagination;
+	if ($_REQUEST['listpage'] > 0) {
+		$page = preg_replace("/[^0-9]/","",$_REQUEST['listpage']);
+	} else {
+		$page = 1;
+	}
+	$limit_start = (abs($page - 1) * $pagination);
+	$limit_end = $pagination;
+	$query = sprintf("SELECT * FROM `artists` ORDER BY `last_updated` DESC LIMIT %s,%s",
+		mysqli_real_escape_string($conn,$limit_start),
+		mysqli_real_escape_string($conn,$limit_end)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminArtistListPageNew($result,$page);
+	mysqli_free_result($result);
+}
+
+function AdminArtistListFeat() {
+	global $conn;
+	global $pagination;
+	if ($_REQUEST['listpage'] > 0) {
+		$page = preg_replace("/[^0-9]/","",$_REQUEST['listpage']);
+	} else {
+		$page = 1;
+	}
+	$limit_start = (abs($page - 1) * $pagination);
+	$limit_end = $pagination;
+	$query = sprintf("SELECT * FROM `artists` WHERE `is_highlighted` = 1 ORDER BY `name` LIMIT %s,%s",
+		mysqli_real_escape_string($conn,$limit_start),
+		mysqli_real_escape_string($conn,$limit_end)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminArtistListPageFeat($result,$page);
+	mysqli_free_result($result);
+}
+
+function AdminArtistListSecret() {
+	global $conn;
+	global $pagination;
+	if ($_REQUEST['listpage'] > 0) {
+		$page = preg_replace("/[^0-9]/","",$_REQUEST['listpage']);
+	} else {
+		$page = 1;
+	}
+	$limit_start = (abs($page - 1) * $pagination);
+	$limit_end = $pagination;
+	$query = sprintf("SELECT * FROM `artists` WHERE `is_active` = 0 OR `is_searchable` = 0 ORDER BY `is_active` DESC, `name` LIMIT %s,%s",
+		mysqli_real_escape_string($conn,$limit_start),
+		mysqli_real_escape_string($conn,$limit_end)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminArtistListPageSecret($result,$page);
+	mysqli_free_result($result);
+}
+
+function AdminListArtistsByCategory() {
+	global $conn;
+	global $pagination;
+	if ($_REQUEST['listpage'] > 0) {
+		$page = preg_replace("/[^0-9]/","",$_REQUEST['listpage']);
+	} else {
+		$page = 1;
+	}
+	$limit_start = (abs($page - 1) * $pagination);
+	$limit_end = $pagination;
+	// wtf is the cid for categoryurl
+	$query = sprintf(
+		"SELECT `cid` FROM `categories` WHERE `url` = '%s'",
+		mysqli_real_escape_string($conn,$_REQUEST['categoryurl'])
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	// wtf are all the aid's associated with the one cid?
+	// XXX: I MAED A JOIN QUERY HFS
+	$query = sprintf(
+		"SELECT * FROM `artists` LEFT OUTER JOIN `artistcategories` ON `artists`.`aid` = `artistcategories`.`aid` WHERE `artistcategories`.`cid` = %s",
+		mysqli_real_escape_string($conn,$row['cid'])
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminArtistListPageByCategory($result,$page);
 	mysqli_free_result($result);
 }
 
@@ -1406,6 +1526,15 @@ function AdminSelectCategories($aid = NULL) {
 		);
 	}
 	return($string);
+}
+
+function CategoryNameFromURL($caturl) {
+	// simple turn categoryurl to cid
+	global $conn;
+	$query = sprintf("SELECT `category` FROM `categories` WHERE `url` = '%s'", mysqli_real_escape_string($conn,$caturl));
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	return ($row['category']);
 }
 
 function AdminSelectStyles($aid = NULL) {

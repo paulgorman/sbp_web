@@ -351,6 +351,36 @@ td {
 	float: left;
 }
 
+.AdminCategoryFavoriteIcon {
+	background-image: url('/templates/icons/Favorite.png');
+	background-size: 18px;
+	background-repeat: no-repeat;
+	padding-left: 22px;
+	height: 1.5em;
+	vertical-align:top;
+	float: left;
+}
+
+.AdminCategoryInactiveIcon {
+	background-image: url('/templates/icons/Grey.png');
+	background-size: 18px;
+	background-repeat: no-repeat;
+	padding-left: 22px;
+	height: 1.5em;
+	vertical-align:top;
+	float: left;
+}
+
+.AdminCategorySecretIcon {
+	background-image: url('/templates/icons/Blue.png');
+	background-size: 18px;
+	background-repeat: no-repeat;
+	padding-left: 22px;
+	height: 1.5em;
+	vertical-align:top;
+	float: left;
+}
+
 .AdminCategoryListingAddContainer {
 	color: #4F8A10;
 	background-color: #DFF2BF;

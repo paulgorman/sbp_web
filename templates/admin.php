@@ -71,11 +71,132 @@ function AdminArtistListPage($artists,$page) {
 					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
 						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
 						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= $values['slug'] ?></div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= nicetime($values['last_updated']); ?></div>
+						<? AdminArtistListIconColumn($values); ?>
 					</div>
 				</form>
 			<? } ?>
 			<div class="AdminCategoryListHeader">
 				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_all",$page)); ?></div>
+			</div>
+		</div>
+	<?
+}
+
+function AdminArtistListIconColumn($values) {
+	if((int)$values['is_highlighted'] === 1) { 
+		?><a href="javascript:;" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;" class="AdminCategoryPublishedIcon" title="Featured Highlighted Artist"></a><?
+	}
+	if((int)$values['is_active'] === 0) { 
+		?><a href="javascript:;" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;" class="AdminCategoryInactiveIcon" title="Inactive Artist"></a><?
+	} elseif ((int)$values['is_active'] === 1 && (int)$values['is_searchable'] === 0) { 
+		?><a href="javascript:;" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;" class="AdminCategorySecretIcon" title="Secret Artist"></a><?
+	}
+}
+
+function AdminArtistListPageNew($artists,$page) {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemDescription">Recently Added/Updated Artists</div>
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_new",$page)); ?></div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($artists as $key => $values) { ?>
+				<form method="POST" action="/admin/artists/edit/<?= $values['aid']; ?>" name="edit<?= $values['aid']; ?>">
+					<input type="hidden" name="function" value="edit">
+					<input type="hidden" name="aid" value="<?= $values['aid']; ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
+						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= $values['slug'] ?></div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= nicetime($values['last_updated']); ?></div>
+						<? AdminArtistListIconColumn($values); ?>
+					</div>
+				</form>
+			<? } ?>
+			<div class="AdminCategoryListHeader">
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_new",$page)); ?></div>
+			</div>
+		</div>
+	<?
+}
+
+function AdminArtistListPageFeat($artists,$page) {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemDescription">Featured Artists</div>
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_feat",$page)); ?></div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($artists as $key => $values) { ?>
+				<form method="POST" action="/admin/artists/edit/<?= $values['aid']; ?>" name="edit<?= $values['aid']; ?>">
+					<input type="hidden" name="function" value="edit">
+					<input type="hidden" name="aid" value="<?= $values['aid']; ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
+						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= $values['slug'] ?></div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= nicetime($values['last_updated']); ?></div>
+						<? AdminArtistListIconColumn($values); ?>
+					</div>
+				</form>
+			<? } ?>
+			<div class="AdminCategoryListHeader">
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_feat",$page)); ?></div>
+			</div>
+		</div>
+	<?
+}
+
+function AdminArtistListPageSecret($artists,$page) {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemDescription">Unsearchable / Inactive Artists</div>
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_secret",$page)); ?></div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($artists as $key => $values) { ?>
+				<form method="POST" action="/admin/artists/edit/<?= $values['aid']; ?>" name="edit<?= $values['aid']; ?>">
+					<input type="hidden" name="function" value="edit">
+					<input type="hidden" name="aid" value="<?= $values['aid']; ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
+						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= $values['slug'] ?></div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= nicetime($values['last_updated']); ?></div>
+						<? AdminArtistListIconColumn($values); ?>
+					</div>
+				</form>
+			<? } ?>
+			<div class="AdminCategoryListHeader">
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_secret",$page)); ?></div>
+			</div>
+		</div>
+	<?
+}
+
+function AdminArtistListPageByCategory($artists,$page) {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemDescription">All Artists in <?= CategoryNameFromURL($_REQUEST['categoryurl']); ?></div>
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_category",$page)); ?></div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($artists as $key => $values) { ?>
+				<form method="POST" action="/admin/artists/edit/<?= $values['aid']; ?>" name="edit<?= $values['aid']; ?>">
+					<input type="hidden" name="function" value="edit">
+					<input type="hidden" name="aid" value="<?= $values['aid']; ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
+						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= $values['slug'] ?></div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= nicetime($values['last_updated']); ?></div>
+						<? AdminArtistListIconColumn($values); ?>
+					</div>
+				</form>
+			<? } ?>
+			<div class="AdminCategoryListHeader">
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_category",$page)); ?></div>
 			</div>
 		</div>
 	<?
