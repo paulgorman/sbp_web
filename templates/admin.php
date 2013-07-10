@@ -401,7 +401,7 @@ function AdminShowCategories ($categorieslist) {
 				<div class="AdminCategoryListingAddItem">Category Name:</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="form_category" size="20"></div>
 				<div class="AdminCategoryListingAddItem">URL:</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="form_url" size="15" style="text-transform: lowercase"></div>
+				<div class="AdminCategoryListingAddValue"><input type="text" placeholder="Optional" name="form_url" size="15" style="text-transform: lowercase"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Description:</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" size="40"></div>
@@ -612,7 +612,7 @@ function AdminArtistFormNew() {
 				<div class="AdminCategoryListingAddValue"><input type="text" name="name" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['name']))); ?>" size="50"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Artist's Obfuscated Display Name</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="display_name" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['display_name']))); ?>" size="50"></div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="display_name" placeholder="Optional (auto-generated)" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['display_name']))); ?>" size="50"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">One-Line Summary,<br> Header, Slug</div>
 				<div class="AdminCategoryListingAddTextBox"><textarea rows="2" cols="50" name="slug" wrap="virtual"><?= MakeCase(htmlspecialchars(trim($_REQUEST['slug']))); ?></textarea></div>
