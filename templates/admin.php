@@ -398,10 +398,10 @@ function AdminShowCategories ($categorieslist) {
 			<input type="hidden" name="function" value="add_category">
 			<div class="AdminCategoryListingAddContainer">
 				<div class="AdminCategoryListingAddHeader">ADD NEW CATEGORY</div>
-				<div class="AdminCategoryListingAddItem">URL:</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="form_url" size="15" style="text-transform: lowercase"></div>
 				<div class="AdminCategoryListingAddItem">Category Name:</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="form_category" size="20"></div>
+				<div class="AdminCategoryListingAddItem">URL:</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_url" size="15" style="text-transform: lowercase"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Description:</div>
 				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" size="40"></div>

@@ -1671,13 +1671,16 @@ function AdminSelectLocations($aid = NULL) {
 function AdminSaveNewCategory() {
 	// save a NEW category
 	global $conn;
-	if (isEmpty($_REQUEST['form_url']) || isEmpty($_REQUEST['form_category']) || isEmpty($_REQUEST['form_description']) || (!CheckForFiles())) {
-		echo "<div class='AdminError'>Please fill in all three Category name fields and the Category Graphic</div>";
+	if (isEmpty($_REQUEST['form_category']) || isEmpty($_REQUEST['form_description']) || (!CheckForFiles())) {
+		echo "<div class='AdminError'>Please fill in Category Name, Description and the Category Graphic</div>";
 	} else {
+		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
+		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
+		if (isEmpty($url)) {
+			$url = MakeURL(strtolower($category));
+		}
 		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
 		$newfileid = ResizeImage($fileid,"category"); // 728x90
-		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
-		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
 		if (strlen($_REQUEST['published'])) {
 			$published = TRUE;
 		} else {
