@@ -51,7 +51,7 @@ function AdminArtistsButtonBar() {
 			<div class="adminNavSubItem"><a href='/admin/artists/list_feat'>List Featured Artists</a></div>
 			<div class="adminNavSubItem"><a href='/admin/artists/list_secret'>List Hidden Artists</a></div>
 			<div class="adminNavSubItem"><a href='/admin/artists/list_all'>List All Artists</a></div>
-			<div class="adminNavSubItem"><form method="POST" action="/admin/artists/" id="search"><input type="hidden" name="function" value="search"><input type="text" name="q" placeholder="Search..."></form></div>
+			<div class="adminNavSubItem"><form method="POST" action="/admin/artists/search/" id="search"><input type="hidden" name="function" value="search"><input type="text" name="q" placeholder="Search..."></form></div>
 		</div>
 	<?
 }
@@ -180,7 +180,6 @@ function AdminArtistListPageByCategory($artists,$page) {
 		<div class="AdminCategoryListContainer">
 			<div class="AdminCategoryListHeader">
 				<div class="AdminCategoryListItemDescription">All <?= mysqli_num_rows($artists); ?> Artists in <?= CategoryNameFromURL($_REQUEST['categoryurl']); ?></div>
-				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_category",$page)); ?></div>
 			</div>
 			<div class="clear"></div>
 			<? foreach ($artists as $key => $values) { ?>
@@ -195,9 +194,6 @@ function AdminArtistListPageByCategory($artists,$page) {
 					</div>
 				</form>
 			<? } ?>
-			<div class="AdminCategoryListHeader">
-				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_category",$page)); ?></div>
-			</div>
 		</div>
 	<?
 }
@@ -206,8 +202,7 @@ function AdminArtistListPageByStyle($artists,$page) {
 	?>
 		<div class="AdminCategoryListContainer">
 			<div class="AdminCategoryListHeader">
-				<div class="AdminCategoryListItemDescription">All <?= mysqli_num_rows($artists); ?></pre> Artists in the <?= StyleNameFromSID($_REQUEST['sid']); ?> style</div>
-				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_style",$page)); ?></div>
+				<div class="AdminCategoryListItemDescription">All <?= mysqli_num_rows($artists); ?> Artists in the <?= MakeCase(StyleNameFromSID($_REQUEST['sid'])); ?> Style</div>
 			</div>
 			<div class="clear"></div>
 			<? foreach ($artists as $key => $values) { ?>
@@ -222,9 +217,32 @@ function AdminArtistListPageByStyle($artists,$page) {
 					</div>
 				</form>
 			<? } ?>
+		</div>
+	<?
+}
+
+function AdminArtistListPageBySearchResult($artists,$page) {
+	?>
+		<div class="AdminCategoryListContainer">
 			<div class="AdminCategoryListHeader">
-				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_style",$page)); ?></div>
+				<div class="AdminCategoryListItemDescription">All <?= mysqli_num_rows($artists); ?> Artists Matching Search "<?
+					echo htmlspecialchars(strip_tags(MakeCase(trim($_REQUEST['q']))));
+					echo htmlspecialchars(strip_tags(MakeCase(trim($_REQUEST['listpage']))));
+					?>"</div>
 			</div>
+			<div class="clear"></div>
+			<? foreach ($artists as $key => $values) { ?>
+				<form method="POST" action="/admin/artists/edit/<?= $values['aid']; ?>" name="edit<?= $values['aid']; ?>">
+					<input type="hidden" name="function" value="edit">
+					<input type="hidden" name="aid" value="<?= $values['aid']; ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
+						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= $values['slug'] ?></div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= nicetime($values['last_updated']); ?></div>
+						<? AdminArtistListIconColumn($values); ?>
+					</div>
+				</form>
+			<? } ?>
 		</div>
 	<?
 }
@@ -893,7 +911,7 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="clear"></div>
 				</div>
 					<div class="AdminCategoryListingAddFilesSingle">
-						<div id="file_container"><input name="filesToUpload[]" value="ASDF" class="filesToUpload" id="1" type="file" multiple="" onchange="makeFileList();" /></div>
+						<div id="file_container"><input name="filesToUpload[]" value="Upload Category Graphic" class="filesToUpload" id="1" type="file" multiple="" onchange="makeFileList();" /></div>
 						<div class="AdminCategoryListingValue"><ul id="fileList"></ul></div>
 					</div>
 				<div class="clear"></div>

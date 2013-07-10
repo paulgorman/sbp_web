@@ -248,7 +248,7 @@ function ShowAdminPage() {
 			AdminArtistsButtonBar(); // display that additional nav/button bar
 			switch($_REQUEST['function']) {
 				case "search":
-					echo $_REQUEST['q'];
+					AdminArtistListSearchResults();
 					break;
 				case "list_all":
 					AdminArtistList();
@@ -334,8 +334,11 @@ function GatherArtistInfo($aid) {
 	global $conn;
 	$aid = preg_replace("/[^0-9]/",'',$aid);
 	// XXX: this could be some massive joined query
-	// echo "I'm the AdminArtistEditSingle page<br>";
 	$artistinfo = array();
+	if (isEmpty($aid)) {
+		echo "<div class='AdminError'>Bad Request for Artist Record!</div>";
+		return($artistinfo);
+	}
 	$query = sprintf("SELECT * FROM `artists` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
 	$result = mysqli_query($conn,$query);
 	$row = mysqli_fetch_assoc($result);
@@ -390,7 +393,9 @@ function GatherArtistInfo($aid) {
 
 function AdminArtistEditSingle($aid) {
 	$artistinfo = GatherArtistInfo($aid);
-	AdminArtistFormSingle($artistinfo);
+	if (!isEmpty($artistinfo['name'])) {
+		AdminArtistFormSingle($artistinfo);
+	}
 }
 
 function ObfuscateArtistNameAutomatically($name) {
@@ -793,7 +798,7 @@ function FigurePageNav($type,$page=1) {
 		$query = "SELECT COUNT(*) FROM `artists` WHERE `is_highlighted` = 1";
 	} else if ($type === "list_secret") {
 		$query = "SELECT COUNT(*) FROM `artists` WHERE `is_searchable` = 0 OR `is_active` = 0";
-	} else if ($type === "list_by_category") {
+	} else if ($type === "search_category") {
 		// figure out the cid from submitted categoryurl name
 		$query = sprintf(
 			"SELECT `cid` FROM `categories` WHERE `url` = '%s'",
@@ -805,12 +810,18 @@ function FigurePageNav($type,$page=1) {
 		// count up all the aid's associated with the one cid
 		$query = sprintf(
 			"SELECT count(`aid`) FROM `artistcategories` WHERE `cid` = %s",
-			mysqli_real_escape_string($conn,$row['cid'])
+			mysqli_real_escape_string($conn, preg_replace("/[^0-9]/","",$row['cid']))
 		);
 	} else if ($type === "list_by_style") {
 		$query = sprintf(
 			"SELECT COUNT(`aid`) FROM `artiststyles` WHERE `sid` = %s",
-			mysqli_real_escape_string($conn,$_REQUEST['sid'])
+			mysqli_real_escape_string($conn, preg_replace("/[^0-9]/","",$_REQUEST['sid']))
+		);
+	} else if ($type === "search") {
+		$search = htmlspecialchars(strip_tags(strtolower(trim($_REQUEST['q']))));
+		$query = sprintf(
+			"SELECT COUNT(`aid`) FROM `artists` WHERE `name` LIKE '%%%s%%'",
+			mysqli_real_escape_string($conn,$search)
 		);
 	}
 	$result = mysqli_query($conn,$query);
@@ -1136,13 +1147,6 @@ function AdminArtistListSecret() {
 function AdminListArtistsByCategory() {
 	global $conn;
 	global $pagination;
-	if ($_REQUEST['listpage'] > 0) {
-		$page = preg_replace("/[^0-9]/","",$_REQUEST['listpage']);
-	} else {
-		$page = 1;
-	}
-	$limit_start = (abs($page - 1) * $pagination);
-	$limit_end = $pagination;
 	// wtf is the cid for categoryurl
 	$query = sprintf(
 		"SELECT `cid` FROM `categories` WHERE `url` = '%s'",
@@ -1151,12 +1155,12 @@ function AdminListArtistsByCategory() {
 	$result = mysqli_query($conn,$query);
 	$row = mysqli_fetch_assoc($result);
 	// wtf are all the aid's associated with the one cid?
-	// XXX: I MAED A JOIN QUERY HFS
 	$query = sprintf(
-		"SELECT * FROM `artists` LEFT OUTER JOIN `artistcategories` ON `artists`.`aid` = `artistcategories`.`aid` WHERE `artistcategories`.`cid` = %s",
+		"SELECT * FROM `artists` LEFT OUTER JOIN `artistcategories` ON `artists`.`aid` = `artistcategories`.`aid` WHERE `artistcategories`.`cid` = %s ORDER BY `artists`.`name`",
 		mysqli_real_escape_string($conn,$row['cid'])
 	);
 	$result = mysqli_query($conn,$query);
+	// XXX: no pagination, just a long listing
 	AdminArtistListPageByCategory($result,$page);
 	mysqli_free_result($result);
 }
@@ -1164,23 +1168,34 @@ function AdminListArtistsByCategory() {
 function AdminListArtistByStyle() {
 	global $conn;
 	global $pagination;
-	if ($_REQUEST['listpage'] > 0) {
-		$page = preg_replace("/[^0-9]/","",$_REQUEST['listpage']);
-	} else {
-		$page = 1;
-	}
-	$limit_start = (abs($page - 1) * $pagination);
-	$limit_end = $pagination;
-	// asdf
 	// wtf are all the aid's associated with the one sid?
-	// XXX: I MAED A JOIN QUERY HFS
 	$query = sprintf(
-		"SELECT * FROM `artists` LEFT OUTER JOIN `artiststyles` ON `artists`.`aid` = `artiststyles`.`aid` WHERE `artiststyles`.`sid` = %s",
+		"SELECT * FROM `artists` LEFT OUTER JOIN `artiststyles` ON `artists`.`aid` = `artiststyles`.`aid` WHERE `artiststyles`.`sid` = %s ORDER BY `artists`.`name`",
 		mysqli_real_escape_string($conn,preg_replace("/[^0-9]/","",$_REQUEST['sid']))
 	);
 	$result = mysqli_query($conn,$query);
 	$row = mysqli_fetch_assoc($result);
+	// XXX: no pagination, just a long listing
 	AdminArtistListPageByStyle($result,$page);
+	mysqli_free_result($result);
+}
+
+function AdminArtistListSearchResults() {
+	global $conn;
+	global $pagination;
+	if (isEmpty($_REQUEST['q'])) {
+		$search = htmlspecialchars(strip_tags(strtolower(trim($_REQUEST['listpage']))));
+	} else {
+		$search = htmlspecialchars(strip_tags(strtolower(trim($_REQUEST['q']))));
+	}
+	$query = sprintf(
+		"SELECT * FROM `artists` WHERE `name` LIKE '%%%s%%' ORDER BY `name`",
+		mysqli_real_escape_string($conn,$search)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	// XXX: no pagination, just a long listing
+	AdminArtistListPageBySearchResult($result,$page);
 	mysqli_free_result($result);
 }
 
