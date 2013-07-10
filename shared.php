@@ -541,7 +541,9 @@ function AdminArtistSaveSingle() {
 		foreach ($_REQUEST['styles'] as $key => $value) {
 			$styles[$key] = preg_replace("/[^0-9]/","",$value);
 		}
-		if (array_diff($styles, $artistinfo['styles']) || array_diff($artistinfo['styles'], $styles)) {
+		if (isEmpty($artistinfo['styles'])) {
+			$artistsave['artiststyles'] = $styles;	// styles have been updated
+		} else if (array_diff($styles, $artistinfo['styles']) || array_diff($artistinfo['styles'], $styles)) {
 			$artistsave['artiststyles'] = $styles;	// styles have been updated
 		}
 	} else {
