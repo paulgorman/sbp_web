@@ -179,7 +179,7 @@ function AdminArtistListPageByCategory($artists,$page) {
 	?>
 		<div class="AdminCategoryListContainer">
 			<div class="AdminCategoryListHeader">
-				<div class="AdminCategoryListItemDescription">All Artists in <?= CategoryNameFromURL($_REQUEST['categoryurl']); ?></div>
+				<div class="AdminCategoryListItemDescription">All <?= mysqli_num_rows($artists); ?> Artists in <?= CategoryNameFromURL($_REQUEST['categoryurl']); ?></div>
 				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_category",$page)); ?></div>
 			</div>
 			<div class="clear"></div>
@@ -197,6 +197,33 @@ function AdminArtistListPageByCategory($artists,$page) {
 			<? } ?>
 			<div class="AdminCategoryListHeader">
 				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_category",$page)); ?></div>
+			</div>
+		</div>
+	<?
+}
+
+function AdminArtistListPageByStyle($artists,$page) {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemDescription">All <?= mysqli_num_rows($artists); ?></pre> Artists in the <?= StyleNameFromSID($_REQUEST['sid']); ?> style</div>
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_style",$page)); ?></div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($artists as $key => $values) { ?>
+				<form method="POST" action="/admin/artists/edit/<?= $values['aid']; ?>" name="edit<?= $values['aid']; ?>">
+					<input type="hidden" name="function" value="edit">
+					<input type="hidden" name="aid" value="<?= $values['aid']; ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
+						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= $values['slug'] ?></div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= nicetime($values['last_updated']); ?></div>
+						<? AdminArtistListIconColumn($values); ?>
+					</div>
+				</form>
+			<? } ?>
+			<div class="AdminCategoryListHeader">
+				<div class="ListPage"><?= ShowPageNav(FigurePageNav("list_by_style",$page)); ?></div>
 			</div>
 		</div>
 	<?

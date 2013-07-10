@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20130625
+**  Last Edit: 20130709
 ****************************************/
 
 function Init() {
@@ -215,6 +215,9 @@ function ShowAdminPage() {
 				case "save_style":
 					AdminSaveSingleStyle();
 					AdminListStyles();
+					break;
+				case "search_style":
+					AdminListArtistByStyle();
 					break;
 				default:
 					AdminListStyles();
@@ -804,6 +807,11 @@ function FigurePageNav($type,$page=1) {
 			"SELECT count(`aid`) FROM `artistcategories` WHERE `cid` = %s",
 			mysqli_real_escape_string($conn,$row['cid'])
 		);
+	} else if ($type === "list_by_style") {
+		$query = sprintf(
+			"SELECT COUNT(`aid`) FROM `artiststyles` WHERE `sid` = %s",
+			mysqli_real_escape_string($conn,$_REQUEST['sid'])
+		);
 	}
 	$result = mysqli_query($conn,$query);
 	list($count) = mysqli_fetch_array($result);
@@ -1149,8 +1157,30 @@ function AdminListArtistsByCategory() {
 		mysqli_real_escape_string($conn,$row['cid'])
 	);
 	$result = mysqli_query($conn,$query);
-	$row = mysqli_fetch_assoc($result);
 	AdminArtistListPageByCategory($result,$page);
+	mysqli_free_result($result);
+}
+
+function AdminListArtistByStyle() {
+	global $conn;
+	global $pagination;
+	if ($_REQUEST['listpage'] > 0) {
+		$page = preg_replace("/[^0-9]/","",$_REQUEST['listpage']);
+	} else {
+		$page = 1;
+	}
+	$limit_start = (abs($page - 1) * $pagination);
+	$limit_end = $pagination;
+	// asdf
+	// wtf are all the aid's associated with the one sid?
+	// XXX: I MAED A JOIN QUERY HFS
+	$query = sprintf(
+		"SELECT * FROM `artists` LEFT OUTER JOIN `artiststyles` ON `artists`.`aid` = `artiststyles`.`aid` WHERE `artiststyles`.`sid` = %s",
+		mysqli_real_escape_string($conn,preg_replace("/[^0-9]/","",$_REQUEST['sid']))
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminArtistListPageByStyle($result,$page);
 	mysqli_free_result($result);
 }
 
@@ -1529,12 +1559,26 @@ function AdminSelectCategories($aid = NULL) {
 }
 
 function CategoryNameFromURL($caturl) {
-	// simple turn categoryurl to cid
+	// simple turn categoryurl to nice category name
 	global $conn;
 	$query = sprintf("SELECT `category` FROM `categories` WHERE `url` = '%s'", mysqli_real_escape_string($conn,$caturl));
 	$result = mysqli_query($conn,$query);
 	$row = mysqli_fetch_assoc($result);
+	mysqli_free_result($result);
 	return ($row['category']);
+}
+
+function StyleNameFromSID($sid) {
+	// simple turn styleID into name
+	global $conn;
+	$query = sprintf(
+		"SELECT `name` FROM `styles` WHERE `sid` = %s",
+		mysqli_real_escape_string($conn,preg_replace("/[^0-9]/","",$sid))
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	mysqli_free_result($result);
+	return($row['name']);
 }
 
 function AdminSelectStyles($aid = NULL) {
