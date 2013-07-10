@@ -207,6 +207,9 @@ function ShowAdminPage() {
 					break;
 				case "del_style":
 					AdminDeleteStyle($_REQUEST['sid']);
+					break;
+				case "del_style_for_reals":
+					AdminDeleteStyleGo($_REQUEST['sid']);
 					AdminListStyles();
 					break;
 				case "edit_style":
@@ -1301,7 +1304,20 @@ function AdminSaveSingleStyle() {
 	}
 }
 
-function AdminDeleteStyle($sid) {
+function AdminDeleteStyle($targetcategoryurl) {
+	global $conn;
+	$query = sprintf(
+		"SELECT `name` FROM `styles` WHERE `sid` = %s",
+		mysqli_real_escape_string($conn,preg_replace("/[^0-9]/","",$_REQUEST['sid']))
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	$nextfunction = "del_style_for_reals";
+	$url = "styles_list";
+	AdminShowDeleteConfirmation($targetcategoryurl,$row['name'],$url,$url,$nextfunction);  
+}
+
+function AdminDeleteStyleGo($sid) {
 	global $conn;
 	$sid = preg_replace("/[^0-9]/","",$sid); // input sanitization -- only numbers
 	// find all artists using this category in `artistcategories` and clean 'em up
