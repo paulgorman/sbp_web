@@ -209,7 +209,7 @@ function ShowAdminPage() {
 					AdminDeleteStyle($_REQUEST['sid']);
 					break;
 				case "del_style_for_reals":
-					AdminDeleteStyleGo($_REQUEST['sid']);
+					AdminDeleteStyleGo($_REQUEST['targetcategoryurl']);
 					AdminListStyles();
 					break;
 				case "edit_style":
