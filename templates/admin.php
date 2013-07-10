@@ -417,18 +417,19 @@ function AdminShowCategories ($categorieslist) {
 			<div class="AdminCategoryListingAddContainer">
 				<div class="AdminCategoryListingAddHeader">ADD NEW CATEGORY</div>
 				<div class="AdminCategoryListingAddItem">Category Name:</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="form_category" size="20"></div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_category" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['form_category']))); ?>" size="20"></div>
 				<div class="AdminCategoryListingAddItem">URL:</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" placeholder="Optional" name="form_url" size="15" style="text-transform: lowercase"></div>
+				<div class="AdminCategoryListingAddValue"><input type="text" placeholder="Optional" name="form_url" value="<?= htmlspecialchars(trim($_REQUEST['form_url'])); ?>" size="15" style="text-transform: lowercase"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Description:</div>
-				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" size="40"></div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" value="<?= htmlspecialchars(trim($_REQUEST['form_description'])); ?>" size="40"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Artist Names:</div>
 				<div class="AdminCategoryListingAddValue"><select name="force_display_names"><?= DisplayNamesOptionsDropDown($dataarray['cid']) ?></select></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Category Logo:</div>
 				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple="" accept="image/png"></div>
+				<div class="AdminCategoryListItemURL">728x90 PNG</div>
     		<div class="AdminCategoryListingAddItem"><label for="published">Public</label></div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="published" id="published" class="regular-checkbox big-checkbox" CHECKED /><label title="Publicly Displayed in Categories Listing" for="published"></label>
@@ -486,8 +487,9 @@ function AdminEditCategory($dataarray) {
 				<div class="AdminCategoryListingShowImage"><img src="/i/category/<?= $dataarray['image_id'] ?>"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">Image Name:</div>
-				<div class="AdminCategoryListingAddValue"><?= $dataarray['image_filename'] ?></div>
-				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple=""></div>
+				<div class="AdminCategoryListItemURL"><?= $dataarray['image_filename'] ?></div>
+				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple="" accept="image/png"></div>
+				<div class="AdminCategoryListItemURL">728x90 PNG</div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem"></div>
 				<div class="clear"></div>

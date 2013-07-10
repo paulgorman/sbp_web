@@ -190,7 +190,7 @@ function ShowAdminPage() {
 					break;
 				case "save_category":
 					AdminSaveSingleCategory($_REQUEST['form_cid']);
-					AdminEditCategories();
+					AdminEditSingleCategory(GetCatUrlFromCID($_REQUEST['form_cid']));
 					break;
 				case "search_category":
 					AdminListArtistsByCategory();
@@ -1571,6 +1571,16 @@ function CategoryNameFromURL($caturl) {
 	$row = mysqli_fetch_assoc($result);
 	mysqli_free_result($result);
 	return ($row['category']);
+}
+
+function GetCatUrlFromCID($cid) {
+	// simple turn categoryid to url, since categories was first thing I wrote and did it wrong
+	global $conn;
+	$query = sprintf("SELECT `url` FROM `categories` WHERE `cid` = %s", mysqli_real_escape_string($conn,preg_replace("/[^0-9]/","",$cid)));
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	mysqli_free_result($result);
+	return ($row['url']);
 }
 
 function StyleNameFromSID($sid) {
