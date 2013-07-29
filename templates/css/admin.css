@@ -150,6 +150,20 @@ td {
 	right: 10px;
 }
 
+.AdminVideoTitle {
+	background-color: #AACEDF;
+	color: #000000;
+	width: 640;
+	border-top: 1px solid;
+	border-bottom: 1px solid;
+	border-color: #e6e6e6;
+	padding: 3px;
+	padding-left: 33px;
+	margin-left: -30px;
+	margin-top: 1em;
+	font-family: "Courier New", Courier, Monaco, monospace;
+}
+
 .AdminVideoPreviewChooserContainer {
 	margin-top: 5px;
 	padding-top: 5px;
@@ -259,7 +273,7 @@ td {
 
 .AdminCategoryListRow {
 	color: #9F6000;
-	background-color: #FFFFFF;
+	background-color: #e6e6e6;
 	font-size: 12px;
 	margin: 2px;
 	border: 1px solid;
@@ -484,7 +498,7 @@ td {
 
 .AdminCategoryListingAddValue {
 	color: #4F8A10;
-	background-color: #FFFFFF;
+	background-color: #e6e6e6;
 	font-size: 12px;
 	margin: 2px;
 	border: 0px solid;
@@ -586,6 +600,8 @@ td {
 	background-repeat: no-repeat;
 	background-position: 10px top;
 	background-color: #AACEDF;
+	border-bottom: 1px solid;
+	border-color: #e6e6e6;
 	text-align: left;
 	font-weight: bold;
 	font-size: 2.5em;
@@ -599,6 +615,9 @@ td {
 	background-repeat: no-repeat;
 	background-color: #AACEDF;
 	background-position: 10px top;
+	border-top: 1px solid;
+	border-bottom: 1px solid;
+	border-color: #e6e6e6;
 	text-align: left;
 	font-weight: bold;
 	font-size: 24px;

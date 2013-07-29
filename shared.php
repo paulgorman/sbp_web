@@ -745,7 +745,12 @@ function PrepareVideoPlayer($input) {
 					} else {
 						$tempartistinfo['classname'] = "VideoPlayerNOVIEW";
 					}
-					echo '<div class="clear"><hr></div>';	// XXX: display hack
+					echo sprintf(
+						"<div class='AdminVideoTitle'>%s (%s) %s</div>",
+						$artistinfo['media']['name'][$mid],
+						date("i:s",($artistinfo['media']['vidlength'][$mid])),
+						date("F d, Y",$artistinfo['media']['published'][$mid])
+					);
 					DisplayVideoPlayer($tempartistinfo);
 					AdminVideoPreviewChooser($tempartistinfo);
 				}
