@@ -1886,6 +1886,7 @@ function ShowPhotoArray($mediadata) {
 	// argument is just $artistinfo['media']
 	global $conn;
 	$photosorder = array();
+	$videos = array();
 	if (is_array($mediadata)) {
 		foreach ($mediadata['mid'] as $arraykey => $mid) {
 			if (preg_match("/png|jpg/",$mediadata['filetype'][$mid])) {
@@ -1904,6 +1905,8 @@ function ShowPhotoArray($mediadata) {
 					$location = $arraykey * 1000;	// put this mediaID later in the sort index
 					$photosorder[$location] = $mediadata['mid'][$mid];
 				}
+			} else {
+				$videos[] = $mid;
 			}
 		}
 	} else {
@@ -1948,7 +1951,18 @@ function ShowPhotoArray($mediadata) {
 		} else {
 			$filename = htmlspecialchars($mediadata['name'][$mid]);
 		}
-		$string = sprintf("<div class='CheckBoxImageContainer'>".
+		// attempt to provide video preview image options
+		$videothumboptions = "";
+		foreach ($videos as $vidmid) {
+			$videothumboptions .= sprintf(
+				"<option value='VidThumb%s'>Video %s</option>",
+				$mid,
+				htmlspecialchars(substr($mediadata['name'][$vidmid],0,16))
+			);
+		}
+		$string = sprintf(
+			// fields
+			"<div class='CheckBoxImageContainer'>".
 			"<a href='/i/artist/%s' target='_new' border='0'>".
 			"<img class='%s' src='/i/artist/%s' data-width='%s' data-height='%s' alt='%s' title='%s'>".
 			"</a>".
@@ -1957,6 +1971,7 @@ function ShowPhotoArray($mediadata) {
 			"<option value='' disabled='disabled' selected='selected'>Image Features</option>".
 			"<option value='ToggleHighlight'>%s</option>".
 			"<option value='ToggleHidden'>%s</option>".
+			"$videothumboptions". 
 			"<option value='Remove'>Delete Image</option>".
 			"<optgroup disabled='disabled' label='Image Info'>".
 			"<option value='' disabled='disabled'>%s</option>".	// filename
@@ -1965,6 +1980,7 @@ function ShowPhotoArray($mediadata) {
 			"<option value='' disabled='disabled'>Size: %sx%s</option>".
 			"<option value='' disabled='disabled'>Uploaded: %s</option>".
 			"</select></div>\n",
+			// values
 			"original-".$mediadata['filename'][$mid],
 			$highlightclass,
 			$mediadata['filename'][$mid],
@@ -1989,14 +2005,14 @@ function ShowPhotoArray($mediadata) {
 }
 
 function UploadProgress() {
+	// ajax file upload progress percentage for URL /uploadprogress
 	$key = ini_get("session.upload_progress.prefix") . "sbpform";
 	if (!empty($_SESSION[$key])) {
 		$current = $_SESSION[$key]["bytes_processed"];
 		$total = $_SESSION[$key]["content_length"];
 		echo $current < $total ? ceil($current / $total * 100) : 100;
-	}
-	else {
-		echo 100;
+	} else {
+		echo "100";
 	}
 }
 
