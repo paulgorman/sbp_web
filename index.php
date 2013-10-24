@@ -7,6 +7,9 @@
 			ShowAdminPage();
 			ScriptTime($starttime);
 			break;
+		case "categories":
+			CategoriesList();
+			break;
 		case "uploadprogress":
 			UploadProgress();
 			break;
