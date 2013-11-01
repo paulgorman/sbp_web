@@ -1610,11 +1610,11 @@ function AdminDeleteCategoryGo($targetcategoryurl) {
 	global $dirlocation;
 	// fetch us the category id for tihs url
 	// XXX: could this be some sort of joined thing?  Yeah.  Am I doing it?  Dunno how.  Does it matter?  Not this time.
-	$query = sprintf("SELECT `cid`,`image_id` FROM `categories` WHERE `url` = '%s'",
+	$query = sprintf("SELECT `cid`,`image_id`,`carousel_id` FROM `categories` WHERE `url` = '%s'",
 		mysqli_real_escape_string($conn,$targetcategoryurl)
 	);
 	$result = mysqli_query($conn,$query);
-	list($cid,$fileid) = mysqli_fetch_array($result);
+	list($cid,$fileid,$carousel_id) = mysqli_fetch_array($result);
 	if (isEmpty($cid)) {
 		echo "<div class='AdminError'>Huh, I couldn't retrieve the cid from $targetcategoryurl.". mysqli_error($conn) ."</div>";
 	}
@@ -1632,6 +1632,10 @@ function AdminDeleteCategoryGo($targetcategoryurl) {
 	// delete the category image file from the system
 	unlink("$dirlocation/i/category/$fileid");
 	unlink("$dirlocation/i/category/original-$fileid"); // XXX: we're not deleting jpegs, only png.
+	if (!isEmpty($carousel_id)) {
+		unlink("$dirlocation/i/category/$carousel_id");
+		unlink("$dirlocation/i/category/original-$carousel_id");
+	}
 	if (mysqli_query($conn,$query) === TRUE) {
 		echo "<div class='AdminSuccess'>The light is green, the trap is clean.</div>";
 	} else {
@@ -1649,7 +1653,8 @@ function AdminEditCategories() {
 			"url" => $row['url'],
 			"category" => $row['category'],
 			"description" => $row['description'],
-			"published" => $row['published']
+			"published" => $row['published'],
+			"highlighted" => $row['is_highlighted']
 		);
 	}
 	mysqli_free_result($result);
@@ -1831,19 +1836,33 @@ function AdminSaveNewCategory() {
 		if (isEmpty($url)) {
 			$url = MakeURL(strtolower($category));
 		}
+
 		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
 		$newfileid = ResizeImage($fileid,"category"); // 728x90
+
+		// do highlighted carousel image
+		$highlighted_fileid = NULL;
+		$highlighted_filename = NULL;
+		$highlighted = FALSE;
+		if (strlen($_REQUEST['highlighted'])) {
+			list ($highlighted_fileid, $highlighted_filename) = SaveCategoryHighlight(); // for Highghlighted Carousel image, only one file uploaded.
+			$highlighted = TRUE;
+		}
+
 		if (strlen($_REQUEST['published'])) {
 			$published = TRUE;
 		} else {
 			$published = FALSE;
 		}
-		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`force_display_names`,`published`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO `categories` (`url`,`category`,`description`,`force_display_names`,`published`,`is_highlighted`,`carousel_id`,`carousel_filename`,`image_filename`,`image_id`, `last_updated`) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn,$url),
 			mysqli_real_escape_string($conn,$category),
 			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description'])))),
 			mysqli_real_escape_string($conn,preg_replace("/[^YNI]/","",$_REQUEST['force_display_names'])),
 			mysqli_real_escape_string($conn,$published),
+			mysqli_real_escape_string($conn,$highlighted),
+			mysqli_real_escape_string($conn,$highlighted_fileid),
+			mysqli_real_escape_string($conn,$highlighted_filename),
 			mysqli_real_escape_string($conn,$filename),
 			mysqli_real_escape_string($conn,$newfileid),
 			mysqli_real_escape_string($conn,DatePHPtoSQL(time()))
@@ -1874,6 +1893,10 @@ function ResizeImage($fileid,$purpose) {
 		if (preg_match("/artist/",$purpose)) {
 			$height = 450;
 			$width = abs(round( (imagesX($origimage) / imagesY($origimage)) * $height ));
+		}
+		if (preg_match("/carousel/",$purpose)) {
+			$height = 400;
+			$width = 266;
 		}
 		$newimage = imagecreatetruecolor($width,$height);
 		imagesavealpha($newimage, true);
@@ -2011,6 +2034,98 @@ function SaveFile($purpose) {
 	}
 	// We accepted a positive number of files !
 	return $happyuploads;
+}
+
+function SaveCategoryHighlight() {
+	// save categorty highlight image as a unique ID, returning back the id and "file name"
+	// I'm repeating code because I suck sometimes
+	global $dirlocation;
+	$happyuploads = array(); // the array of ids & names of the numerous uploaded files
+	$error_types = array(
+		1=>"Your file is too large for the server",
+		2=>"Your file is larger than expected",
+		3=>"Your file upload incomplete, only partially uploaded",
+		4=>"You did not select a file, so no file uploaded",
+		6=>"Server problem with the temp directory",
+		7=>"Server failed to write file to disk",
+		8=>"Server PHP extension prevented upload"
+	);
+	$gotafile = FALSE;
+	//make the filename safe
+	$filename = preg_replace(array('/\s/', '/\.[\.]+/', '/[^\w_\.\-]/'), array('_', '.', ''), $_FILES['carousel_image']['name']);
+	$errorIndex = $_FILES['carousel_image']['error'];
+	if ($errorIndex > 0) {
+		if ( ($errorIndex != 4) && (!$gotafile) ) {
+			// listen, we got at least one file, so I no longer care about "no file uploaded" errors.
+			$error_message = $error_types[$_FILES['carousel_image']['error']];
+			echo "<div class='AdminError'>File Upload Error: $error_message.</div>";
+ 			$happyuploads[] = array(NULL,NULL);
+		}
+	} else {
+		$fileid = uniqid();
+		// XXX: I am a race condition, where my unconfirmed file name is exposed on the webs
+		move_uploaded_file($_FILES['carousel_image']['tmp_name'], $dirlocation . "/i/category/original-" . $fileid );
+		if (filesize($dirlocation . "/i/category/original-" . $fileid) < 1024) {
+			// if the file is smaller than 1kb, I don't trust it.
+			unlink($dirlocation . "/i/category/original-" . $fileid);
+			echo "<div class='AdminError'>File Upload Error: File is invalid due to small size.</div>";
+			$happyuploads[] = array(NULL,NULL);
+		} else {
+			// Yay, its a file!  Lets totally blow off the given file name and replace with my own.
+			$finfo = finfo_open(FILEINFO_MIME);
+			$type = finfo_file($finfo, $dirlocation . "/i/category/original-" . $fileid);
+			if (preg_match("/jpeg/i",$type)) {
+				$newfileid = "$fileid.jpg";	
+				rename (
+					$dirlocation . "/i/category/original-". $fileid,
+					$dirlocation . "/i/category/original-". $newfileid
+				);
+			} elseif (preg_match("/png/i",$type)) {
+				$newfileid = "$fileid.png";
+				rename (
+					$dirlocation . "/i/category/original-". $fileid,
+					$dirlocation . "/i/category/original-". $newfileid
+				);
+			} 
+			$happyuploads[] = array($newfileid,$filename);
+			$gotafile = TRUE;
+		}
+	}
+	// XXX: Yes, this whole routine is retarded. I just want it over with.
+	// get the damn category highlight carousel image, do the thing, move the hell on.
+	list ($fileid, $filename) = $happyuploads[0]; // for Highghlighted Carousel image, only one file uploaded.
+	if (preg_match("/\.jpg/",$fileid)) {
+		$origimage = imagecreatefromjpeg("$dirlocation/i/category/original-$fileid");
+	} elseif (preg_match("/\.png/",$fileid)) {
+		$origimage = imagecreatefrompng("$dirlocation/i/category/original-$fileid");
+		imagealphablending($origimage, true);
+		imagesavealpha($origimage, true);
+	}
+	// XXX: hardcoded carousel highlighted size!
+	if ($origimage) {
+		$height = 266;
+		$width = 400;
+		$newimage = imagecreatetruecolor($width,$height);
+		imagesavealpha($newimage, true);
+		$color = imagecolorallocatealpha($newimage,0x00,0x00,0x00,127);
+		imagefill($newimage, 0, 0, $color);
+		// dest , src , x dest, y dest , x src , y src , dest w, dest h, src w, src h
+		if (!imagecopyresampled($newimage,$origimage,0, 0, 0, 0, $width, $height, imagesX($origimage), imagesY($origimage))) {
+			echo "<div class='AdminError'>Highlight Image No Web Resize/Compress WTF $fileid</div>";
+		}
+		// if its a category, only do a transparent png.  Artist, whatever came in.
+		if (preg_match("/\.jpg/",$fileid)) {
+			$newfilename = substr($fileid,0,-4) . ".jpg";
+			imagejpeg($newimage, "$dirlocation/i/category/$newfilename", 80); // http://www.ebrueggeman.com/blog/php_image_optimization
+		} else if (preg_match("/\.png/",$fileid)) {
+			$newfilename = substr($fileid,0,-4) . ".png";
+			imagepng($newimage, "$dirlocation/i/category/$newfilename",9);
+		}
+		imagedestroy($origimage);
+		imagedestroy($newimage);
+	}
+	$alldone = array($fileid,$filename);
+	return($alldone);
 }
 
 function ShowPhotoArray($mediadata) {

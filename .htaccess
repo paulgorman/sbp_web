@@ -23,7 +23,7 @@ RewriteRule ^[/]?$ index.php?page=home [QSA,L]
 # 	/artist/band_name or /artists/band_name or /Artist/Band_Name will show that one band
 # $page name and $url
 RewriteRule ^artist[s]?[/]?([a-zA-Z0-9_-]+)? index.php?page=artist&url=$1 [QSA,L,NC]
-RewriteRule ^(category|categories)[/]?([a-zA-Z0-9_-]+)? index.php?page=categories&url=$2 [QSA,L,NC] 
+RewriteRule ^(category|catagories|categories)[/]?([a-zA-Z0-9_-]+)? index.php?page=categories&url=$2 [QSA,L,NC] 
 
 # File upload progress bar
 RewriteRule ^uploadprogress[/]? index.php?page=uploadprogress [QSA,L,NC]

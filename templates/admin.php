@@ -382,6 +382,13 @@ function AdminShowCategories ($categorieslist) {
 						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['category'] ?></div>
 						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['description'] ?></div>
 						<?
+							if ($catvalues['highlighted']) {
+								echo "<div class='AdminCategoryHighlightedIcon' title='Highlighted Category'></div>";
+							} else {
+								echo "<div class='AdminCategoryEmptyIcon'></div>";
+							}
+						?>
+						<?
 							if ($catvalues['published']) {
 								echo "<div class='AdminCategoryPublishedIcon' title='Public Listed Category'></div>";
 							} else {
@@ -411,6 +418,19 @@ function AdminShowCategories ($categorieslist) {
 				</div>  <!-- class="AdminCategoryListRow" -->
 			<? } ?>
 		</div> <!-- AdminCategoryListContainer -->
+		<script type="text/javascript">
+			<!--
+			function showHide(){
+				var highlighted = document.getElementById("highlighted");
+				var carousel_image = document.getElementById("carousel_image");
+				if (highlighted.checked){
+					carousel_image.style.visibility = "visible";
+				} else {
+					carousel_image.style.visibility = "hidden";
+				}
+			}
+			-->
+		</script>
 		<div class="clear"></div>
 		<form method="POST" action="/admin/categories_list" enctype="multipart/form-data">
 			<input type="hidden" name="function" value="add_category">
@@ -430,9 +450,15 @@ function AdminShowCategories ($categorieslist) {
 				<div class="AdminCategoryListingAddItem">Category Logo:</div>
 				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple="" accept="image/png"></div>
 				<div class="AdminCategoryListItemURL">728x90 PNG</div>
+				<div class="clear"></div>
     		<div class="AdminCategoryListingAddItem"><label for="published">Public</label></div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="published" id="published" class="regular-checkbox big-checkbox" CHECKED /><label title="Publicly Displayed in Categories Listing" for="published"></label>
+				</div>
+    		<div class="AdminCategoryListingAddItem"><label for="highlighted">Highlighted</label></div>
+    		<div class="AdminCategoryListingCheckBox">
+					<input type="checkbox" name="highlighted" id="highlighted" onclick="showHide();" class="regular-checkbox big-checkbox" /><label title="Highlighted in the Carousel" for="highlighted"></label>
+					<input name="carousel_image" id="carousel_image" style="visibility: hidden;" class="filesToUpload" size="40" type="file" multiple="" accept="image/png">
 				</div>
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Category"></div>
 				<div class="clear"></div>
@@ -457,6 +483,19 @@ function AdminShowDeleteConfirmation($id,$desc,$urlDo,$urlCancel,$nextfunction) 
 function AdminEditCategory($dataarray) {
 	// cid, category, url, description, image_filename, image_id, last_updated
 	?>
+		<script type="text/javascript">
+			<!--
+			function showHide(){
+				var is_highlighted = document.getElementById("is_highlighted");
+				var carousel_image = document.getElementById("carousel_image");
+				if (is_highlighted.checked){
+					carousel_image.style.visibility = "visible";
+				} else {
+					carousel_image.style.visibility = "hidden";
+				}
+			}
+			-->
+		</script>
 		<form method="POST" action="/admin/categories_list" enctype="multipart/form-data">
 			<input method="hidden" name="function" value="save_category" style="display:none">
 			<input method="hidden" name="form_cid" value="<?= $dataarray['cid'] ?>" style="display:none">
@@ -499,6 +538,15 @@ function AdminEditCategory($dataarray) {
 					<input type="checkbox" id="published" name="published" class="regular-checkbox big-checkbox" <?= ($dataarray['published']?'CHECKED ':'') ?>/><label title="Publicly Displayed in Categories Listing" for="published"></label>
 				</div>
 
+    		<div class="AdminCategoryListingEditItem">Highlighted</div>
+    		<div class="AdminCategoryListingCheckBox">
+					<input type="checkbox" id="is_highlighted" onclick="showHide();" name="is_highlighted" class="regular-checkbox big-checkbox" <?= ($dataarray['is_highlighted']?'CHECKED ':'') ?>/><label title="Highlighted in the Featured Carousel" for="is_highlighted"></label>
+				<input name="carousel_image[]" id="carousel_image" style="visibility: hidden;" class="filesToUpload" size="40" type="file" multiple="">
+				<? if (!isEmpty($dataarray['carousel_id'])) { ?>
+					<img src="/i/category/<?= $dataarray['carousel_id']; ?>">
+				<? } ?>
+				</div>
+				<div class="clear"></div>
 				<div class="AdminCategoryListingAddSubmit">
 					<input type="submit" value="Update Category">
 					<input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/categories_list'">

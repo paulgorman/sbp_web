@@ -335,6 +335,26 @@ td {
 	float:left;
 }
 
+.AdminCategoryHighlightedIcon {
+	background-image: url('/templates/icons/Upload.png');
+	background-size:18px;
+	background-repeat:no-repeat;
+	padding-left:22px;
+	height: 1.5em;
+	vertical-align: top;
+	float:left;
+}
+
+.AdminCategoryEmptyIcon {
+	background-image: url('#');
+	background-size:18px;
+	background-repeat:no-repeat;
+	padding-left:22px;
+	height: 1.5em;
+	vertical-align: top;
+	float:left;
+}
+
 .AdminCategoryHiddenIcon {
 	background-image: url('/templates/icons/Stop.png');
 	background-size:18px;
