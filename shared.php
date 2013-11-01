@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20130709
+**  Last Edit: 20131101
 ****************************************/
 
 function Init() {
@@ -1534,6 +1534,25 @@ function AdminSaveSingleCategory($cid) {
 		} else {
 			$published = FALSE;
 		}
+		// do highlighted carousel image
+		$highlighted = FALSE;
+		if (strlen($_REQUEST['is_highlighted'])) {
+			list ($highlighted_fileid, $highlighted_filename) = SaveCategoryHighlight(); // for Highghlighted Carousel image, only one file uploaded.
+			if (!isEmpty($highlighted_fileid)) {
+				$query = sprintf("UPDATE `categories` SET `carousel_filename` = '%s', `carousel_id` = '%s' WHERE `cid` = '%s'",
+					mysqli_real_escape_string($conn,$highlighted_filename),
+					mysqli_real_escape_string($conn,$highlighted_fileid),
+					mysqli_real_escape_string($conn,$cid)
+				);
+				if (mysqli_query($conn,$query) === TRUE) {
+					echo "<div class='AdminSuccess'>Category Entry <B>$category</B> [$url] Carousel Image Successfully Updated.</div>";
+				} else {
+					echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Update Carousel Image!<br>". mysqli_error($conn) ."</div>";
+				}
+			}
+			// XXX: I'm leaving behind the old category carousel image.
+			$highlighted = TRUE;
+		}
 		if ($filename) {
 			// delete the old category image file from the system
 			$query = sprintf("SELECT `image_id` FROM `categories` WHERE `cid` = '%s'", mysqli_real_escape_string($conn,$cid));
@@ -1541,7 +1560,7 @@ function AdminSaveSingleCategory($cid) {
 			list($old_fileid) = mysqli_fetch_array($result);
 			unlink("$dirlocation/i/category/$old_fileid");
 			unlink("$dirlocation/i/category/original-$old_fileid"); // XXX: we're not deleting jpegs, only png.
-			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `image_filename` = '%s', `image_id` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'",
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `image_filename` = '%s', `image_id` = '%s', `is_highlighted` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'",
 				mysqli_real_escape_string($conn,$url),
 				mysqli_real_escape_string($conn,$category),
 				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
@@ -1549,16 +1568,18 @@ function AdminSaveSingleCategory($cid) {
 				mysqli_real_escape_string($conn,$published),
 				mysqli_real_escape_string($conn,$filename),
 				mysqli_real_escape_string($conn,$newfileid),
+				mysqli_real_escape_string($conn,$highlighted),
 				mysqli_real_escape_string($conn,DatePHPtoSQL(time())),
 				mysqli_real_escape_string($conn,$cid)
 			);
 		} else {
-			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'",
+			$query = sprintf("UPDATE `categories` SET `url` = '%s', `category` = '%s', `description` = '%s', `force_display_names` = '%s', `published` = '%s', `is_highlighted` = '%s', `last_updated` = '%s' WHERE `cid` = '%s'",
 				mysqli_real_escape_string($conn,$url),
 				mysqli_real_escape_string($conn,$category),
 				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
 				mysqli_real_escape_string($conn,preg_replace("/[^YNI]/","",$_REQUEST['force_display_names'])),
 				mysqli_real_escape_string($conn,$published),
+				mysqli_real_escape_string($conn,$highlighted),
 				mysqli_real_escape_string($conn,DatePHPtoSQL(time())),
 				mysqli_real_escape_string($conn,$cid)
 			);

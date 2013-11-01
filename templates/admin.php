@@ -541,7 +541,7 @@ function AdminEditCategory($dataarray) {
     		<div class="AdminCategoryListingEditItem">Highlighted</div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" id="is_highlighted" onclick="showHide();" name="is_highlighted" class="regular-checkbox big-checkbox" <?= ($dataarray['is_highlighted']?'CHECKED ':'') ?>/><label title="Highlighted in the Featured Carousel" for="is_highlighted"></label>
-				<input name="carousel_image[]" id="carousel_image" style="visibility: hidden;" class="filesToUpload" size="40" type="file" multiple="">
+				<input name="carousel_image" id="carousel_image" style="visibility: hidden;" class="filesToUpload" size="40" type="file" multiple="">
 				<? if (!isEmpty($dataarray['carousel_id'])) { ?>
 					<img src="/i/category/<?= $dataarray['carousel_id']; ?>">
 				<? } ?>
