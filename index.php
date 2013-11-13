@@ -8,7 +8,9 @@
 			ScriptTime($starttime);
 			break;
 		case "categories":
+			RecordHit();
 			CategoriesList();
+			ScriptTime($starttime);
 			break;
 		case "uploadprogress":
 			UploadProgress();

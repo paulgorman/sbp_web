@@ -79,7 +79,9 @@ function DebugShow() {
 
 function CategoriesList() {
 	global $conn;
+	require_once("templates/header.php");
 	require_once("templates/categories.php");
+	$meta = array();
 	if (isEmpty($_REQUEST['url'])) {
 		// all public categories, highlighted first.
 		$query = "SELECT * FROM `categories` WHERE `published` = 1 ORDER BY is_highlighted DESC, `category` ASC";
@@ -94,7 +96,24 @@ function CategoriesList() {
 				// all categories go in here, but only lightlighted go into highlighted for the carousel
 				$categoryList[] = $row;
 			}
+			// meta keywords
+			$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Category List, Categories, ";
+			foreach ($categoryList as $category) {
+				$meta['keywords'] .= $category['category'] . ", ";
+			}
+			$meta['keywords'] = substr($meta['keywords'], 0, -2) . ".";
+			$meta['description'] = "Categories Listing including ";
+			foreach($highlightedList as $category) {
+				$meta['description'] .= $category['category'] . ", ";
+			}
+			$meta['description'] = substr($meta['description'], 0, -2) . ".";
+			$meta['title'] = "Entertainment Categories Listing";
+			$meta['url'] = CurPageURL();
+			$meta['image'] = CurServerUrl() . "/i/category/" . $highlightedList[0]['carousel_id'];
+			$meta['css'][] = "skin_modern_silver.css";
+			$meta['js'][] = "FWDRoyal3DCarousel.js";
 			// display all the categories
+			htmlHeader($meta);
 			ListCategoryCarousel($highlightedList);
 			ListAllCategories($categoryList);
 		} else {
@@ -112,6 +131,7 @@ function CategoriesList() {
 		}
 		$closestCategoryFromRequest = ClosestWord($url,$categorynames);
 		// dig up all categories that match the request
+		// XXX: Nevermind, just the one closest matching category, got really confusing doing bunches
 		$query = sprintf(
 			//"SELECT * FROM `categories` WHERE `url` like '%%%s%%' ORDER BY is_highlighted DESC, `category` ASC",
 			//mysqli_real_escape_string($conn,$url)
@@ -126,8 +146,11 @@ function CategoriesList() {
 		} else {
 			// just AIDs that match requested category
 			$artistsMatchingCategoryRequest = array();
+			$categoryInfo = array(); // XXX: This only works for the final multi-matching-category loop
 			// all artist IDs from each of the 1-or-more matching categories
+			// XXX: this loop is currently going to only do ClosestWord now, no additional looping
 			while ($row = mysqli_fetch_array($resultMatchingCategories, MYSQLI_ASSOC)) {
+				$categoryInfo = $row;
 				// check if any of the categories require obfuscated artist names
 				// "Y" is to force display names. (N is force real names, I is individual artist mode)
 				if ($row['force_display_names'] == "I" && $obfuscatedArtistNames == 0) {
@@ -193,7 +216,7 @@ function CategoriesList() {
 					);
 					$result = mysqli_query($conn,$query);
 					$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-					$artistsHighlighted[$aid]['filename'] = $row['filename'];
+					$artistsHighlighted[$aid]['filename'] = $row['carousel_id'];
 					$artistsHighlighted[$aid]['thumbwidth'] = $row['thumbwidth'];
 					$artistsHighlighted[$aid]['thumbheight'] = $row['thumbheight'];
 					// append remaining normal artist info to this highlighted artist
@@ -201,7 +224,32 @@ function CategoriesList() {
 				}
 			}
 			// So what is the best real category name that matches the random user request?
-			$closestCategoryFromRequest = ClosestWord($url,$categorynames);
+			$closestCategoryFromRequest = ucWords(ClosestWord($url,$categorynames));
+
+			// meta keywords
+			$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Entertainment, Category, List, Listing, ";
+			$meta['keywords'] .= "$closestCategoryFromRequest, ";
+			$meta['keywords'] .= $categoryInfo['description'] .", ";
+			foreach ($artists as $artist) {
+				$meta['keywords'] .= $artist['name'] . ", ";
+			}
+			$meta['keywords'] = substr($meta['keywords'], 0, -2) . ".";
+			$meta['description'] = "Listing of $closestCategoryFromRequest - ". $categoryInfo['description'] ." including ";
+			foreach($artistsHighlighted as $highlights) {
+				$meta['description'] .= $highlights['name'] . ", ";
+			}
+			$meta['description'] = substr($meta['description'], 0, -2) . ".";
+			$meta['title'] = "$closestCategoryFromRequest Entertainment Category Listing";
+			$meta['url'] = CurPageURL();
+			if (isEmpty($categoryInfo['carousel_id'])) {
+				$meta['image'] = CurServerURL() . "/i/category/" . $categoryInfo['image_id'];
+			} else {
+				$meta['image'] = CurServerURL() . "/i/category/" . $categoryInfo['carousel_id'];
+			}
+			$meta['css'][] = "skin_modern_silver.css";
+			$meta['js'][] = "FWDRoyal3DCarousel.js";
+
+			htmlHeader($meta);
 			ListArtistCarousel($closestCategoryFromRequest,$artistsHighlighted);
 			ListArtistsForCategory($closestCategoryFromRequest,$artists);
 		}
@@ -2504,6 +2552,34 @@ function ScriptTime($starttime) {
 	$mtime = microtime(); $mtime = explode(" ",$mtime); $mtime = $mtime[1] + $mtime[0]; $endtime = $mtime; $totaltime = ($endtime - $starttime) * 1000;
 	$totaltime = sprintf("%.2f", $totaltime);
 	echo "<!-- This page was created in ".$totaltime." milliseconds -->"; 
+}
+
+function CurPageURL() {
+	$pageURL = 'http';
+	if ($_SERVER["HTTPS"] == "on") {
+		$pageURL .= "s";
+	}
+	$pageURL .= "://";
+	if ($_SERVER["SERVER_PORT"] != "80") {
+		$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+	} else {
+		$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+	}
+	return $pageURL;
+}
+
+function CurServerURL() {
+	$serverURL = "http";
+	if ($_SERVER["HTTPS"] == "on") {
+		$serverURL .= "s";
+	}
+	$serverURL .= "://";
+	if ($_SERVER["SERVER_PORT"] != "80") {
+		$serverURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"];
+	} else {
+		$serverURL .= $_SERVER["SERVER_NAME"];
+	}
+	return $serverURL;
 }
 
 function ClosestWord($input,$possibles) {

@@ -1,0 +1,33 @@
+/* TEAM */
+
+	Design and Programming:	Paul Gorman
+	Contact: presence@irev.net
+	Twitter: @presence
+	Site: http://irev.net/
+	Location: Las Vegas, Nevada
+
+	Editor: Levi Velasquez
+	Location: Las Vegas, Nevada
+
+	Editor: Jesse Young
+	Location: Las Vegas, Nevada
+
+	Office Staff: Steve Beyer Productions
+	Location: 133 N. Gibson Road, Henderson, Nevada, 89014
+	Voice: +1 (702) 568-9000
+
+/* SITE */
+	Site Name: Steve Beyer Productions Talent WebApp
+	Site URL: http://stevebeyerproductions.com/
+	Doctype: HTML5
+	IDE: Vim
+	Software: 
+	OS: FreeBSD, Apache, PHP5, MySQL
+	Host: InfiniteVPS
+
+/*   __ _  _  
+    (_ |_)|_) 
+    __)|_)| 
+   Steve Beyer 
+   Productions
+*/
