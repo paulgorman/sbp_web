@@ -6,6 +6,12 @@
 	Site: http://irev.net/
 	Location: Las Vegas, Nevada
 
+	Site Layout and Graphics: Tammy Smith
+	Contact: tammy@atomicginger.com
+	Twitter: @cowkitty
+	Site: http://atomicginger.com/
+	Location: Burbank, California
+
 	Editor: Levi Velasquez
 	Location: Las Vegas, Nevada
 
@@ -21,13 +27,13 @@
 	Site URL: http://stevebeyerproductions.com/
 	Doctype: HTML5
 	IDE: Vim
-	Software: 
+	Software: Gimp, X-Chat2, HipChat
 	OS: FreeBSD, Apache, PHP5, MySQL
 	Host: InfiniteVPS
 
-/*   __ _  _  
-    (_ |_)|_) 
-    __)|_)| 
-   Steve Beyer 
+/*   __ _  _
+    (_ |_)|_)
+    __)|_)|
+   Steve Beyer
    Productions
 */

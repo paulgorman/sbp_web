@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20131101
+**  Last Edit: 20131121
 ****************************************/
 
 function Init() {
@@ -18,7 +18,7 @@ function Init() {
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
 	$_SESSION['last_move'] = $_SESSION['last_activity']; // testing how long page to page
-	if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 120)) {
+	if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 300)) {
 		// last request was more than 60 minates ago (3600 seconds)
 		session_destroy();   // destroy session data in storage
 		session_unset();     // unset $_SESSION variable for the runtime
@@ -60,6 +60,7 @@ function DatePHPtoSQL($phpdate) {
 }
 
 function DebugShow() {
+	echo "<div class='Debug'>";
 	echo "You wanted to look at: ";
 	if (isEmpty($_REQUEST['url'])) {
 		printf ("Page: %s<br>\nSpecifically: %s<br>\nCount: %s<br>\nLast Activity:%s seconds<br>\n",
@@ -75,6 +76,7 @@ function DebugShow() {
 			(time() - $_SESSION['last_move'])
 		);
 	}
+	echo "</div>";
 }
 
 function CategoriesList() {
@@ -109,11 +111,16 @@ function CategoriesList() {
 			$meta['description'] = substr($meta['description'], 0, -2) . ".";
 			$meta['title'] = "Entertainment Categories Listing";
 			$meta['url'] = CurPageURL();
-			$meta['image'] = CurServerUrl() . "/i/category/" . $highlightedList[0]['carousel_id'];
+			$meta['image'] = CurServerUrl() . "i/category/" . $highlightedList[0]['carousel_id'];
 			$meta['css'][] = "skin_modern_silver.css";
 			$meta['js'][] = "FWDRoyal3DCarousel.js";
+			$meta['breadcrumb'][0]['name'] = "Talent";
+			$meta['breadcrumb'][0]['url'] = curPageURL();
 			// display all the categories
 			htmlHeader($meta);
+			htmlMasthead($meta);
+			htmlNavigation($meta);
+			htmlBreadcrumb($meta);
 			ListCategoryCarousel($highlightedList);
 			ListAllCategories($categoryList);
 		} else {
@@ -242,18 +249,40 @@ function CategoriesList() {
 			$meta['title'] = "$closestCategoryFromRequest Entertainment Category Listing";
 			$meta['url'] = CurPageURL();
 			if (isEmpty($categoryInfo['carousel_id'])) {
-				$meta['image'] = CurServerURL() . "/i/category/" . $categoryInfo['image_id'];
+				$meta['image'] = CurServerURL() . "i/category/" . $categoryInfo['image_id'];
 			} else {
-				$meta['image'] = CurServerURL() . "/i/category/" . $categoryInfo['carousel_id'];
+				$meta['image'] = CurServerURL() . "i/category/" . $categoryInfo['carousel_id'];
 			}
 			$meta['css'][] = "skin_modern_silver.css";
 			$meta['js'][] = "FWDRoyal3DCarousel.js";
+			$meta['breadcrumb'][0]['name'] = "Talent";
+			$meta['breadcrumb'][0]['url'] = curServerURL() . "talent/";
+			$meta['breadcrumb'][1]['name'] = $closestCategoryFromRequest;
+			$meta['breadcrumb'][1]['url'] = curPageURL();
 
 			htmlHeader($meta);
+			htmlMasthead($meta);
+			htmlNavigation($meta);
+			htmlBreadcrumb($meta);
 			ListArtistCarousel($closestCategoryFromRequest,$artistsHighlighted);
 			ListArtistsForCategory($closestCategoryFromRequest,$artists);
 		}
 	}
+}
+
+function HomePage() {
+	require_once("templates/header.php");
+	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
+	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
+	$meta['title'] = "Entertainment Categories Listing";
+	$meta['url'] = CurPageURL();
+	$meta['image'] = CurServerUrl() . "sbp.png";
+	$meta['css'][] = "skin_modern_silver.css";
+	$meta['js'][] = "FWDRoyal3DCarousel.js";
+	htmlHeader($meta);
+	htmlMasthead($meta);
+	htmlNavigation($meta);
+	//htmlBreadcrumb($meta);
 }
 
 function AdminDisplaySiteStats() {
@@ -2579,6 +2608,7 @@ function CurServerURL() {
 	} else {
 		$serverURL .= $_SERVER["SERVER_NAME"];
 	}
+	$serverURL .= "/";
 	return $serverURL;
 }
 

@@ -24,7 +24,7 @@ RewriteRule ^[/]?$ index.php?page=home [QSA,L]
 # 	/artist/band_name or /artists/band_name or /Artist/Band_Name will show that one band
 # $page name and $url
 RewriteRule ^artist[s]?[/]?([a-zA-Z0-9_-]+)? index.php?page=artist&url=$1 [QSA,L,NC]
-RewriteRule ^(category|catagories|categories)[/]?([a-zA-Z0-9_-]+)? index.php?page=categories&url=$2 [QSA,L,NC] 
+RewriteRule ^(category|catagories|categories|catagoreies|talent)[/]?([a-zA-Z0-9_-]+)? index.php?page=categories&url=$2 [QSA,L,NC] 
 
 # File upload progress bar
 RewriteRule ^uploadprogress[/]? index.php?page=uploadprogress [QSA,L,NC]
@@ -33,7 +33,10 @@ RewriteRule ^uploadprogress[/]? index.php?page=uploadprogress [QSA,L,NC]
 RewriteRule ^tag/([a-zA-Z0-9_-]+) index.php?page=findbytag&tag=$1 [QSA,L,NC]
 RewriteRule ^about[/]? index.php?page=about [QSA,L,NC]
 RewriteRule ^production[/]? index.php?page=production [QSA,L,NC]
-RewriteRule ^contact[/]? index.php?page=contact [QSA,L,NC]
+RewriteRule ^(event|events)[/]? index.php?page=event [QSA,L,NC]
+RewriteRule ^decor[/]? index.php?page=decor [QSA,L,NC]
+RewriteRule ^(wedding|weddings)[/]? index.php?page=wedding [QSA,L,NC]
+RewriteRule ^(about|contact)[/]? index.php?page=about[QSA,L,NC]
 RewriteRule ^admin[/]?([a-z_-]+)?[/]?([a-z_-]+)?[/]?([a-zA-Z0-9]+)? /index.php?page=admin&url=$1&function=$2&listpage=$3 [QSA,L,NC]
 RewriteRule ^(.*)$ index.php?page=404 [QSA,L,NC]
 

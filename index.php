@@ -17,6 +17,7 @@
 			break;
 		default:
 			RecordHit();
+			HomePage();
 			DebugShow();
 			ScriptTime($starttime);
 	}

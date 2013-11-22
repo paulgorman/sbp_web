@@ -11,9 +11,9 @@ function ListCategoryCarousel ($categoryList) {
 		<div class='CategoryCarousel'>
 			<ul>
 			<?
-				foreach ($categoryList as $key => $value) {
+				foreach ($categoryList as $key => $blah) {
 					?>
-						<li>highlighted: <?= $categoryList[$key]['category']; ?></li>
+						<li><img src="/i/category/<?= $categoryList[$key]['carousel_id']; ?>" width="400" height="266" title="<?= $categoryList[$key]['category']; ?> - <?= $categoryList[$key]['description']; ?>" alt="<?= $categoryList[$key]['category']; ?>"></li>
 					<?
 				}
 			?>
@@ -28,9 +28,9 @@ function ListAllCategories($categoryList) {
 		<div class='CategoryList'>
 			<ul>
 			<?
-				foreach ($categoryList as $count => $blah) {
+				foreach ($categoryList as $key => $blah) {
 					?>
-						<li class="CategoryItem"><a href="/category/<?= $categoryList[$count]['url']; ?>"><img src="/i/category/<?= $categoryList[$count]['image_id']; ?>" border="0" title="<?= $categoryList[$count]['category']; ?>" alt="<?= $categoryList[$count]['description']; ?>"></a></li>
+						<li class="CategoryItem"><a href="/category/<?= $categoryList[$key]['url']; ?>"><img src="/i/category/<?= $categoryList[$key]['image_id']; ?>" width="728" height="90" title="<?= $categoryList[$key]['category']; ?> - <?= $categoryList[$key]['description']; ?>" alt="<?= $categoryList[$key]['category']; ?>"></a></li>
 					<?
 				}
 			?>
@@ -47,7 +47,6 @@ function ListArtistsForCategory($category,$artists)	{
 }
 
 function ListArtistCarousel($category,$artists) {
-	echo $category;
 	echo "<pre>";
 	print_r ($artists);
 	echo "</pre><br>";
