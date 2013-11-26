@@ -303,6 +303,10 @@ p.smallLabel{
 	margin: 0 auto 12px auto;
 	border: 1px solid #fff;
 }
+.catButton:hover{
+	background-color: #806D96;
+	color: #FFFFFF;
+}
 @media handheld, only screen and (max-width: 980px) {
 	hr,.cats{
 		width: 100%;
