@@ -15,6 +15,8 @@ RewriteRule ^templates/css/(.*) - [L]
 RewriteRule ^templates/js/(.*) - [L]
 RewriteRule ^templates/icons/(.*) - [L]
 RewriteRule ^templates/jwplayer/(.*) - [L]
+RewriteRule ^templates/sbp/(.*) - [L]
+RewriteRule ^templates/skin_modern_silver/(.*) - [L]
 RewriteRule ^favicon.ico - [L]
 
 RewriteRule ^[/]?$ index.php?page=home [QSA,L]

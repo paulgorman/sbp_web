@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20131121
+**  Last Edit: 20131125
 ****************************************/
 
 function Init() {
@@ -114,15 +114,19 @@ function CategoriesList() {
 			$meta['image'] = CurServerUrl() . "i/category/" . $highlightedList[0]['carousel_id'];
 			$meta['css'][] = "skin_modern_silver.css";
 			$meta['js'][] = "FWDRoyal3DCarousel.js";
+			$meta['js'][] = "carouselSettings.js";
 			$meta['breadcrumb'][0]['name'] = "Talent";
 			$meta['breadcrumb'][0]['url'] = curPageURL();
 			// display all the categories
 			htmlHeader($meta);
 			htmlMasthead($meta);
 			htmlNavigation($meta);
+			htmlWavesStart();
 			htmlBreadcrumb($meta);
 			ListCategoryCarousel($highlightedList);
+			htmlBodyStart();
 			ListAllCategories($categoryList);
+			htmlFooter($meta);
 		} else {
 			ErrorDisplay("Categories Listing Unavailable!");
 		}
@@ -255,6 +259,7 @@ function CategoriesList() {
 			}
 			$meta['css'][] = "skin_modern_silver.css";
 			$meta['js'][] = "FWDRoyal3DCarousel.js";
+			$meta['js'][] = "carouselSettings.js";
 			$meta['breadcrumb'][0]['name'] = "Talent";
 			$meta['breadcrumb'][0]['url'] = curServerURL() . "talent/";
 			$meta['breadcrumb'][1]['name'] = $closestCategoryFromRequest;
@@ -266,6 +271,7 @@ function CategoriesList() {
 			htmlBreadcrumb($meta);
 			ListArtistCarousel($closestCategoryFromRequest,$artistsHighlighted);
 			ListArtistsForCategory($closestCategoryFromRequest,$artists);
+			htmlFooter($meta);
 		}
 	}
 }
@@ -279,10 +285,12 @@ function HomePage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	$meta['css'][] = "skin_modern_silver.css";
 	$meta['js'][] = "FWDRoyal3DCarousel.js";
+	$meta['js'][] = "carouselSettings.js";
 	htmlHeader($meta);
 	htmlMasthead($meta);
 	htmlNavigation($meta);
 	//htmlBreadcrumb($meta);
+	htmlFooter($meta);
 }
 
 function AdminDisplaySiteStats() {

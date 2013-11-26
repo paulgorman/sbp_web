@@ -6,11 +6,14 @@
 	Site: http://irev.net/
 	Location: Las Vegas, Nevada
 
-	Site Layout and Graphics: Tammy Smith
+	Site Graphics: Tammy Smith
 	Contact: tammy@atomicginger.com
 	Twitter: @cowkitty
 	Site: http://atomicginger.com/
 	Location: Burbank, California
+
+	Site Layout: Michael Chinn
+	Contact: mike.chinn@xtechhq.com
 
 	Editor: Levi Velasquez
 	Location: Las Vegas, Nevada
