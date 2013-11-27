@@ -8,114 +8,6 @@ function ErrorDisplay($error) {
 function ListCategoryCarousel ($categoryList) {
 	// $url, $category, description, is_highlighted
 	?>
-		<script type="text/javascript">
-			var carousel;
-			
-			FWDUtils.onReady(function(){
-				carousel = new FWD3DCarousel({
-				
-					//required settings
-					carouselHolderDivId:"goCarousel",
-					carouselDataListDivId:"playList1",
-					displayType:"fluidwidth",
-					autoScale:"yes",
-					carouselWidth:940,
-					carouselHeight:338,
-												
-					//main settings
-					/* Presence's hack to hide scroll bar and controls
-					backgroundColor:"#000000",
-					backgroundImagePath:"templates/skin_modern_silver/background.jpg",
-					thumbnailsBackgroundImagePath:"templates/skin_modern_silver/thumbnailsBackground.jpg",
-					scrollbarBackgroundImagePath:"templates/skin_modern_silver/scrollbarBackground.jpg",
-					*/
-					backgroundRepeat:"repeat-x",
-					showDisplay2DAlways:"no",
-					carouselStartPosition:"center",
-					numberOfThumbnailsToDisplayLeftAndRight:4,
-					slideshowDelay:2000,
-					autoplay:"yes",
-					showPrevButton:"yes",
-					showNextButton:"yes",
-					showSlideshowButton:"yes",
-					disableNextAndPrevButtonsOnMobile:"no",
-					controlsMaxWidth:"x", //  Presence's hack to hide controls bar.
-					slideshowTimerColor:"#777777",
-					showContextMenu:"no",
-												
-					//thumbnail settings
-					thumbnailWidth:400,
-					thumbnailHeight:266,
-					thumbnailSpaceOffset3D:-19,
-					thumbnailSpaceOffset2D:-19,
-					thumbnailBorderSize:4,
-					thumbnailBackgroundColor:"#666666",
-					thumbnailBorderColor1:"#fcfdfd",
-					thumbnailBorderColor2:"#e4e4e4",
-					maxNumberOfThumbnailsOnMobile:13,
-					showThumbnailsHtmlContent:"no",
-					enableHtmlContent:"no",
-					textBackgroundColor:"#333333",
-					textBackgroundOpacity:.7,
-					showText:"yes",
-					showTextBackgroundImage:"yes",
-					showThumbnailBoxShadow:"yes",
-					thumbnailBoxShadowCss:"0px 2px 2px #555555",
-												
-					//scrollbar settings
-					showScrollbar:"yes",
-					disableScrollbarOnMobile:"yes",
-					enableMouseWheelScroll:"yes",
-					scrollbarMaxWidth:940,
-					scrollbarHandlerWidth:300,
-					scrollbarTextColorNormal:"#777777",
-					scrollbarTextColorSelected:"#000000",
-												
-					//combobox settings
-					startAtCategory:1,
-					selectLabel:"SELECT CATEGORIES",
-					allCategoriesLabel:"All Categories",
-					showAllCategories:"no",
-					comboBoxPosition:"topright",
-					selectorBackgroundNormalColor1:"#fcfdfd",
-					selectorBackgroundNormalColor2:"#e4e4e4",
-					selectorBackgroundSelectedColor1:"#a7a7a7",
-					selectorBackgroundSelectedColor2:"#8e8e8e",
-					selectorTextNormalColor:"#8b8b8b",
-					selectorTextSelectedColor:"#FFFFFF",
-					buttonBackgroundNormalColor1:"#e7e7e7",
-					buttonBackgroundNormalColor2:"#e7e7e7",
-					buttonBackgroundSelectedColor1:"#a7a7a7",
-					buttonBackgroundSelectedColor2:"#8e8e8e",
-					buttonTextNormalColor:"#000000",
-					buttonTextSelectedColor:"#FFFFFF",
-					comboBoxShadowColor:"#000000",
-					comboBoxHorizontalMargins:12,
-					comboBoxVerticalMargins:12,
-					comboBoxCornerRadius:0,
-												
-					//lightbox settings
-					addLightBoxKeyboardSupport:"yes",
-					showLightBoxNextAndPrevButtons:"yes",
-					showLightBoxZoomButton:"yes",
-					showLightBoxInfoButton:"yes",
-					showLighBoxSlideShowButton:"yes",
-					showLightBoxInfoWindowByDefault:"no",
-					slideShowAutoPlay:"no",
-					lightBoxVideoAutoPlay:"no",
-					lightBoxBackgroundColor:"#000000",
-					lightBoxInfoWindowBackgroundColor:"#FFFFFF",
-					lightBoxItemBorderColor1:"#fcfdfd",
-					lightBoxItemBorderColor2:"#e4FFe4",
-					lightBoxItemBackgroundColor:"#333333",
-					lightBoxMainBackgroundOpacity:.8,
-					lightBoxInfoWindowBackgroundOpacity:.9,
-					lightBoxBorderSize:5,
-					lightBoxBorderRadius:0,
-					lightBoxSlideShowDelay:4
-				});
-			})
-		</script>
 		<div id="goCarousel"></div>
 			<ul id="playList1" style="display: none;">
 			<!-- skin -->
@@ -200,15 +92,147 @@ function ListAllCategories($categoryList) {
 	echo "</div>";
 }
 
+function htmlCategoryImage($categoryImage,$category) {
+	?>
+		<div class='catHeader'><img src="/i/category/<?= $categoryImage; ?>" width="485" height="60" title="<?= $category; ?>" alt="<?= $category; ?>"></div>
+	<?
+}
+
 function ListArtistsForCategory($category,$artists)	{
 	// aid, name, url, slug, is_highlighted
-	echo "<pre>";
-	print_r ($artists);
-	echo "</pre><br>";
+	//asdf
+	?>
+		<div class="artistArray"><!-- start of artistArray -->
+		<div id="ArtistsGrid" style="width:100%;"></div>
+		<!-- grid data list -->
+		<ul id="playlist" style="display: none;">
+			<!-- skin -->
+			<ul data-skin="">
+				<li data-preloader-path="/templates/skin_minimal_dark_round/rotite-30-29.png"></li>
+				<li data-show-more-thumbnails-button-normal-path="/templates/skin_minimal_dark_round/showMoreThumbsNormalState.png"></li>
+				<li data-show-more-thumbnails-button-selectsed-path="/templates/skin_minimal_dark_round/showMoreThumbsSelectedState.png"></li>
+				<li data-image-icon-path="/templates/skin_minimal_dark_round/photoIcon.png"></li>
+				<li data-video-icon-path="/templates/skin_minimal_dark_round/videoIcon.png"></li>
+				<li data-link-icon-path="/templates/skin_minimal_dark_round/linkIcon.png"></li>
+				<li data-iframe-icon-path="/templates/skin_minimal_dark_round/iframeIcon.png"></li>
+				<li data-hand-move-icon-path="/templates/skin_minimal_dark_round/handnmove.cur"></li>
+				<li data-hand-drag-icon-path="/templates/skin_minimal_dark_round/handgrab.cur"></li>
+				<li data-combobox-down-arrow-icon-normal-path="/templates/skin_minimal_dark_round/combobox-down-arrow.png"></li>
+				<li data-combobox-down-arrow-icon-selected-path="/templates/skin_minimal_dark_round/combobox-down-arrow-rollover.png"></li>
+				<li data-lightbox-slideshow-preloader-path="/templates/skin_minimal_dark_round/slideShowPreloader.png"></li>
+				<li data-lightbox-close-button-normal-path="/templates/skin_minimal_dark_round/galleryCloseButtonNormalState.png"></li>
+				<li data-lightbox-close-button-selected-path="/templates/skin_minimal_dark_round/galleryCloseButtonSelectedState.png"></li>
+				<li data-lightbox-next-button-normal-path="/templates/skin_minimal_dark_round/nextIconNormalState.png"></li>
+				<li data-lightbox-next-button-selected-path="/templates/skin_minimal_dark_round/nextIconSelectedState.png"></li>
+				<li data-lightbox-prev-button-normal-path="/templates/skin_minimal_dark_round/prevIconNormalState.png"></li>
+				<li data-lightbox-prev-button-selected-path="/templates/skin_minimal_dark_round/prevIconSelectedState.png"></li>
+				<li data-lightbox-play-button-normal-path="/templates/skin_minimal_dark_round/playButtonNormalState.png"></li>
+				<li data-lightbox-play-button-selected-path="/templates/skin_minimal_dark_round/playButtonSelectedState.png"></li>
+				<li data-lightbox-pause-button-normal-path="/templates/skin_minimal_dark_round/pauseButtonNormalState.png"></li>
+				<li data-lightbox-pause-button-selected-path="/templates/skin_minimal_dark_round/pauseButtonSelectedState.png"></li>
+				<li data-lightbox-maximize-button-normal-path="/templates/skin_minimal_dark_round/maximizeButtonNormalState.png"></li>
+				<li data-lightbox-maximize-button-selected-path="/templates/skin_minimal_dark_round/maximizeButtonSelectedState.png"></li>
+				<li data-lightbox-minimize-button-normal-path="/templates/skin_minimal_dark_round/minimizeButtonNormalState.png"></li>
+				<li data-lightbox-minimize-button-selected-path="/templates/skin_minimal_dark_round/minimizeButtonSelectedState.png"></li>
+				<li data-lightbox-info-button-open-normal-path="/templates/skin_minimal_dark_round/infoButtonOpenNormalState.png"></li>
+				<li data-lightbox-info-button-open-selected-path="/templates/skin_minimal_dark_round/infoButtonOpenSelectedState.png"></li>
+				<li data-lightbox-info-button-close-normal-path="/templates/skin_minimal_dark_round/infoButtonCloseNormalPath.png"></li>
+				<li data-lightbox-info-button-close-selected-path="/templates/skin_minimal_dark_round/infoButtonCloseSelectedPath.png"></li>
+			</ul> 
+			<ul data-cat="Category one">
+				<?
+				foreach ($artists as $key => $blah) {
+					?>
+				<ul>
+					<li data-type="link" data-url="/artist/<?= $artists[$key]['url']; ?>" data-target="_self"></li>
+					<li data-thumbnail-path="/i/artist/<?= $artists[$key]['filename']; ?>"></li>
+					<li data-thumbnail-text>
+						<p class="largeLabel"><?= $artists[$key]['name']; ?></p>
+						<p class="smallLabel"><?= $artists[$key]['slug']; ?></p>
+					</li>
+					<li data-info="">
+						<p class="mediaDescriptionHeader">CUSTOM PRESS THUMBNAIL ACTION.</p>
+						<p class="mediaDescriptionText">When a thumbnail is pressed you can choose either to display an original media lightbox which we have coded, or to open a new webpage, the url and target of this webpage can be specified. The lightbox can display images, or can display videos loaded from YouTube or Vimeo. Also you can set up one or more thumbnails so that a new browser page will be opened when they are pressed. The URL and target for this page can be customized.</p>
+					</li>
+				</ul>
+					<?
+				}
+				?>
+			</ul>
+		</ul>
+	</div><!-- /end of artistArray -->
+	<?
 }
 
 function ListArtistCarousel($category,$artists) {
-	echo "<pre>";
-	print_r ($artists);
-	echo "</pre><br>";
+	?>
+		<div id="goCarousel"></div>
+			<ul id="playList1" style="display: none;">
+			<!-- skin -->
+			<ul data-skin="">
+				<li data-preloader-path="/templates/skin_modern_silver/preloader.png"></li>
+				<li data-thumbnail-gradient-left-path="/templates/skin_modern_silver/gradientLeft.png"></li>
+				<li data-thumbnail-gradient-right-path="/templates/skin_modern_silver/gradientRight.png"></li>
+				<li data-thumbnail-title-gradient-path="/templates/skin_modern_silver/textGradient.png"></li>
+				<li data-next-button-normal-path="/templates/skin_modern_silver/nextButtonNormalState.png"></li>
+				<li data-next-button-selected-path="/templates/skin_modern_silver/nextButtonSelectedState.png"></li>
+				<li data-prev-button-normal-path="/templates/skin_modern_silver/prevButtonNormalState.png"></li>
+				<li data-prev-button-selected-path="/templates/skin_modern_silver/prevButtonSelectedState.png"></li>
+				<li data-play-button-normal-path="/templates/skin_modern_silver/playButtonNormalState.png"></li>
+				<li data-play-button-selected-path="/templates/skin_modern_silver/playButtonSelectedState.png"></li>
+				<li data-pause-button-path="/templates/skin_modern_silver/pauseButtonSelectedState.png"></li>
+				<li data-handler-left-normal-path="/templates/skin_modern_silver/handlerLeftNormal.png"></li>
+				<li data-handler-left-selected-path="/templates/skin_modern_silver/handlerLeftSelected.png"></li>
+				<li data-handler-center-normal-path="/templates/skin_modern_silver/handlerCenterNormal.png"></li>
+				<li data-handler-center-selected-path="/templates/skin_modern_silver/handlerCenterSelected.png"></li>
+				<li data-handler-right-normal-path="/templates/skin_modern_silver/handlerRightNormal.png"></li>
+				<li data-handler-right-selected-path="/templates/skin_modern_silver/handlerRightSelected.png"></li>
+				<li data-track-left-path="/templates/skin_modern_silver/trackLeft.png"></li>
+				<li data-track-center-path="/templates/skin_modern_silver/trackCenter.png"></li>
+				<li data-track-right-path="/templates/skin_modern_silver/trackRight.png"></li>
+				<li data-slideshow-timer-path="/templates/skin_modern_silver/slideshowTimer.png"></li>
+				<li data-lightbox-slideshow-preloader-path="/templates/skin_modern_silver/slideShowPreloader.png"></li>
+				<li data-lightbox-close-button-normal-path="/templates/skin_modern_silver/closeButtonNormalState.png"></li>
+				<li data-lightbox-close-button-selected-path="/templates/skin_modern_silver/closeButtonSelectedState.png"></li>
+				<li data-lightbox-next-button-normal-path="/templates/skin_modern_silver/lightboxNextButtonNormalState.png"></li>
+				<li data-lightbox-next-button-selected-path="/templates/skin_modern_silver/lightboxNextButtonSelectedState.png"></li>
+				<li data-lightbox-prev-button-normal-path="/templates/skin_modern_silver/lightboxPrevButtonNormalState.png"></li>
+				<li data-lightbox-prev-button-selected-path="/templates/skin_modern_silver/lightboxPrevButtonSelectedState.png"></li>
+				<li data-lightbox-play-button-normal-path="/templates/skin_modern_silver/lightboxPlayButtonNormalState.png"></li>
+				<li data-lightbox-play-button-selected-path="/templates/skin_modern_silver/lightboxPlayButtonSelectedState.png"></li>
+				<li data-lightbox-pause-button-normal-path="/templates/skin_modern_silver/lightboxPauseButtonNormalState.png"></li>
+				<li data-lightbox-pause-button-selected-path="/templates/skin_modern_silver/lightboxPauseButtonSelectedState.png"></li>
+				<li data-lightbox-maximize-button-normal-path="/templates/skin_modern_silver/maximizeButtonNormalState.png"></li>
+				<li data-lightbox-maximize-button-selected-path="/templates/skin_modern_silver/maximizeButtonSelectedState.png"></li>
+				<li data-lightbox-minimize-button-normal-path="/templates/skin_modern_silver/minimizeButtonNormalState.png"></li>
+				<li data-lightbox-minimize-button-selected-path="/templates/skin_modern_silver/minimizeButtonSelectedState.png"></li>
+				<li data-lightbox-info-button-open-normal-path="/templates/skin_modern_silver/infoButtonOpenNormalState.png"></li>
+				<li data-lightbox-info-button-open-selected-path="/templates/skin_modern_silver/infoButtonOpenSelectedState.png"></li>
+				<li data-lightbox-info-button-close-normal-path="/templates/skin_modern_silver/infoButtonCloseNormalPath.png"></li>
+				<li data-lightbox-info-button-close-selected-path="/templates/skin_modern_silver/infoButtonCloseSelectedPath.png"></li>
+				<li data-combobox-arrow-icon-normal-path="/templates/skin_modern_silver/comboboxArrowNormal.png"></li>
+				<li data-combobox-arrow-icon-selected-path="/templates/skin_modern_silver/comboboxArrowSelected.png"></li>
+			</ul>
+			<!-- category  -->
+			<ul data-cat="Category one">
+			<?
+				foreach ($artists as $key => $blah) {
+					?>
+				<ul>
+					<li data-type="link" data-url="/artist/<?= $artists[$key]['url']; ?>" data-target="_self"></li>
+					<li data-thumbnail-path="/i/artist/<?= $artists[$key]['filename']; ?>"></li>
+					<li data-thumbnail-text="<?= $artists[$key]['name']; ?>" data-thumbnail-text-title-offset="35" data-thumbnail-text-offset-top="10" data-thumbnail-text-offset-bottom="7">
+						<p class="largeLabel"><?= $artists[$key]['name']; ?></p>
+						<p class="smallLabel"><?= $artists[$key]['slug']; ?></p>
+					</li>
+					<li data-info="">
+						<p class="mediaDescriptionHeader"><?= $artists[$key]['name']; ?></p>
+						<p class="mediaDescriptionText"><?= $artists[$key]['slug']; ?></p>
+					</li>
+				</ul>
+					<?
+				}
+			?>
+		</ul>
+	<?
 }

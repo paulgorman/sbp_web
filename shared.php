@@ -83,6 +83,7 @@ function CategoriesList() {
 	global $conn;
 	require_once("templates/header.php");
 	require_once("templates/categories.php");
+	require_once("templates/FWDconstructors.php"); // shit to make grid and carousel go
 	$meta = array();
 	if (isEmpty($_REQUEST['url'])) {
 		// all public categories, highlighted first.
@@ -114,7 +115,6 @@ function CategoriesList() {
 			$meta['image'] = CurServerUrl() . "i/category/" . $highlightedList[0]['carousel_id'];
 			$meta['css'][] = "skin_modern_silver.css";
 			$meta['js'][] = "FWDRoyal3DCarousel.js";
-			$meta['js'][] = "carouselSettings.js";
 			$meta['breadcrumb'][0]['name'] = "Talent";
 			$meta['breadcrumb'][0]['url'] = curPageURL();
 			// display all the categories
@@ -126,6 +126,7 @@ function CategoriesList() {
 			ListCategoryCarousel($highlightedList);
 			htmlBodyStart();
 			ListAllCategories($categoryList);
+			fwdConsStart(); fwdConsCarousel(); fwdConsStop(); // carousel constructor settings
 			htmlFooter($meta);
 		} else {
 			ErrorDisplay("Categories Listing Unavailable!");
@@ -213,24 +214,24 @@ function CategoriesList() {
 					$artists[$row['aid']]['slug'] = $row['slug'];
 					$artists[$row['aid']]['is_highlighted'] = $row['is_highlighted'];
 					$artists[$row['aid']]['use_display_name'] = $row['use_display_name'];
-				}
-			}
 
-			// Add image info for the Highlighted Carousel
-			$artistsHighlighted = array();	// array of highlighted good artists
-			foreach ($artists as $aid => $garbage) {
-				if ($artists[$aid]['is_highlighted'] == 1) {
 					$query = sprintf(
 						"SELECT `filename`,`thumbwidth`,`thumbheight` 
-						 FROM `media` WHERE `aid` = %s AND `viewable` = 1 AND is_highlighted = 1",
+						 FROM `media` WHERE `aid` = %s AND `viewable` = 1 AND `is_highlighted` = 1",
 						mysqli_real_escape_string($conn,$aid)
 					);
 					$result = mysqli_query($conn,$query);
-					$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-					$artistsHighlighted[$aid]['filename'] = $row['carousel_id'];
-					$artistsHighlighted[$aid]['thumbwidth'] = $row['thumbwidth'];
-					$artistsHighlighted[$aid]['thumbheight'] = $row['thumbheight'];
-					// append remaining normal artist info to this highlighted artist
+					$rowphoto = mysqli_fetch_array($result, MYSQLI_ASSOC);
+					$artists[$row['aid']]['filename'] = $rowphoto['filename'];
+					$artists[$row['aid']]['thumbwidth'] = $rowphoto['thumbwidth'];
+					$artists[$row['aid']]['thumbheight'] = $rowphoto['thumbheight'];
+				}
+			}
+
+			$artistsHighlighted = array();	// array of highlighted good artists
+			foreach ($artists as $aid => $garbage) {
+				if ($artists[$aid]['is_highlighted'] == 1) {
+					// highlighted carousel data
 					$artistsHighlighted[$aid] = $artists[$aid];
 				}
 			}
@@ -258,8 +259,9 @@ function CategoriesList() {
 				$meta['image'] = CurServerURL() . "i/category/" . $categoryInfo['carousel_id'];
 			}
 			$meta['css'][] = "skin_modern_silver.css";
+			$meta['css'][] = "skin_minimal_dark_global.css";
 			$meta['js'][] = "FWDRoyal3DCarousel.js";
-			$meta['js'][] = "carouselSettings.js";
+			$meta['js'][] = "FWDGrid.js";
 			$meta['breadcrumb'][0]['name'] = "Talent";
 			$meta['breadcrumb'][0]['url'] = curServerURL() . "talent/";
 			$meta['breadcrumb'][1]['name'] = $closestCategoryFromRequest;
@@ -268,9 +270,22 @@ function CategoriesList() {
 			htmlHeader($meta);
 			htmlMasthead($meta);
 			htmlNavigation($meta);
-			htmlBreadcrumb($meta);
-			ListArtistCarousel($closestCategoryFromRequest,$artistsHighlighted);
-			ListArtistsForCategory($closestCategoryFromRequest,$artists);
+			if (count($artistsHighlighted) > 0) {
+				htmlWavesStart();
+				htmlBreadcrumb($meta);
+				ListArtistCarousel($closestCategoryFromRequest,$artistsHighlighted);
+				htmlBodyStart();
+				ListArtistsForCategory($closestCategoryFromRequest,$artists);
+				fwdConsStart(); fwdConsCarousel(); fwdConsGrid(); fwdConsStop(); // carousel constructor settings
+			} else {
+				// snap, we don't like no ones in this category! Put up a simple category header image
+				htmlWavesShortStart();
+				htmlBreadcrumb($meta);
+				htmlCategoryImage($categoryInfo['image_id'], $closestCategoryFromRequest);
+				htmlBodyStart();
+				ListArtistsForCategory($closestCategoryFromRequest,$artists);
+				fwdConsStart(); fwdConsGrid(); fwdConsStop(); // carousel constructor settings
+			}
 			htmlFooter($meta);
 		}
 	}

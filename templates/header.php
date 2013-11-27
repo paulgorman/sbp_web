@@ -101,6 +101,13 @@ function htmlWavesStart() {
 	<?
 }
 
+function htmlWavesShortStart() {
+	?>
+	<!-- dark waves -->
+	<div class="dark carousel carouselShort col12">
+	<?
+}
+
 function htmlBodyStart() {
 	?>
 	</div> <!-- / dark waves -->
