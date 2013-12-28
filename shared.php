@@ -114,7 +114,8 @@ function CategoriesList() {
 			$meta['url'] = CurPageURL();
 			$meta['image'] = CurServerUrl() . "i/category/" . $highlightedList[0]['carousel_id'];
 			$meta['css'][] = "skin_modern_silver.css";
-			$meta['js'][] = "FWDRoyal3DCarousel.js";
+			//$meta['js'][] = "FWDRoyal3DCarousel.js";
+			$meta['js'][] = "FWDRoyal3DCarousel_uncompressed.js";
 			$meta['breadcrumb'][0]['name'] = "Talent";
 			$meta['breadcrumb'][0]['url'] = curPageURL();
 			// display all the categories
@@ -126,7 +127,7 @@ function CategoriesList() {
 			ListCategoryCarousel($highlightedList);
 			htmlBodyStart();
 			ListAllCategories($categoryList);
-			fwdConsStart(); fwdConsCarousel(); fwdConsStop(); // carousel constructor settings
+			fwdConsCarousel(); // carousel constructor settings
 			htmlFooter($meta);
 		} else {
 			ErrorDisplay("Categories Listing Unavailable!");
@@ -260,8 +261,9 @@ function CategoriesList() {
 			}
 			$meta['css'][] = "skin_modern_silver.css";
 			$meta['css'][] = "skin_minimal_dark_global.css";
-			$meta['js'][] = "FWDRoyal3DCarousel.js";
 			$meta['js'][] = "FWDGrid.js";
+			//$meta['js'][] = "FWDRoyal3DCarousel_uncompressed.js";
+			//$meta['js'][] = "FWDRoyal3DCarousel.js";
 			$meta['breadcrumb'][0]['name'] = "Talent";
 			$meta['breadcrumb'][0]['url'] = curServerURL() . "talent/";
 			$meta['breadcrumb'][1]['name'] = $closestCategoryFromRequest;
@@ -276,7 +278,9 @@ function CategoriesList() {
 				ListArtistCarousel($closestCategoryFromRequest,$artistsHighlighted);
 				htmlBodyStart();
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
-				fwdConsStart(); fwdConsCarousel(); fwdConsGrid(); fwdConsStop(); // carousel constructor settings
+				//fwdConsCombined();
+				fwdConsCarousel();
+				fwdConsGrid();
 			} else {
 				// snap, we don't like no ones in this category! Put up a simple category header image
 				htmlWavesShortStart();
@@ -284,7 +288,7 @@ function CategoriesList() {
 				htmlCategoryImage($categoryInfo['image_id'], $closestCategoryFromRequest);
 				htmlBodyStart();
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
-				fwdConsStart(); fwdConsGrid(); fwdConsStop(); // carousel constructor settings
+				fwdConsGrid();	// Grid constructor settings
 			}
 			htmlFooter($meta);
 		}
@@ -299,7 +303,8 @@ function HomePage() {
 	$meta['url'] = CurPageURL();
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	$meta['css'][] = "skin_modern_silver.css";
-	$meta['js'][] = "FWDRoyal3DCarousel.js";
+	//$meta['js'][] = "FWDRoyal3DCarousel.js";
+	$meta['js'][] = "FWDRoyal3DCarousel_uncompressed.js";
 	$meta['js'][] = "carouselSettings.js";
 	htmlHeader($meta);
 	htmlMasthead($meta);

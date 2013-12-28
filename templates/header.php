@@ -44,9 +44,9 @@ function htmlHeader($dataArray) {
 		<? foreach ($dataArray['css'] as $css) { ?> 
 			<link rel="stylesheet" href="/templates/css/<?= $css; ?>" />
 		<? } ?>
-		<? foreach ($dataArray['js'] as $js) { ?> 
+		<? if (isset($dataArray['js'])) { foreach ($dataArray['js'] as $js) { ?> 
 			<script type="text/javascript" src="/templates/js/<?= $js; ?>"></script>
-		<? } ?>
+		<? } } ?>
 
 	</head>
 	<body>
@@ -58,7 +58,7 @@ function htmlMasthead($meta) {
 	?>
 		<header class="col12">
 			<img class="logo" src="/templates/sbp/sbp-logo.png" title="Steve Beyer Productions" alt="SBP" />
-			<div class="swoosh" />
+			<div class="swoosh"></div>
 		</header>
 	<?
 }
@@ -117,12 +117,12 @@ function htmlBodyStart() {
 }
 
 function htmlBreadcrumb($meta) {
-	echo '<div class="breadcrumb">';
-	echo '<div class="breadcrumbitem"><a href="' . curServerURL() . '" title="Entertainment Home">Home</a></div>';
+	echo "\t<div class=\"breadcrumb\">\n";
+	echo "\t\t\t" . '<div class="breadcrumbitem"><a href="' . curServerURL() . '" title="Entertainment Home">Home</a></div>';
 	foreach ($meta['breadcrumb'] as $bc) { 
-		echo '<div class="breadcrumbitem"><a href="' . $bc['url'] . '" title="' . $bc['name'] . '">' . $bc['name'] . '</a></div>';
+		echo "\n\t\t\t". '<div class="breadcrumbitem"><a href="' . $bc['url'] . '" title="' . $bc['name'] . '">' . $bc['name'] . '</a></div>';
 	}
-	echo '</div>';
+	echo "\n\t\t</div><!-- /breadcrumb -->\n\n";
 }
 
 

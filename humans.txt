@@ -15,6 +15,9 @@
 	Site Layout: Michael Chinn
 	Contact: mike.chinn@xtechhq.com
 
+	Site Effects: FWDesign
+	Site: http://codecanyon.net/user/FWDesign
+
 	Editor: Levi Velasquez
 	Location: Las Vegas, Nevada
 
@@ -30,7 +33,7 @@
 	Site URL: http://stevebeyerproductions.com/
 	Doctype: HTML5
 	IDE: Vim
-	Software: Gimp, X-Chat2, HipChat
+	Software: Gimp, X-Chat2, HipChat, FWDesign
 	OS: FreeBSD, Apache, PHP5, MySQL
 	Host: InfiniteVPS
 
