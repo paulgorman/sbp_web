@@ -12,6 +12,11 @@
 			CategoriesList();
 			ScriptTime($starttime);
 			break;
+		case "artist":
+			RecordHit();
+			ArtistPage();
+			Scripttime($starttime);
+			break;
 		case "uploadprogress":
 			UploadProgress();
 			break;

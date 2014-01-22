@@ -79,6 +79,41 @@ function DebugShow() {
 	echo "</div>";
 }
 
+function ArtistPage() {
+	global $conn;
+	require_once("templates/header.php");
+	require_once("templates/FWDconstructors.php"); // shit to make grid and carousel go
+	$meta = array();
+	if (isEmpty($_REQUEST['url'])) {
+		// Whoops, no artist name in the URL, show the categories
+		CategoriesList();
+	}
+	// asdf
+	// make safe the incoming artist name $url
+	$url = MakeURL(strtolower(trim($_REQUEST['url'])));
+	echo $url;
+	$artistnames = array(); // to find the nearest artist name
+	//$query = "SELECT url, alt_url, name, display_name FROM artists WHERE is_active = 1";
+	// search to find exact URL match first
+	$query = sprintf(
+		"SELECT `url` FROM `artists` WHERE `url` = '%s' AND `is_active` = 1",
+		mysqli_real_escape_string($conn, $url)
+	);
+	$result = mysqli_query($conn, $query);
+	if (mysqli_num_rows($result)) {
+		while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+			$artistnames[] = $row['url'];
+		}
+	}
+	echo $artistnames[0];
+
+	$closestArtistFromRequest = ucWords(ClosestWord($url,$artistnames));
+	// search for any artists matching the incoming obfuscated or full name
+	// no result, display warning and go categories
+	// one result, show the artist page
+	// more than one result, show listing
+}
+
 function CategoriesList() {
 	global $conn;
 	require_once("templates/header.php");
@@ -137,18 +172,20 @@ function CategoriesList() {
 		$url = MakeURL(strtolower(trim($_REQUEST['url'])));
 		// what are all the categories we can choose from?
 		$categorynames = array();
-		$query = "SELECT `category` FROM `categories`";
+		$categoryurls= array();
+		$query = "SELECT `url`, `category` FROM `categories`";
 		$result = mysqli_query($conn,$query);
 		while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 			$categorynames[] = strtolower($row['category']);
+			$categoryurls[] = strtolower($row['url']);
 		}
-		$closestCategoryFromRequest = ClosestWord($url,$categorynames);
+		$closestCategoryFromRequest = ClosestWord($url,$categoryurls);
 		// dig up all categories that match the request
 		// XXX: Nevermind, just the one closest matching category, got really confusing doing bunches
 		$query = sprintf(
 			//"SELECT * FROM `categories` WHERE `url` like '%%%s%%' ORDER BY is_highlighted DESC, `category` ASC",
 			//mysqli_real_escape_string($conn,$url)
-			"SELECT * FROM `categories` WHERE `category` = '%s' ORDER BY is_highlighted DESC, `category` ASC",
+			"SELECT * FROM `categories` WHERE `url` = '%s' ORDER BY is_highlighted DESC, `category` ASC",
 			mysqli_real_escape_string($conn,$closestCategoryFromRequest)
 		);
 		$resultMatchingCategories = mysqli_query($conn, $query);
@@ -236,8 +273,9 @@ function CategoriesList() {
 					$artistsHighlighted[$aid] = $artists[$aid];
 				}
 			}
-			// So what is the best real category name that matches the random user request?
-			$closestCategoryFromRequest = ucWords(ClosestWord($url,$categorynames));
+			// So what was the best real category name that matches the random user request?
+			$closestCategoryFromRequest = $categoryInfo['category'];
+			//$closestCategoryFromRequest = ucWords(ClosestWord($url,$categorynames));
 
 			// meta keywords
 			$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Entertainment, Category, List, Listing, ";
@@ -283,7 +321,6 @@ function CategoriesList() {
 				htmlBodyStart();
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
 				ListArtistsTextLinks($category,$artists); 
-				// asdf
 				fwdConsCarousel(); // dump this stuff in at the bottom of html
 			} else {
 				// snap, we don't like no ones in this category! Put up a simple category header image
@@ -293,7 +330,6 @@ function CategoriesList() {
 				htmlBodyStart();
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
 				ListArtistsTextLinks($category,$artists); 
-				// asdf
 			}
 			htmlFooter($meta);
 		}
@@ -652,7 +688,7 @@ function ObfuscateArtistNameAutomatically($name) {
 	$counter = 0;
 	if (count($words) > 0) {
 		if (count($words) == 1) {
-			$display_name = $name;	// one word artist name is a one-word artist name.
+			$display_name = substr($name,0,3);	// one word artist name is now first 3 letters
 		} elseif (count($words) == 2) {
 			foreach ($words as $word) {
 				$display_name .= strtoupper(substr($word,0,1));
