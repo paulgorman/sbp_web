@@ -11,9 +11,9 @@ function AdminHead($curfunction,$adminfunctions) {
 				<title>SBP Admin - <?= $tempadminfunctionsflipped[$curfunction]; ?></title>
 				<link rel="stylesheet" type="text/css" href="/templates/css/admin.css" />
 	  		<link rel="stylesheet" type="text/css" href="/templates/css/jquery.bsmselect.css" />
-	  		<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
-	  		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-	  		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+	  		<link href="/templates/css/jquery-ui.css" rel="stylesheet" type="text/css" />
+	  		<script type="text/javascript" src="/templates/js/jquery.js"></script>
+	  		<script type="text/javascript" src="/templates/js/jquery-ui.js"></script>
 	  		<script type="text/javascript" src="/templates/js/jquery.bsmselect.js"></script>
 	  		<script type="text/javascript" src="/templates/js/jquery.bsmselect.sortable.js"></script>
 	  		<script type="text/javascript" src="/templates/js/jquery.bsmselect.compatibility.js"></script>

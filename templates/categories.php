@@ -101,9 +101,50 @@ function htmlCategoryImage($categoryImage,$category) {
 	<?
 }
 
-function ListArtistsForCategory($category,$artists)	{
+function ListArtistsForCategory($category,$artists) {
+	// $artists array of name, url, filename, slug
+	$width = 298;
+	$height = 250;
+	?>
+
+		<div class="artistArray"><!-- start of artistArray -->
+		<?
+			foreach ($artists as $key => $blah) {
+				$height = abs(round( ($artists[$key]['thumbwidth'] / $artists[$key]['thumbheight'])) * $width);
+				//$width = abs(round( ($artists[$key]['thumbwidth'] / $artists[$key]['thumbheight'])) * $height );
+				$text = sprintf(
+					"<a href='/artist/%s' title=\"%s\"><p class='artistsListBoxText'><span class='artistsListBoxTextName'>%s</span><br>%s</p></a>",
+					$artists[$key]['url'],
+					$artists[$key]['name'] . " - " . $artists[$key]['slug'],
+					$artists[$key]['name'],
+					$artists[$key]['slug']
+				);
+				$photo = sprintf(
+					// fields
+					"<div class='box artistsListBox blue fl'>".
+					"<a href='/artist/%s' border='0'>".
+					"<img class='artistsListBoxImage' src='/i/artist/%s' width='%s' height='%s' alt=\"%s\" title=\"%s\">".
+					"</a>".
+					$text .
+					"</div>\n",
+					// values
+					$artists[$key]['url'],
+					$artists[$key]['filename'],
+					$width,
+					$height,
+					$artists[$key]['name'],
+					$artists[$key]['name'] . " - " . $artists[$key]['slug']
+				);
+				echo "$photo\n";
+			}
+		?>
+		<div class="clearfix"></div>
+		</div><!-- /artistArray -->
+	<?
+}
+
+function XXXListArtistsForCategory($category,$artists)	{
 	// aid, name, url, slug, is_highlighted
-	//asdf
 	?>
 		<div class="artistArray"><!-- start of artistArray -->
 		<div id="goGrid" style="width:100%;"></div>

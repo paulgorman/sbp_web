@@ -261,9 +261,13 @@ function CategoriesList() {
 			}
 			$meta['css'][] = "skin_modern_silver.css";
 			$meta['css'][] = "skin_minimal_dark_global.css";
-			$meta['js'][] = "FWDGrid.js";
-			//$meta['js'][] = "FWDRoyal3DCarousel_uncompressed.js";
+			//$meta['css'][] = "jquery-ui.css";
+			//$meta['js'][] = "FWDGrid.js";
 			//$meta['js'][] = "FWDRoyal3DCarousel.js";
+			$meta['js'][] = "FWDRoyal3DCarousel_uncompressed.js";
+			//$meta['js'][] = "jquery.js";
+			//$meta['js'][] = "jquery-ui.js";
+			//$meta['js'][] = "presgrid.js";
 			$meta['breadcrumb'][0]['name'] = "Talent";
 			$meta['breadcrumb'][0]['url'] = curServerURL() . "talent/";
 			$meta['breadcrumb'][1]['name'] = $closestCategoryFromRequest;
@@ -278,9 +282,8 @@ function CategoriesList() {
 				ListArtistCarousel($closestCategoryFromRequest,$artistsHighlighted);
 				htmlBodyStart();
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
-				//fwdConsCombined();
-				fwdConsCarousel();
-				fwdConsGrid();
+				// asdf
+				fwdConsCarousel(); // dump this stuff in at the bottom of html
 			} else {
 				// snap, we don't like no ones in this category! Put up a simple category header image
 				htmlWavesShortStart();
@@ -288,7 +291,7 @@ function CategoriesList() {
 				htmlCategoryImage($categoryInfo['image_id'], $closestCategoryFromRequest);
 				htmlBodyStart();
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
-				fwdConsGrid();	// Grid constructor settings
+				// asdf
 			}
 			htmlFooter($meta);
 		}
