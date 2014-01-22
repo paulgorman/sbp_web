@@ -101,6 +101,12 @@ function htmlCategoryImage($categoryImage,$category) {
 	<?
 }
 
+function htmlCategoryImageBelow($categoryImage,$category) {
+	?>
+		<div class='catHeaderBelow'><img src="/i/category/<?= $categoryImage; ?>" width="485" height="60" title="<?= $category; ?>" alt="<?= $category; ?>"></div>
+	<?
+}
+
 function ListArtistsForCategory($category,$artists) {
 	// $artists array of name, url, filename, slug
 	$width = 298;
@@ -143,8 +149,9 @@ function ListArtistsForCategory($category,$artists) {
 	<?
 }
 
-function  ListArtistsTextLinks($category,$artists) {
-	echo "<div class=\"textlist\">\n";
+function ListArtistsTextLinks($category,$artists) {
+	echo "<h3>". $category['category'] . " - " . $category['description'] . "</h3><hr>";
+	echo "<div class='textlist'>\n";
 	echo "<ul>\n";
 	foreach ($artists as $key => $blah) {
 		$line = sprintf(

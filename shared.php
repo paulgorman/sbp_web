@@ -319,8 +319,9 @@ function CategoriesList() {
 				htmlBreadcrumb($meta);
 				ListArtistCarousel($closestCategoryFromRequest,$artistsHighlighted);
 				htmlBodyStart();
+				htmlCategoryImageBelow($categoryInfo['image_id'], $closestCategoryFromRequest);
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
-				ListArtistsTextLinks($category,$artists); 
+				ListArtistsTextLinks($categoryInfo,$artists); 
 				fwdConsCarousel(); // dump this stuff in at the bottom of html
 			} else {
 				// snap, we don't like no ones in this category! Put up a simple category header image
