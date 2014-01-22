@@ -282,6 +282,7 @@ function CategoriesList() {
 				ListArtistCarousel($closestCategoryFromRequest,$artistsHighlighted);
 				htmlBodyStart();
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
+				ListArtistsTextLinks($category,$artists); 
 				// asdf
 				fwdConsCarousel(); // dump this stuff in at the bottom of html
 			} else {
@@ -291,6 +292,7 @@ function CategoriesList() {
 				htmlCategoryImage($categoryInfo['image_id'], $closestCategoryFromRequest);
 				htmlBodyStart();
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
+				ListArtistsTextLinks($category,$artists); 
 				// asdf
 			}
 			htmlFooter($meta);

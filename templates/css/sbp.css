@@ -329,6 +329,29 @@ p.smallLabel{
 	top: -12px;
 }
 
+.textlist, .textlist a:link, .textlist a:visited, .textlist a:active {
+	margin: 0 auto 12px auto;
+	position: relative;
+	max-width: 960px;
+	text-align: left;
+	text-decoration: none;
+	color: #aaa;
+	font-size:14px;
+	line-height: 1.5em;
+}
+
+.textname{
+	color: #fff;
+}
+
+.textname:hover {
+	color: orange;
+}
+
+.textlist a:hover {
+	color: orange;
+}
+
 .artistsListBox {
 	position: relative;
 	border-radius: 4px;
