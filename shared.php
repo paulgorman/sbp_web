@@ -180,92 +180,75 @@ function CategoriesList() {
 			$categoryurls[] = strtolower($row['url']);
 		}
 		$closestCategoryFromRequest = ClosestWord($url,$categoryurls);
-		// dig up all categories that match the request
-		// XXX: Nevermind, just the one closest matching category, got really confusing doing bunches
+		// Artist names default to not obfuscated using real names, not requiring display names.
+		$obfuscatedArtistNames = 0;
+		// dig up closest category that matches the request
 		$query = sprintf(
-			//"SELECT * FROM `categories` WHERE `url` like '%%%s%%' ORDER BY is_highlighted DESC, `category` ASC",
-			//mysqli_real_escape_string($conn,$url)
 			"SELECT * FROM `categories` WHERE `url` = '%s' ORDER BY is_highlighted DESC, `category` ASC",
 			mysqli_real_escape_string($conn,$closestCategoryFromRequest)
 		);
 		$resultMatchingCategories = mysqli_query($conn, $query);
-		// Artist names default to not obfuscated using real names, not requiring display names.
-		$obfuscatedArtistNames = 0;
 		if (mysqli_num_rows($resultMatchingCategories) == 0) {
 			ErrorDisplay("No Categories Match Your Request");
 		} else {
-			// just AIDs that match requested category
-			$artistsMatchingCategoryRequest = array();
-			$categoryInfo = array(); // XXX: This only works for the final multi-matching-category loop
-			// all artist IDs from each of the 1-or-more matching categories
-			// XXX: this loop is currently going to only do ClosestWord now, no additional looping
-			while ($row = mysqli_fetch_array($resultMatchingCategories, MYSQLI_ASSOC)) {
-				$categoryInfo = $row;
-				// check if any of the categories require obfuscated artist names
-				// "Y" is to force display names. (N is force real names, I is individual artist mode)
-				if ($row['force_display_names'] == "I" && $obfuscatedArtistNames == 0) {
-					$obfuscatedArtistNames = "I";
-				} else if ($row['force_display_names'] == "Y") {
-					$obfuscatedArtistNames = 1;
-				}
-				// artist id's that match each category plz
-				$query = sprintf(
-					"SELECT `aid` FROM `artistcategories` WHERE `cid` = '%s'",
-					mysqli_real_escape_string($conn,$row['cid'])
-				);
-				$resultArtistIDs = mysqli_query($conn, $query);
-				while ($artistIDs = mysqli_fetch_array($resultArtistIDs, MYSQLI_ASSOC)) {
-					$aid = $artistIDs['aid'];
-					$artistsMatchingCategoryRequest[$aid] = $artistIDs[$aid];
-				}
+			$categoryInfo = mysqli_fetch_array($resultMatchingCategories, MYSQLI_ASSOC);
+			// check if any of the categories require obfuscated artist names
+			// "Y" is to force display names. (N is force real names, I is individual artist mode)
+			if ($categoryInfo['force_display_names'] == "I" && $obfuscatedArtistNames == 0) {
+				$obfuscatedArtistNames = "I";
+			} else if ($categoryInfo['force_display_names'] == "Y") {
+				$obfuscatedArtistNames = 1;
 			}
-			// put together the array of artist information
+			// joined query to find artists IDs that match the category,
+			// sort them by is_highlighted desc, name asc,
+			// save data to $artists array
 			$artists = array(); // the big array of good artists data
-			foreach ($artistsMatchingCategoryRequest as $aid => $garbage) {
-				$query = sprintf(
-					"SELECT `aid`,`name`,`display_name`,`url`,`alt_url`,`slug`,`use_display_name`,`is_highlighted`
-					 FROM `artists` WHERE `aid` = %s AND `is_searchable` = 1 AND `is_active` = 1",
-					mysqli_real_escape_string($conn,$aid)
-				);
-				$result = mysqli_query($conn,$query);
-				while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-					if ($obfuscatedArtistNames == "I") {
-						// we're allowd to display names depending on the individual artist 
-						if ($row['use_display_name'] == "1") {
-							// obfuscate this one artist
-							$artists[$row['aid']]['name'] = $row['display_name'];
-							$artists[$row['aid']]['url'] = $row['alt_url'];
-						} else {
-							// Real name for this one artist
-							$artists[$row['aid']]['name'] = $row['name'];
-							$artists[$row['aid']]['url'] = $row['url'];
-						}
-					} else if ($obfuscatedArtistNames == 1) {
-						// obfuscate ALL names in this list
+			$query = sprintf(
+				"SELECT `artists`.`aid`, `artists`.`name`, `artists`.`display_name`, `artists`.`url`, 
+				 `artists`.`alt_url`, `artists`.`slug`, `artists`.`use_display_name`, `artists`.`is_highlighted`
+				 FROM `artists` LEFT OUTER JOIN `artistcategories` ON `artists`.`aid` = `artistcategories`.`aid` 
+				 WHERE `artistcategories`.`cid` = '%s' AND `artists`.`is_searchable` = 1 AND `artists`.`is_active` = 1 
+				 ORDER BY `artists`.`is_highlighted` DESC, `artists`.`name` ASC",
+				mysqli_real_escape_string($conn,$categoryInfo['cid'])
+			);
+			$result = mysqli_query($conn,$query);
+			while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+				$artists[$row['aid']] = array();
+				if ($obfuscatedArtistNames == "I") {
+					// we're allowd to display names depending on the individual artist 
+					if ($row['use_display_name'] == "1") {
+						// obfuscate this one artist
 						$artists[$row['aid']]['name'] = $row['display_name'];
 						$artists[$row['aid']]['url'] = $row['alt_url'];
-					} else { // we can use normal real names!
+					} else {
+						// Real name for this one artist
 						$artists[$row['aid']]['name'] = $row['name'];
 						$artists[$row['aid']]['url'] = $row['url'];
 					}
-					$artists[$row['aid']]['aid'] = $row['aid'];
-					$artists[$row['aid']]['slug'] = $row['slug'];
-					$artists[$row['aid']]['is_highlighted'] = $row['is_highlighted'];
-					$artists[$row['aid']]['use_display_name'] = $row['use_display_name'];
-
-					$query = sprintf(
-						"SELECT `filename`,`thumbwidth`,`thumbheight` 
-						 FROM `media` WHERE `aid` = %s AND `viewable` = 1 AND `is_highlighted` = 1",
-						mysqli_real_escape_string($conn,$aid)
-					);
-					$result = mysqli_query($conn,$query);
-					$rowphoto = mysqli_fetch_array($result, MYSQLI_ASSOC);
-					$artists[$row['aid']]['filename'] = $rowphoto['filename'];
-					$artists[$row['aid']]['thumbwidth'] = $rowphoto['thumbwidth'];
-					$artists[$row['aid']]['thumbheight'] = $rowphoto['thumbheight'];
+				} else if ($obfuscatedArtistNames == 1) {
+					// obfuscate ALL names in this list
+					$artists[$row['aid']]['name'] = $row['display_name'];
+					$artists[$row['aid']]['url'] = $row['alt_url'];
+				} else { // we can use normal real names!
+					$artists[$row['aid']]['name'] = $row['name'];
+					$artists[$row['aid']]['url'] = $row['url'];
 				}
-			}
+				$artists[$row['aid']]['aid'] = $row['aid'];
+				$artists[$row['aid']]['slug'] = $row['slug'];
+				$artists[$row['aid']]['is_highlighted'] = $row['is_highlighted'];
+				$artists[$row['aid']]['use_display_name'] = $row['use_display_name'];
 
+				$query = sprintf(
+					"SELECT `filename`,`thumbwidth`,`thumbheight` 
+					 FROM `media` WHERE `aid` = %s AND `viewable` = 1 AND `is_highlighted` = 1",
+					mysqli_real_escape_string($conn,$row['aid'])
+				);
+				$photoresult = mysqli_query($conn,$query);
+				$rowphoto = mysqli_fetch_array($photoresult, MYSQLI_ASSOC);
+				$artists[$row['aid']]['filename'] = $rowphoto['filename'];
+				$artists[$row['aid']]['thumbwidth'] = $rowphoto['thumbwidth'];
+				$artists[$row['aid']]['thumbheight'] = $rowphoto['thumbheight'];
+			}
 			$artistsHighlighted = array();	// array of highlighted good artists
 			foreach ($artists as $aid => $garbage) {
 				if ($artists[$aid]['is_highlighted'] == 1) {
@@ -330,7 +313,7 @@ function CategoriesList() {
 				htmlCategoryImage($categoryInfo['image_id'], $closestCategoryFromRequest);
 				htmlBodyStart();
 				ListArtistsForCategory($closestCategoryFromRequest,$artists);
-				ListArtistsTextLinks($category,$artists); 
+				ListArtistsTextLinks($categoryInfo,$artists); 
 			}
 			htmlFooter($meta);
 		}
