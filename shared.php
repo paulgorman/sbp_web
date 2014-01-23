@@ -92,6 +92,7 @@ function ArtistPage() {
 			header("Location: http://". $_SERVER['HTTP_HOST'] ."/categories", TRUE, 302);
 		} elseif (count($artistinfo) === 1) {
 			$artistinfo = obfuscateArtistInfo($artistinfo);
+			$artistinfo = insertBreadCrumb($artistinfo);
 			//$meta = getArtistMetaTags($artistinfo);
 			// show artist page
 			print_r ($artistinfo);
@@ -163,6 +164,28 @@ function getArtistInfo() {
 		return ($artistnames);
 	}
 	//$closestArtistFromRequest = ClosestWord($url,$artistnames);
+}
+
+function insertBreadCrumb($artistinfo) {
+	// slap in the breadcrumbs for each artist in the array
+	foreach ($artistinfo as $key => $blah) {
+		$catarray = getCategoryBreadcrumb($artistinfo[$key]['cid']);
+		$artistinfo[$key]['category'] = $catarray['category'];
+		$artistinfo[$key]['caturl'] = $catarray['url'];
+	}
+	return ($artistinfo);
+}
+
+function getCategoryBreadcrumb($cid) {
+	// collect an incoming CID, return the URL and Name plz.
+	global $conn;
+	$query = sprintf(
+		"SELECT `category`,`url` FROM `categories` WHERE `cid` = '%s'",
+		mysqli_real_escape_string($conn,$cid)
+	);
+	$result = mysqli_query($conn, $query);
+	$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+	return ($row);
 }
 
 function getArtistCategory($aid) {
