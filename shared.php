@@ -83,35 +83,110 @@ function ArtistPage() {
 	global $conn;
 	require_once("templates/header.php");
 	require_once("templates/FWDconstructors.php"); // shit to make grid and carousel go
-	$meta = array();
 	if (isEmpty($_REQUEST['url'])) {
 		// Whoops, no artist name in the URL, show the categories
-		CategoriesList();
+		header("Location: http://". $_SERVER['HTTP_HOST'] ."/categories", TRUE, 302);
+	} else {
+		$artistinfo = getArtistInfo();
+		if (count($artistinfo) === 0) {
+			header("Location: http://". $_SERVER['HTTP_HOST'] ."/categories", TRUE, 302);
+		} elseif (count($artistinfo) === 1) {
+			$artistinfo = obfuscateArtistInfo($artistinfo);
+			//$meta = getArtistMetaTags($artistinfo);
+			// show artist page
+			print_r ($artistinfo);
+		} else {
+			// show multiple matching artist chooser
+			// XXX: Not Done
+		}
 	}
-	// asdf
-	// make safe the incoming artist name $url
+}
+
+function obfuscateArtistInfo($artistinfo) {
+	// determine if it is necessarty to obfuscate any artists in this array, munge if so, and send the array back
+	global $conn;
+	foreach ($artistinfo as $key => $blah) {
+		$obfuscateMe = 0;
+		// artist's own entry forced to obfuscate?
+		if ((int)$artistinfo[$key]['use_display_name'] === 1) {
+			$obfuscateMe++;
+		}
+		// artist's category selected to obfuscate?
+		$query = sprintf(
+			"SELECT `force_display_names` FROM `categories` WHERE `cid` = '%s'",
+			mysqli_real_escape_string($conn,$artistinfo[$key]['cid'])
+		);
+		$row = mysqli_fetch_array(mysqli_query($conn,$query), MYSQLI_ASSOC);
+		if ($row['force_display_names'] === "Y") {
+			$obfuscateMe++;
+		}
+		// incoming URL used obfuscated artist name?
+		$url = MakeURL(strtolower(trim($_REQUEST['url'])));
+		$query = sprintf(
+			"SELECT `alt_url` FROM `artists` WHERE `alt_url` = '%s'",
+			mysqli_real_escape_string($conn,$url)
+		);
+		$result = mysqli_query($conn, $query);
+		if (mysqli_num_rows($result)) {
+			$obfuscateMe++;
+		}
+		if ($obfuscateMe) {
+			$artistinfo[$key]['bio'] = str_ireplace($artistinfo[$key]['name'], $artistinfo[$key]['display_name'], $artistinfo[$key]['bio']);
+			$artistinfo[$key]['slug'] = str_ireplace($artistinfo[$key]['name'], $artistinfo[$key]['display_name'], $artistinfo[$key]['slug']);
+			$artistinfo[$key]['name'] = $artistinfo[$key]['display_name'];
+			$artistinfo[$key]['url'] = $artistinfo[$key]['alt_url'];
+		}
+	}
+	return ($artistinfo);
+}
+
+function getArtistInfo() {
+	global $conn;
 	$url = MakeURL(strtolower(trim($_REQUEST['url'])));
-	echo $url;
 	$artistnames = array(); // to find the nearest artist name
-	//$query = "SELECT url, alt_url, name, display_name FROM artists WHERE is_active = 1";
-	// search to find exact URL match first
+	// search to find exact full URL match first
 	$query = sprintf(
-		"SELECT `url` FROM `artists` WHERE `url` = '%s' AND `is_active` = 1",
+		"SELECT * FROM `artists` WHERE (`url` = '%s' OR `alt_url` = '%s') AND `is_active` = 1",
+		mysqli_real_escape_string($conn, $url),
 		mysqli_real_escape_string($conn, $url)
 	);
 	$result = mysqli_query($conn, $query);
 	if (mysqli_num_rows($result)) {
 		while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-			$artistnames[] = $row['url'];
+			$artistnames[$row['aid']] = $row;
 		}
 	}
-	echo $artistnames[0];
+	// check category and get the hell outta here if we can
+	if (count($artistnames) === 1) {
+		// has the user come in via a category page listing?
+		$artistnames[key($artistnames)]['cid'] = getArtistCategory($artistnames[key($artistnames)]['aid']);
+		return ($artistnames);
+	}
+	//$closestArtistFromRequest = ClosestWord($url,$artistnames);
+}
 
-	$closestArtistFromRequest = ucWords(ClosestWord($url,$artistnames));
-	// search for any artists matching the incoming obfuscated or full name
-	// no result, display warning and go categories
-	// one result, show the artist page
-	// more than one result, show listing
+function getArtistCategory($aid) {
+	global $conn;
+	// from looking at the artist id, return the category ID or null
+	$cid = NULL;
+	if (strlen(preg_replace("/[^0-9]/","",$_SESSION['category'])) >= 1 ) {
+		// did the web visitor pass through a category listing page?
+		$cid = preg_replace("/[^0-9]/","",$_SESSION['category']);
+	} else {
+		// no category was in the session, prolly a direct link, so go pick a category for this one artist
+		$query = sprintf(
+			"SELECT `categories`.`cid` FROM `categories` 
+			 LEFT OUTER JOIN `artistcategories` ON `categories`.`cid` = `artistcategories`.`cid` 
+			 WHERE `artistcategories`.`aid` = '%s' AND `categories`.`published` = 1 ORDER BY `categories`.`is_highlighted` DESC, `categories`.`category` ASC
+			 LIMIT 0,1",
+			mysqli_real_escape_string($conn,$aid)
+		);
+		$result = mysqli_query($conn, $query);
+		if (mysqli_num_rows($result)) {
+			$cid = mysqli_fetch_array($result, MYSQLI_ASSOC)['cid'];
+		}
+	}
+	return($cid);
 }
 
 function CategoriesList() {
@@ -294,6 +369,7 @@ function CategoriesList() {
 			$meta['breadcrumb'][1]['name'] = $closestCategoryFromRequest;
 			$meta['breadcrumb'][1]['url'] = curPageURL();
 
+			$_SESSION['category'] = $categoryInfo['cid'];
 			htmlHeader($meta);
 			htmlMasthead($meta);
 			htmlNavigation($meta);
