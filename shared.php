@@ -82,7 +82,9 @@ function DebugShow() {
 function ArtistPage() {
 	global $conn;
 	require_once("templates/header.php");
+	require_once("templates/artistpage.php");
 	require_once("templates/FWDconstructors.php"); // shit to make grid and carousel go
+	require_once("templates/Parsedown/Parsedown.php");
 	if (isEmpty($_REQUEST['url'])) {
 		// Whoops, no artist name in the URL, show the categories
 		header("Location: http://". $_SERVER['HTTP_HOST'] ."/categories", TRUE, 302);
@@ -99,13 +101,11 @@ function ArtistPage() {
 			htmlHeader($meta);
 			htmlMasthead($meta);
 			htmlNavigation($meta);
-			htmlWavesStart();
+			htmlWavesFullStart();
 			htmlBreadcrumb($meta);
-			echo "<div style='max-width:940px;margin: 22px auto 22px auto;'>upper body</div>";
-			//print_r ($meta);
+			htmlArtistPageTop($artistinfo);
 			htmlBodyStart();
-			echo "<div style='height: 10em; margin-top: 1em;'>lower body</div>";
-			//print_r ($artistinfo);
+			htmlArtistPageBottom($artistinfo);
 			htmlFooter($meta);
 		} else {
 			// show multiple matching artist chooser

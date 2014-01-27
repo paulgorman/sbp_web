@@ -145,6 +145,14 @@ nav.menu ul:hover li{
 .carouselShort {
 	height: 100px;
 }
+
+.carouselFull {
+	margin-left:0!important;
+	position: relative;
+	height: 100%;
+	padding-bottom: 12px;
+}
+
 .purple{
 	text-align:center;
 	margin-left:0!important;
@@ -173,6 +181,46 @@ nav.menu ul:hover li{
 	margin-right:12px;
 	/* margin-bottom:12px; */
 }
+
+.artistTop {
+	position: relative;
+	max-width: 960px;
+	margin:0 auto 12px auto;
+}
+
+.artistTitle {
+	text-align: center;
+}
+.artistHeadImage {
+	border-radius: 16px;
+	border: 1px solid rgba(0,0,0,0.5);
+	background-color:rgba(255,255,255,0.1);
+	padding: 4px;
+}
+.artistBio {
+	position: relative;
+	text-align: left;
+	padding: 4px;
+	padding-top: 14px;
+}
+
+.artistBio p {
+	font-size: 14px;
+	line-height: 18px;
+	text-indent: 1em;
+}
+.artistBio strong { font-weight: bold; }
+.artistBio em, dfn { font-style: italic; margin-right: 0.4em; margin-left: 0.3em; }
+.artistBio dfn { font-weight: bold; }
+.artistBio pre, code { margin: 1.625em 0; white-space: pre; }
+.artistBio pre, code, tt { font: 1em monospace; line-height: 1.5; } 
+.artistBio tt { display: block; margin: 1.625em 0; }
+.artistBio hr { margin-bottom:1.625em; }
+.artistBio p + p { margin-top: 0.5em; }
+.artistBio blockquote { padding:1.5em 1em 1.825em 1em; font-family:georgia,serif;font-style: italic;  }
+.artistBio blockquote:before { content:"\201C";font-size:2.5em;margin-left:-.625em; font-family:georgia,serif;color:#aaa;line-height:0; }/* From Tripoli  */
+.artistBio blockquote > p {padding:0; margin:0; font-size: 1.1em; line-height: 0.1em;}
+
 h1{
 	font-family: 'Droid Serif', serif;
 	font-size:30px !important;
@@ -180,7 +228,7 @@ h1{
 	font-style:italic;
 	color:#dcdcdc;
 	margin-top:5px;
-	margin-bottom: 22px;
+	//margin-bottom: 22px;
 	padding:12px;
 }
 h2{
