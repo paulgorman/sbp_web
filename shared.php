@@ -31,7 +31,7 @@ function Init() {
 	$db    = "sbpweb";
 	require_once("db.php");
 	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
-	$pagination = "10";	// number of entries per "page"
+	$pagination = "20";	// number of entries per "page"
 	$videoheight = 300;
 }
 
@@ -93,14 +93,99 @@ function ArtistPage() {
 		} elseif (count($artistinfo) === 1) {
 			$artistinfo = obfuscateArtistInfo($artistinfo);
 			$artistinfo = insertBreadCrumb($artistinfo);
-			//$meta = getArtistMetaTags($artistinfo);
-			// show artist page
-			print_r ($artistinfo);
+			$meta = getArtistMetaTags($artistinfo);
+			$meta['js'][] = "#";
+			$meta['css'][] = "#";
+			htmlHeader($meta);
+			htmlMasthead($meta);
+			htmlNavigation($meta);
+			htmlWavesStart();
+			htmlBreadcrumb($meta);
+			echo "<div style='max-width:940px;margin: 22px auto 22px auto;'>upper body</div>";
+			//print_r ($meta);
+			htmlBodyStart();
+			echo "<div style='height: 10em; margin-top: 1em;'>lower body</div>";
+			//print_r ($artistinfo);
+			htmlFooter($meta);
 		} else {
 			// show multiple matching artist chooser
 			// XXX: Not Done
 		}
 	}
+}
+
+function getArtistMetaTags($artistinfo) {
+	$meta = array();
+	// meta keywords are name, categories, styles, locations
+	$meta['keywords'] = "Steve Beyer Productions, SBP, ";
+	foreach (array_keys($artistinfo) as $key) {
+		$meta['keywords'] .= $artistinfo[$key]['name'] . ", ";
+		foreach (array_keys($artistinfo[$key]['categories']) as $subkey) {
+			$meta['keywords'] .= $artistinfo[$key]['categories'][$subkey] . ", ";
+		}
+		foreach (array_keys($artistinfo[$key]['styles']) as $subkey) {
+			$meta['keywords'] .= $artistinfo[$key]['styles'][$subkey] . ", ";
+		}
+		foreach (array_keys($artistinfo[$key]['locations']) as $subkey) {
+			$meta['keywords'] .= "'" . $artistinfo[$key]['locations'][$subkey] . "', ";
+		}
+	}
+	$meta['keywords'] = substr($meta['keywords'], 0, -2) . ".";
+	// meta description is: name - slug (cat,egor,ies)
+	$meta['description'] = "";
+	foreach (array_keys($artistinfo) as $key) {
+		$meta['description'] .= $artistinfo[$key]['name'];
+		$meta['description'] .= " - ";
+		$meta['description'] .= $artistinfo[$key]['slug'];
+		$meta['description'] .= " (";
+		foreach (array_keys($artistinfo[$key]['categories']) as $subkey) {
+			$meta['description'] .= $artistinfo[$key]['categories'][$subkey] . ", ";
+		}
+		$meta['description'] = substr($meta['description'], 0, -2) . ")";
+		$meta['description'] .= " / ";
+	}
+	$meta['description'] = substr($meta['description'], 0, -3);
+	// title is: SBP Presents name - slug (sty,les)
+	$meta['title'] = "SBP presents ";
+	foreach (array_keys($artistinfo) as $key) {
+		$meta['title'] .= $artistinfo[$key]['name'];
+		$meta['title'] .= " - ";
+		$meta['title'] .= $artistinfo[$key]['slug'];
+		$meta['title'] .= " (";
+		foreach (array_keys($artistinfo[$key]['styles']) as $subkey) {
+			$meta['title'] .= $artistinfo[$key]['styles'][$subkey] . ", ";
+		}
+		$meta['title'] = substr($meta['title'], 0, -2) . ")";
+		$meta['description'] .= " / ";
+	}
+	$meta['description'] = substr($meta['description'], 0, -3);
+	$meta['url'] = CurPageURL();
+	// breadcrumb
+	// step 0 : categories
+	// step 1 : category name
+	// step 2 : artist name
+	$aid = $artistinfo[key($artistinfo)]['aid'];
+	$meta['breadcrumb'][0]['name'] = "Talent";
+	$meta['breadcrumb'][0]['url'] = CurServerURL() . "talent";
+	if (count($artistinfo) === 1) {
+		$meta['breadcrumb'][1]['name'] = $artistinfo[$aid]['category'];
+		$meta['breadcrumb'][1]['url'] = curServerURL() . "category/" . $artistinfo[$aid]['caturl'];
+		$meta['breadcrumb'][2]['name'] = $artistinfo[$aid]['name'];
+		$meta['breadcrumb'][2]['url'] = curPageURL();
+	} else {
+		$meta['breadcrumb'][1]['name'] = "Selection: ";
+		$meta['breadcrumb'][1]['url'] = curPageURL();
+		foreach (array_keys($artistinfo) as $key) {
+			$meta['breadcrumb'][1]['name'] .= $artistinfo[$key]['name'];
+			$meta['breadcrumb'][1]['name'] .= ", ";
+		}
+		$meta['breadcrumb'][1] = substr($meta['breadcrumb'][1], 0, -2);
+	}	
+	// image
+	$meta['image']  = CurServerUrl() . "i/artist/";
+	$meta['image'] .= $artistinfo[$aid]['media']['filename'][key($artistinfo[$aid]['media']['filename'])];
+	return ($meta);
+
 }
 
 function obfuscateArtistInfo($artistinfo) {
@@ -121,6 +206,14 @@ function obfuscateArtistInfo($artistinfo) {
 		if ($row['force_display_names'] === "Y") {
 			$obfuscateMe++;
 		}
+		if ($row['force_display_names'] === "N") {
+			// AH HA, no, this special category MUST show full real name!
+			$obfuscateMe = -9;
+		}
+		// was the obfuscate session cookie previously set?
+		if ($_SESSION['obfuscate'] == "1") {
+			$obfuscateMe++;
+		}
 		// incoming URL used obfuscated artist name?
 		$url = MakeURL(strtolower(trim($_REQUEST['url'])));
 		$query = sprintf(
@@ -128,10 +221,19 @@ function obfuscateArtistInfo($artistinfo) {
 			mysqli_real_escape_string($conn,$url)
 		);
 		$result = mysqli_query($conn, $query);
-		if (mysqli_num_rows($result)) {
+		if (mysqli_num_rows($result) > 0) {
 			$obfuscateMe++;
+			// XXX: Oh hey, set a cookie on this to obfuscate further artists during this user's visit
+			// XXX: Since this user was originally given an obfuscated URL
+			$_SESSION['obfuscate'] = 1;
+		} else {
+			// XXX: nevermind, they found a legit url somehow, remove that cookie
+			if ($_SESSION['obfuscate'] == "1") {
+				$obfuscateMe--;
+				$_SESSION['obfuscate'] = 0;
+			}
 		}
-		if ($obfuscateMe) {
+		if ($obfuscateMe > 0) {
 			$artistinfo[$key]['bio'] = str_ireplace($artistinfo[$key]['name'], $artistinfo[$key]['display_name'], $artistinfo[$key]['bio']);
 			$artistinfo[$key]['slug'] = str_ireplace($artistinfo[$key]['name'], $artistinfo[$key]['display_name'], $artistinfo[$key]['slug']);
 			$artistinfo[$key]['name'] = $artistinfo[$key]['display_name'];
@@ -159,8 +261,60 @@ function getArtistInfo() {
 	}
 	// check category and get the hell outta here if we can
 	if (count($artistnames) === 1) {
+		$aid = key($artistnames);
 		// has the user come in via a category page listing?
-		$artistnames[key($artistnames)]['cid'] = getArtistCategory($artistnames[key($artistnames)]['aid']);
+		$artistnames[key($artistnames)]['cid'] = getArtistCategory($aid);
+		// Get other categories, styles, and locations
+		$query = sprintf(
+			"SELECT `categories`.`cid`, `categories`.`category` FROM `categories`
+			 LEFT OUTER JOIN `artistcategories` ON `artistcategories`.`cid` = `categories`.`cid`
+			 WHERE `artistcategories`.`aid` = '%s' AND `categories`.`published` = 1",
+			mysqli_real_escape_string($conn,$aid)
+		);
+		$result = mysqli_query($conn,$query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$artistnames[$aid]['categories'][$row['cid']] = $row['category'];
+		}
+		$query = sprintf(
+			"SELECT `styles`.`sid`, `styles`.`name` FROM `styles`
+			 LEFT OUTER JOIN `artiststyles` ON `artiststyles`.`sid` = `styles`.`sid`
+			 WHERE `artiststyles`.`aid` = '%s'",
+			mysqli_real_escape_string($conn,$aid)
+		);
+		$result = mysqli_query($conn,$query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$artistnames[$aid]['styles'][$row['sid']] = $row['name'];
+		}
+		$query = sprintf(
+			"SELECT `locations`.`lid`, `locations`.`city`, `locations`.`state` FROM `locations`
+			 LEFT OUTER JOIN `artistlocations` ON `artistlocations`.`lid` = `locations`.`lid`
+			 WHERE `artistlocations`.`aid` = '%s' ORDER BY `locations`.`state`",
+			mysqli_real_escape_string($conn,$aid)
+		);
+		$result = mysqli_query($conn,$query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$artistnames[$aid]['locations'][$row['lid']] = $row['city'] . ", " . StateCodeToName($row['state']);
+		}
+		$query = sprintf(
+			"SELECT * FROM `media` WHERE `aid` = %s ORDER BY `is_highlighted` DESC, `vidlength` ASC", 
+			mysqli_real_escape_string($conn,$aid)
+		);
+		$result = mysqli_query($conn,$query);
+		while ($row = mysqli_fetch_assoc($result)) {
+			$artistnames[$aid]['media']['mid'][$row['mid']] = $row['mid'];
+			$artistnames[$aid]['media']['name'][$row['mid']] = $row['name'];
+			$artistnames[$aid]['media']['filetype'][$row['mid']] = $row['filetype'];
+			$artistnames[$aid]['media']['filename'][$row['mid']] = $row['filename'];
+			$artistnames[$aid]['media']['thumbwidth'][$row['mid']] = $row['thumbwidth'];
+			$artistnames[$aid]['media']['thumbheight'][$row['mid']] = $row['thumbheight'];
+			$artistnames[$aid]['media']['height'][$row['mid']] = $row['height'];
+			$artistnames[$aid]['media']['width'][$row['mid']] = $row['width'];
+			$artistnames[$aid]['media']['vidlength'][$row['mid']] = $row['vidlength'];
+			$artistnames[$aid]['media']['is_highlighted'][$row['mid']] = $row['is_highlighted'];
+			$artistnames[$aid]['media']['viewable'][$row['mid']] = $row['viewable'];
+			$artistnames[$aid]['media']['published'][$row['mid']] = DateSQLtoPHP($row['published']);
+		}
+		mysqli_free_result($result);
 		return ($artistnames);
 	}
 	//$closestArtistFromRequest = ClosestWord($url,$artistnames);
@@ -338,7 +492,7 @@ function CategoriesList() {
 
 				$query = sprintf(
 					"SELECT `filename`,`thumbwidth`,`thumbheight` 
-					 FROM `media` WHERE `aid` = %s AND `viewable` = 1 AND `is_highlighted` = 1",
+					 FROM `media` WHERE `aid` = %s AND `viewable` = 1 ORDER BY `is_highlighted` DESC, `width` DESC LIMIT 0,1",
 					mysqli_real_escape_string($conn,$row['aid'])
 				);
 				$photoresult = mysqli_query($conn,$query);
@@ -735,7 +889,10 @@ function GatherArtistInfo($aid) {
 		$artistinfo['styles'][$row['sid']] = $row['sid'];
 	}
 	mysqli_free_result($result);
-	$query = sprintf("SELECT * FROM `media` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
+	$query = sprintf(
+		"SELECT * FROM `media` WHERE `aid` = %s ORDER BY `is_highlighted` DESC, `vidlength` ASC", 
+		mysqli_real_escape_string($conn,$aid)
+	);
 	$result = mysqli_query($conn,$query);
 	while ($row = mysqli_fetch_assoc($result)) {
 		$artistinfo['media']['mid'][$row['mid']] = $row['mid'];

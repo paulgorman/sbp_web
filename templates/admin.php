@@ -1004,7 +1004,7 @@ function DisplayVideoPlayer($artistinfo) {
 				{type: 'download'}
 			],
 			'author': 'Steve Beyer Productions',
-			'description': '<?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?>',
+			'description': '<?= ($artistinfo['use_display_name'])? htmlspecialchars($artistinfo['display_name'], ENT_QUOTES) : htmlspecialchars($artistinfo['name'], ENT_QUOTES); ?>',
 			'file': '/m/<?= $artistinfo['media']['filename']; ?>',
 			'image': '/i/artist/<?= $artistinfo['media']['previewimage']; ?>',
 			'duration': '<?= $artistinfo['media']['vidlength']; ?>',
