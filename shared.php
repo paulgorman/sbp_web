@@ -96,8 +96,6 @@ function ArtistPage() {
 			$artistinfo = obfuscateArtistInfo($artistinfo);
 			$artistinfo = insertBreadCrumb($artistinfo);
 			$meta = getArtistMetaTags($artistinfo);
-			$meta['js'][] = "#";
-			$meta['css'][] = "#";
 			htmlHeader($meta);
 			htmlMasthead($meta);
 			htmlNavigation($meta);
@@ -444,6 +442,10 @@ function CategoriesList() {
 			ErrorDisplay("No Categories Match Your Request");
 		} else {
 			$categoryInfo = mysqli_fetch_array($resultMatchingCategories, MYSQLI_ASSOC);
+			// check obfuscated cookie status
+			if ($_SESSION['obfuscate'] == "1") {
+				$obfuscatedArtistNames = 1;
+			}
 			// check if any of the categories require obfuscated artist names
 			// "Y" is to force display names. (N is force real names, I is individual artist mode)
 			if ($categoryInfo['force_display_names'] == "I" && $obfuscatedArtistNames == 0) {
@@ -589,6 +591,32 @@ function HomePage() {
 	htmlNavigation($meta);
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
+}
+
+function DisplayVideoPlayer($artistinfo) {
+	?>
+	<script type="text/javascript" src="/templates/jwplayer/jwplayer.js"></script>
+	<div class="<?= $artistinfo['classname']; ?>" id="container<?= $artistinfo['media']['mid']; ?>">Loading video for <?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?></div>
+	<script type="text/javascript">
+		jwplayer('container<?= $artistinfo['media']['mid']; ?>').setup({
+			'modes': [
+				{type: 'html5'},
+				{type: 'flash', src: '/templates/jwplayer/player.swf'},
+				{type: 'download'}
+			],
+			'author': 'Steve Beyer Productions',
+			'description': '<?= ($artistinfo['use_display_name'])? htmlspecialchars($artistinfo['display_name'], ENT_QUOTES) : htmlspecialchars($artistinfo['name'], ENT_QUOTES); ?>',
+			'file': '/m/<?= $artistinfo['media']['filename']; ?>',
+			'image': '/i/artist/<?= $artistinfo['media']['previewimage']; ?>',
+			'duration': '<?= $artistinfo['media']['vidlength']; ?>',
+			'controlbar': 'over',
+			'shownavigation': 'true',
+			'icons': false,
+			'width': '<?= $artistinfo['media']['width']; ?>',
+			'height': '<?= $artistinfo['media']['height']; ?>'
+		});
+	</script>
+	<?
 }
 
 function AdminDisplaySiteStats() {
@@ -1257,20 +1285,24 @@ function PrepareVideoPlayer($input) {
 					$tempartistinfo['media']['fileid'] = substr($artistinfo['media']['filename'][$mid], 0, -4);
 					$tempartistinfo['media']['is_highlighted'] = $artistinfo['media']['is_highlighted'][$mid];
 					$tempartistinfo['media']['viewable'] = $artistinfo['media']['viewable'][$mid];
-					$tempartistinfo['media']['published'] = $artistinfo['media']['published'][$mid];
-					if ((string)$artistinfo['media']['viewable'][$mid] === '1') {
-						$tempartistinfo['classname'] = "VideoPlayer";
-					} else {
-						$tempartistinfo['classname'] = "VideoPlayerNOVIEW";
+					if ((string)$_REQUEST['page'] === 'admin') {
+						$tempartistinfo['media']['published'] = $artistinfo['media']['published'][$mid];
+						if ((string)$artistinfo['media']['viewable'][$mid] === '1') {
+							$tempartistinfo['classname'] = "VideoPlayer";
+						} else {
+							$tempartistinfo['classname'] = "VideoPlayerNOVIEW";
+						}
+						echo sprintf(
+							"<div class='AdminVideoTitle'>%s (%s) %s</div>",
+							$artistinfo['media']['name'][$mid],
+							date("i:s",($artistinfo['media']['vidlength'][$mid])),
+							date("F d, Y",$artistinfo['media']['published'][$mid])
+						);
 					}
-					echo sprintf(
-						"<div class='AdminVideoTitle'>%s (%s) %s</div>",
-						$artistinfo['media']['name'][$mid],
-						date("i:s",($artistinfo['media']['vidlength'][$mid])),
-						date("F d, Y",$artistinfo['media']['published'][$mid])
-					);
 					DisplayVideoPlayer($tempartistinfo);
-					AdminVideoPreviewChooser($tempartistinfo);
+					if ((string)$_REQUEST['page'] === 'admin') {
+						AdminVideoPreviewChooser($tempartistinfo);
+					}
 				}
 			}
 		}

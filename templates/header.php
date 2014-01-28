@@ -41,9 +41,9 @@ function htmlHeader($dataArray) {
 		<link rel="canonical" href="<?= $dataArray['url']; ?>" />
 		<link rel="stylesheet" type="text/css" href="/templates/css/responsiveboilerplate.css">
 		<link rel="stylesheet" type="text/css" href="/templates/css/sbp.css">
-		<? foreach ($dataArray['css'] as $css) { ?> 
+		<? if (isset($dataArray['css'])) { foreach ($dataArray['css'] as $css) { ?> 
 			<link rel="stylesheet" href="/templates/css/<?= $css; ?>" />
-		<? } ?>
+		<? } } ?>
 		<? if (isset($dataArray['js'])) { foreach ($dataArray['js'] as $js) { ?> 
 			<script type="text/javascript" src="/templates/js/<?= $js; ?>"></script>
 		<? } } ?>

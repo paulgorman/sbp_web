@@ -992,32 +992,6 @@ function AdminArtistFormSingle($artistinfo) {
 	<?
 }
 
-function DisplayVideoPlayer($artistinfo) {
-	?>
-	<script type="text/javascript" src="/templates/jwplayer/jwplayer.js"></script>
-	<div class="<?= $artistinfo['classname']; ?>" id="container<?= $artistinfo['media']['mid']; ?>">Loading video for <?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?></div>
-	<script type="text/javascript">
-		jwplayer('container<?= $artistinfo['media']['mid']; ?>').setup({
-			'modes': [
-				{type: 'html5'},
-				{type: 'flash', src: '/templates/jwplayer/player.swf'},
-				{type: 'download'}
-			],
-			'author': 'Steve Beyer Productions',
-			'description': '<?= ($artistinfo['use_display_name'])? htmlspecialchars($artistinfo['display_name'], ENT_QUOTES) : htmlspecialchars($artistinfo['name'], ENT_QUOTES); ?>',
-			'file': '/m/<?= $artistinfo['media']['filename']; ?>',
-			'image': '/i/artist/<?= $artistinfo['media']['previewimage']; ?>',
-			'duration': '<?= $artistinfo['media']['vidlength']; ?>',
-			'controlbar': 'over',
-			'shownavigation': 'true',
-			'icons': false,
-			'width': '<?= $artistinfo['media']['width']; ?>',
-			'height': '<?= $artistinfo['media']['height']; ?>'
-		});
-	</script>
-	<?
-}
-
 function AdminVideoPreviewChooser($artistinfo) {
 	// using div in-line style background to show the images because img tag is taken by ShowPhotoArray()'s css image array resizer
 	?>
