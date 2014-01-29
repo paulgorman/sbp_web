@@ -230,11 +230,11 @@ nav.menu ul:hover li{
 .artistVideo {
 	text-align: center;
 	position: relative;
-	//margin-left:0!important;
+	margin-left:0!important;
 	max-width:540px;
 	margin: 0px auto 0px auto;
 	border: 1px solid #fff;
-	padding: 4px;
+	//padding: 4px;
 }
 
 h1{

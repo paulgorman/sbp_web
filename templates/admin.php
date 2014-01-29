@@ -756,6 +756,7 @@ function AdminArtistFormNew() {
 
 function AdminArtistFormSingle($artistinfo) {
 	?>
+	<script type="text/javascript" src="/templates/js/jwplayer/jwplayer.js"></script>
   <script type="text/javascript">//<![CDATA[
 		var filecounter = 1;
 		function makeFileList() {
@@ -1004,7 +1005,8 @@ function AdminVideoPreviewChooser($artistinfo) {
 		<? } ?>
 		</div>
 		<div class="VideoSize">
-			Video Size:<br><strong><?= $artistinfo['media']['realdimensions']; ?></strong>
+			<strong><?= $artistinfo['media']['realdimensions']; ?></strong>
+			(<?= $artistinfo['media']['aspectratio']; ?>)
 			<select name="videoaction[<?= $artistinfo['media']['mid']; ?>]" <?= ((int)$artistinfo['media']['viewable'] === 0)? "style='background-color: #FFBABA;' " : ""; ?>>
 				<option value='' selected="SELECTED" disabled="disabled">Actions</option>
 				<?= ((int)$artistinfo['media']['viewable'] === 1)? '<option value="0">Make Hidden</option>' : '<option value="1">Make Visible</option>'; ?>
