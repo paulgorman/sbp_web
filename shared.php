@@ -413,6 +413,7 @@ function CategoriesList() {
 			htmlBodyStart();
 			ListAllCategories($categoryList);
 			fwdConsCarousel(); // carousel constructor settings
+			ListCategoriesTextLinks($categoryList);
 			htmlFooter($meta);
 		} else {
 			ErrorDisplay("Categories Listing Unavailable!");
@@ -1257,7 +1258,8 @@ function PrepareVideoPlayer($input) {
 		$videocount = 0;
 		// I am the artistinfo's media keyed array
 		// If this is used, SHOW ALL (viewable) VIDEOS
-		if (is_array($artistinfo['media'])) { // are there videos here (fixes error on the foreach line below)
+		//if (is_array($artistinfo['media'])) { // are there videos here (fixes error on the foreach line below)
+		if (count($artistinfo['media']['vidlength']) > 0) { // are there REALLY videos here (WTF is array? how about just count it?)
 			foreach ($artistinfo['media']['mid'] as $mid) {
 				// if in the admin page, or is viewable, and media is a video, ...
 				if (((string)$_REQUEST['page'] === 'admin' OR (string)$artistinfo['media']['viewable'][$mid] == '1') AND ($artistinfo['media']['vidlength'][$mid] > 0)) {
@@ -2267,7 +2269,7 @@ function AdminSelectLocations($aid = NULL) {
 function AdminSaveNewCategory() {
 	// save a NEW category
 	global $conn;
-	if (isEmpty($_REQUEST['form_category']) || isEmpty($_REQUEST['form_description']) || (!CheckForFiles())) {
+	if (isEmpty($_REQUEST['form_category']) || isEmpty($_REQUEST['form_description'])) {
 		echo "<div class='AdminError'>Please fill in Category Name, Description and the Category Graphic</div>";
 	} else {
 		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
@@ -2276,8 +2278,10 @@ function AdminSaveNewCategory() {
 			$url = MakeURL(strtolower($category));
 		}
 
-		list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
-		$newfileid = ResizeImage($fileid,"category"); // 728x90
+		if (CheckForFiles()) {
+			list ($fileid, $filename) = SaveFile("category")[0]; // for Categories, only one image uploaded.
+			$newfileid = ResizeImage($fileid,"category"); // 728x90
+		}
 
 		// do highlighted carousel image
 		$highlighted_fileid = NULL;

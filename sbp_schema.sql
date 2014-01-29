@@ -65,8 +65,8 @@ CREATE TABLE `sbpweb`.`categories` (
 	`description` VARCHAR(250),
 	`force_display_names` CHAR NOT NULL DEFAULT "N",	-- N force real names only, I individual artist mode, Y force display names only
 	`published` BOOLEAN NOT NULL DEFAULT 1,
-	`image_filename` VARCHAR(30) NOT NULL,
-	`image_id` CHAR(17) NOT NULL UNIQUE,
+	`image_filename` VARCHAR(30) NULL,
+	`image_id` CHAR(17) UNIQUE,
 	`carousel_filename` VARCHAR(30) NULL,
 	`carousel_id` CHAR(17) NULL,
 	`is_highlighted` BOOLEAN NOT NULL DEFAULT 0,

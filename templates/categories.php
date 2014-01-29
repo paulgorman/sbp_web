@@ -167,6 +167,23 @@ function ListArtistsTextLinks($category,$artists) {
 	echo "</div>\n";
 }
 
+function ListCategoriesTextLinks($categories) {
+	echo "<div class='textlist'>\n";
+	echo "<ul>\n";
+	foreach (array_keys($categories) as $key) {
+		$line = sprintf(
+			"<li><a href=\"/category/%s\" title=\"%s\"><span class=\"textname\">%s</span> - %s</a></li>\n",
+			$categories[$key]['url'],
+			$categories[$key]['category'],
+			$categories[$key]['category'],
+			$categories[$key]['description']
+		);
+		echo $line;
+	}
+	echo "<div class=\"clearfix\"></div></ul>\n";
+	echo "</div>\n";
+}
+
 function XXXListArtistsForCategory($category,$artists)	{
 	// aid, name, url, slug, is_highlighted
 	?>
