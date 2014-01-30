@@ -9,7 +9,18 @@ function htmlArtistPageTop($artistinfo) {
 	?>
 		<div class="artistTop">
 			<div class="col6 fl artistHeadImageContainer"><!-- Artist Highlighted Photo -->
-				<img class="artistHeadImage" src="/i/artist/<?= $hlighted_filename; ?>" width="<?= $hlighted_width; ?>" height="<?= $hlighted_height; ?>" alt="<?= $hlighted_alt; ?>" title="<?= $hlighted_alt; ?>">
+			<?
+				if (count($artist['media']['mid']) === 1) {
+					// If there's only one photo for the artist, just link this here image to high-res, since there's no Gridfolio
+					?>
+						<a href="/i/artist/original-<?= $hlighted_filename; ?>" title="Click for High-Resolution Image"><img class="artistHeadImage" src="/i/artist/<?= $hlighted_filename; ?>" width="<?= $hlighted_width; ?>" height="<?= $hlighted_height; ?>" alt="<?= $hlighted_alt; ?>" title="<?= $hlighted_alt; ?>"></a>
+					<?
+				} else {
+					?>
+						<img class="artistHeadImage" src="/i/artist/<?= $hlighted_filename; ?>" width="<?= $hlighted_width; ?>" height="<?= $hlighted_height; ?>" alt="<?= $hlighted_alt; ?>" title="<?= $hlighted_alt; ?>">
+					<?
+				}
+			?>
 			</div>
 			<div class="col6 fr artistTitle">
 				<h1><?= $artist['name']; ?></h1>
