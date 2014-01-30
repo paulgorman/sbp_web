@@ -141,8 +141,8 @@ function getArtistMetaTags($artistinfo) {
 		$meta['description'] .= " - ";
 		$meta['description'] .= $artistinfo[$key]['slug'];
 		$meta['description'] .= " (";
-		foreach (array_keys($artistinfo[$key]['categories']) as $subkey) {
-			$meta['description'] .= $artistinfo[$key]['categories'][$subkey] . ", ";
+		foreach (array_keys($artistinfo[$key]['styles']) as $subkey) {
+			$meta['description'] .= $artistinfo[$key]['styles'][$subkey] . ", ";
 		}
 		$meta['description'] = substr($meta['description'], 0, -2) . ")";
 		$meta['description'] .= " / ";
@@ -155,8 +155,8 @@ function getArtistMetaTags($artistinfo) {
 		$meta['title'] .= " - ";
 		$meta['title'] .= $artistinfo[$key]['slug'];
 		$meta['title'] .= " (";
-		foreach (array_keys($artistinfo[$key]['styles']) as $subkey) {
-			$meta['title'] .= $artistinfo[$key]['styles'][$subkey] . ", ";
+		foreach (array_keys($artistinfo[$key]['categories']) as $subkey) {
+			$meta['title'] .= $artistinfo[$key]['categories'][$subkey] . ", ";
 		}
 		$meta['title'] = substr($meta['title'], 0, -2) . ")";
 		$meta['description'] .= " / ";
@@ -400,7 +400,7 @@ function CategoriesList() {
 				$meta['description'] .= $category['category'] . ", ";
 			}
 			$meta['description'] = substr($meta['description'], 0, -2) . ".";
-			$meta['title'] = "Entertainment Categories Listing";
+			$meta['title'] = "Entertainment Categories Listing - Steve Beyer Productions";
 			$meta['url'] = CurPageURL();
 			$meta['image'] = CurServerUrl() . "i/category/" . $highlightedList[0]['carousel_id'];
 			$meta['css'][] = "skin_modern_silver.css";
@@ -585,7 +585,7 @@ function HomePage() {
 	require_once("templates/header.php");
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
-	$meta['title'] = "Entertainment Categories Listing";
+	$meta['title'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['url'] = CurPageURL();
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	$meta['css'][] = "skin_modern_silver.css";
@@ -595,6 +595,88 @@ function HomePage() {
 	htmlHeader($meta);
 	htmlMasthead($meta);
 	htmlNavigation($meta);
+	htmlWavesStart();
+	htmlBodyStart();
+	//htmlBreadcrumb($meta);
+	htmlFooter($meta);
+}
+
+function ProductionPage() {
+	require_once("templates/header.php");
+	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
+	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
+	$meta['title'] = "Production Staging, Projection, Lighting, Sound Reinforcement - Steve Beyer Productions";
+	$meta['url'] = CurPageURL();
+	$meta['image'] = CurServerUrl() . "sbp.png";
+	htmlHeader($meta);
+	htmlMasthead($meta);
+	htmlNavigation($meta);
+	htmlWavesStart();
+	htmlBodyStart();
+	//htmlBreadcrumb($meta);
+	htmlFooter($meta);
+}
+
+function EventPage() {
+	require_once("templates/header.php");
+	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
+	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
+	$meta['title'] = "Special Events - Steve Beyer Productions";
+	$meta['url'] = CurPageURL();
+	$meta['image'] = CurServerUrl() . "sbp.png";
+	htmlHeader($meta);
+	htmlMasthead($meta);
+	htmlNavigation($meta);
+	htmlWavesStart();
+	htmlBodyStart();
+	//htmlBreadcrumb($meta);
+	htmlFooter($meta);
+}
+
+function DecorPage() {
+	require_once("templates/header.php");
+	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Decor, Props, Fabrication, Floral, Design, Treatment, Centerpieces";
+	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
+	$meta['title'] = "Decor, Props, Design, Floral, Fabrication, and Treatments - Steve Beyer Productions";
+	$meta['url'] = CurPageURL();
+	$meta['image'] = CurServerUrl() . "sbp.png";
+	htmlHeader($meta);
+	htmlMasthead($meta);
+	htmlNavigation($meta);
+	htmlWavesStart();
+	htmlBodyStart();
+	//htmlBreadcrumb($meta);
+	htmlFooter($meta);
+}
+
+function WeddingPage() {
+	require_once("templates/header.php");
+	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
+	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
+	$meta['title'] = "Weddings - Steve Beyer Productions";
+	$meta['url'] = CurPageURL();
+	$meta['image'] = CurServerUrl() . "sbp.png";
+	htmlHeader($meta);
+	htmlMasthead($meta);
+	htmlNavigation($meta);
+	htmlWavesStart();
+	htmlBodyStart();
+	//htmlBreadcrumb($meta);
+	htmlFooter($meta);
+}
+
+function AboutPage() {
+	require_once("templates/header.php");
+	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
+	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
+	$meta['title'] = "About & Contact - Steve Beyer Productions";
+	$meta['url'] = CurPageURL();
+	$meta['image'] = CurServerUrl() . "sbp.png";
+	htmlHeader($meta);
+	htmlMasthead($meta);
+	htmlNavigation($meta);
+	htmlWavesStart();
+	htmlBodyStart();
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
 }

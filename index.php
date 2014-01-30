@@ -17,13 +17,32 @@
 			ArtistPage();
 			Scripttime($starttime);
 			break;
+		case "production":
+			RecordHit();
+			ProductionPage();
+			break;
+		case "event":
+			RecordHit();
+			EventPage();
+			break;
+		case "decor":
+			RecordHit();
+			DecorPage();
+			break;
+		case "wedding":
+			RecordHit();
+			WeddingPage();
+			break;
+		case "about":
+			RecordHit();
+			AboutPage();
+			break;
 		case "uploadprogress":
 			UploadProgress();
 			break;
 		default:
 			RecordHit();
 			HomePage();
-			DebugShow();
 			ScriptTime($starttime);
 	}
 ?>
