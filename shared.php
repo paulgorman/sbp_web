@@ -597,7 +597,7 @@ function HomePage() {
 
 function DisplayVideoPlayer($artistinfo) {
 	?>
-	<div class="<?= $artistinfo['classname']; ?>" id="container<?= $artistinfo['media']['mid']; ?>">Loading video for <?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?></div>
+	<div class="col6 artistVideoIndividual"><div class="<?= $artistinfo['classname']; ?>" id="container<?= $artistinfo['media']['mid']; ?>">Loading video for <?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?></div></div>
 	<script type="text/javascript">
 		jwplayer('container<?= $artistinfo['media']['mid']; ?>').setup({
 			'modes': [
@@ -614,6 +614,7 @@ function DisplayVideoPlayer($artistinfo) {
 			'shownavigation': 'true',
 			'icons': false,
 			'width': '<?= $artistinfo['media']['widthdisplay']; ?>',
+			'stretching': 'uniform',
 			<?= ($artistinfo['media']['heightdisplay'])? $artistinfo['media']['heightdisplay'] : NULL ?>
 			'aspectratio': '<?= $artistinfo['media']['aspectratio']; ?>',
 		});
@@ -1295,7 +1296,7 @@ function PrepareVideoPlayer($input) {
 					} else {
 						$tempartistinfo['media']['width'] = $artistinfo['media']['width'][$mid];
 						$tempartistinfo['media']['height'] = $artistinfo['media']['height'][$mid];
-						$tempartistinfo['media']['widthdisplay'] = "94%";
+						$tempartistinfo['media']['widthdisplay'] = "100%";
 					}
 					$tempartistinfo['media']['realdimensions'] = $artistinfo['media']['width'][$mid] . "x" . $artistinfo['media']['height'][$mid];
 					$tempartistinfo['media']['aspectratio'] = ($artistinfo['media']['width'][$mid]/$gcd) . ":" . ($artistinfo['media']['height'][$mid]/$gcd);

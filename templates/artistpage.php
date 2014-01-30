@@ -19,11 +19,12 @@ function htmlArtistPageTop($artistinfo) {
 					<?= $artist_bio; ?>
 				</div>
 			</div>
-		</div>
-		<div class="clearfix"></div>
-			<div class="artistVideo">
+			<div class="clearfix"></div>
+			<div class="col12 artistVideo">
 				<? PrepareVideoPlayer($artist); ?>
 			</div>
+			<div class="clearfix"></div>
+		</div>
 	<?
 }
 
