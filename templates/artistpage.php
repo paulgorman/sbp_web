@@ -73,9 +73,11 @@ function htmlArtistPageBottom($artistinfo) {
 			</ul> 
 			<ul data-cat="Category one">
 				<?
-				foreach (array_keys($artist['media']['mid']) as $key) {
-					if ($artist['media']['vidlength'][$key] > 0) { continue; }
-					?>
+					if (count($artist['media']['mid']) > 1) {
+						// if there's only the one photo, don't duplicate it down here...
+						foreach (array_keys($artist['media']['mid']) as $key) {
+							if ($artist['media']['vidlength'][$key] > 0) { continue; }
+							?>
 				<ul>
 					<li data-type="media" data-url="/i/artist/original-<?= $artist['media']['filename'][$key]; ?>" data-target="_self"></li>
 					<li data-thumbnail-path="/i/artist/<?= $artist['media']['filename'][$key]; ?>"></li>
@@ -88,8 +90,9 @@ function htmlArtistPageBottom($artistinfo) {
 						<p class="mediaDescriptionText"><a href="/i/artist/original-<?= $artist['media']['filename'][$key]; ?>"><?= $artist['media']['filename'][$key]; ?></a> (<?= $artist['media']['width'][$key]; ?> x <?= $artist['media']['height'][$key]; ?>) Published: <?= nicetime(date("r",$artist['media']['published'][$key])); ?></p>
 					</li>
 				</ul>
-					<?
-				}
+							<?
+						}
+					}
 				?>
 			</ul>
 		</ul>
