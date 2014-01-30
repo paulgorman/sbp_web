@@ -13,7 +13,7 @@ function Init() {
 	global $conn;
 	global $dirlocation;
 	global $pagination;
-	global $videoheight;
+	global $videowidth;
 	error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
@@ -32,7 +32,7 @@ function Init() {
 	require_once("db.php");
 	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
 	$pagination = "20";	// number of entries per "page"
-	$videoheight = 300;
+	$videowidth = 600;
 }
 
 function RecordHit() {
@@ -96,6 +96,7 @@ function ArtistPage() {
 			$artistinfo = obfuscateArtistInfo($artistinfo);
 			$artistinfo = insertBreadCrumb($artistinfo);
 			$meta = getArtistMetaTags($artistinfo);
+			$meta['js'][] = "jwplayer/jwplayer.js";
 			htmlHeader($meta);
 			htmlMasthead($meta);
 			htmlNavigation($meta);
@@ -596,13 +597,12 @@ function HomePage() {
 
 function DisplayVideoPlayer($artistinfo) {
 	?>
-	<script type="text/javascript" src="/templates/jwplayer/jwplayer.js"></script>
 	<div class="<?= $artistinfo['classname']; ?>" id="container<?= $artistinfo['media']['mid']; ?>">Loading video for <?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?></div>
 	<script type="text/javascript">
 		jwplayer('container<?= $artistinfo['media']['mid']; ?>').setup({
 			'modes': [
 				{type: 'html5'},
-				{type: 'flash', src: '/templates/jwplayer/player.swf'},
+				{type: 'flash', src: '/templates/js/jwplayer/player.swf'},
 				{type: 'download'}
 			],
 			'author': 'Steve Beyer Productions',
@@ -613,11 +613,24 @@ function DisplayVideoPlayer($artistinfo) {
 			'controlbar': 'over',
 			'shownavigation': 'true',
 			'icons': false,
-			'width': '<?= $artistinfo['media']['width']; ?>',
-			'height': '<?= $artistinfo['media']['height']; ?>'
+			'width': '<?= $artistinfo['media']['widthdisplay']; ?>',
+			<?= ($artistinfo['media']['heightdisplay'])? $artistinfo['media']['heightdisplay'] : NULL ?>
+			'aspectratio': '<?= $artistinfo['media']['aspectratio']; ?>',
 		});
 	</script>
 	<?
+	/*
+			//'width': '<?= $artistinfo['media']['width']; ?>',
+			//'height': '<?= $artistinfo['media']['height']; ?>'
+	*/
+}
+
+function getCommonDivisor($a, $b) {
+	if ($a == 0 || $b == 0) {
+		return abs( max(abs($a), abs($b)) );
+	}
+	$r = $a % $b;
+	return ($r != 0) ? getCommonDivisor($b, $r) : abs($b);
 }
 
 function AdminDisplaySiteStats() {
@@ -1252,7 +1265,7 @@ function AdminArtistSaveSingle() {
 function PrepareVideoPlayer($input) {
 	// Put video(s) into jwplayer
 	global $conn;
-	global $videoheight;
+	global $videowidth;
 	if (is_array($input)) {
 		$artistinfo = $input;
 		$videocount = 0;
@@ -1267,18 +1280,25 @@ function PrepareVideoPlayer($input) {
 					// single out the one media ID for the Video Player
 					$tempartistinfo = $artistinfo;
 					unset ($tempartistinfo['media']);	// dump all the media info on this artist, replacing with the one video to display
-					// make video players a reasonable size
-					if ($artistinfo['media']['height'][$mid] > $videoheight) {
-						$width = $artistinfo['media']['width'][$mid];
-						$height = $artistinfo['media']['height'][$mid];
-						$scale = $height / $videoheight;
-						$tempartistinfo['media']['width'] = ceil($width / $scale);
-						$tempartistinfo['media']['height'] = ceil($height / $scale);
+					$gcd=getCommonDivisor($artistinfo['media']['width'][$mid],$artistinfo['media']['height'][$mid]);
+					if ((string)$_REQUEST['page'] === "admin") {
+						// make video players a reasonable size
+						if ($artistinfo['media']['width'][$mid] > $videowidth) {
+							$width = $artistinfo['media']['width'][$mid];
+							$height = $artistinfo['media']['height'][$mid];
+							$scale = $width / $videowidth;
+							$tempartistinfo['media']['width'] = ceil($width / $scale);
+							$tempartistinfo['media']['height'] = ceil($height / $scale);
+							$tempartistinfo['media']['widthdisplay'] = $tempartistinfo['media']['width'];
+							$tempartistinfo['media']['heightdisplay'] = "	'height': '". $tempartistinfo['media']['height'] ."',";
+						}
 					} else {
 						$tempartistinfo['media']['width'] = $artistinfo['media']['width'][$mid];
 						$tempartistinfo['media']['height'] = $artistinfo['media']['height'][$mid];
+						$tempartistinfo['media']['widthdisplay'] = "94%";
 					}
 					$tempartistinfo['media']['realdimensions'] = $artistinfo['media']['width'][$mid] . "x" . $artistinfo['media']['height'][$mid];
+					$tempartistinfo['media']['aspectratio'] = ($artistinfo['media']['width'][$mid]/$gcd) . ":" . ($artistinfo['media']['height'][$mid]/$gcd);
 					$tempartistinfo['media']['mid'] = $artistinfo['media']['mid'][$mid];
 					$tempartistinfo['media']['previewimage'] = substr($artistinfo['media']['filename'][$mid],0,-4) . ".jpg";
 					$tempartistinfo['media']['vidlength'] = $artistinfo['media']['vidlength'][$mid];
