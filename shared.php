@@ -96,7 +96,9 @@ function ArtistPage() {
 			$artistinfo = obfuscateArtistInfo($artistinfo);
 			$artistinfo = insertBreadCrumb($artistinfo);
 			$meta = getArtistMetaTags($artistinfo);
+			$meta['css'][] = "Rb-ui.css";
 			$meta['js'][] = "jwplayer/jwplayer.js";
+			$meta['js'][] = "FWDGrid.js";
 			htmlHeader($meta);
 			htmlMasthead($meta);
 			htmlNavigation($meta);
@@ -105,7 +107,9 @@ function ArtistPage() {
 			htmlArtistPageTop($artistinfo);
 			htmlBodyStart();
 			htmlArtistPageBottom($artistinfo);
+			htmlStylesTags($artistinfo);
 			htmlFooter($meta);
+			fwdConsGrid(); // dump this stuff in at the bottom of html
 		} else {
 			// show multiple matching artist chooser
 			// XXX: Not Done
