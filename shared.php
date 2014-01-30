@@ -583,6 +583,8 @@ function CategoriesList() {
 
 function HomePage() {
 	require_once("templates/header.php");
+	require_once("templates/homepage.php");
+	require_once("templates/FWDconstructors.php"); // shit to make grid and carousel go
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Steve Beyer Productions - The Entertainment and Production Company";
@@ -591,13 +593,15 @@ function HomePage() {
 	$meta['css'][] = "skin_modern_silver.css";
 	//$meta['js'][] = "FWDRoyal3DCarousel.js";
 	$meta['js'][] = "FWDRoyal3DCarousel_uncompressed.js";
-	$meta['js'][] = "carouselSettings.js";
 	htmlHeader($meta);
 	htmlMasthead($meta);
 	htmlNavigation($meta);
 	htmlWavesStart();
+	homePageCarousel(gatherHighlightedArtists());
 	htmlBodyStart();
+	htmlHomePageCategories(allPublicCategories());
 	//htmlBreadcrumb($meta);
+	fwdConsCarousel(); // dump this stuff in at the bottom of html
 	htmlFooter($meta);
 }
 
@@ -679,6 +683,29 @@ function AboutPage() {
 	htmlBodyStart();
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
+}
+
+function gatherHighlightedArtists() {
+	// get some artists for the homepage carousel
+	global $conn;
+	$query = "
+		SELECT `artists`.`name`, `artists`.`display_name`, `artists`.`slug`, 
+		 `artists`.`url`, `artists`.`alt_url`, `artists`.`use_display_name`,
+		 `media`.`filename`, `media`.`thumbwidth`, `media`.`thumbheight`, `artists`.`aid`
+		FROM `artists`
+		LEFT OUTER JOIN `media` ON `media`.`aid` = `artists`.`aid`
+		WHERE `artists`.`is_active` = 1 AND `artists`.`is_highlighted` = 1 AND `artists`.`is_searchable` = 1
+		AND `media`.`viewable` = 1 AND `media`.`is_highlighted` = 1";
+	$result = mysqli_query($conn,$query);
+	$artists = array();
+	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+		$artists[$row['aid']] = $row;
+		if (($_SESSION['obfuscate'] == 1) || ($row['use_display_name'] == 1) ) {
+			$artists[$row['aid']]['name'] = $artists[$row['aid']]['display_name'];
+			$artists[$row['aid']]['url'] = $artists[$row['aid']]['alt_url'];
+		}
+	}
+	return ($artists);
 }
 
 function DisplayVideoPlayer($artistinfo) {
@@ -974,6 +1001,17 @@ function AdminArtistAddNew() {
 			AdminArtistEditSingle($aid);
 		}
 	}
+}
+
+function allPublicCategories() {
+	global $conn;
+	$query = "SELECT `category`,`url`,`description` FROM `categories` WHERE `published` = 1 ORDER BY `category` ASC";
+	$result = mysqli_query($conn,$query);
+	$categories = array();
+	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+		$categories[] = $row;
+	}
+	return ($categories);
 }
 
 function GatherArtistInfo($aid) {
