@@ -1,22 +1,51 @@
 <?
 function htmlHomePageTop () {
+	?>
+		<div style="padding-top: 18px;">
+		<h1>Quality Entertainment for Your Next Event</h1>
+		</div>
+	<?
+}
+
+function htmlHomePageContent($content) {
+	?>
+		<div class="content">
+			<div class="col2">
+				<img src="/templates/sbp/1.jpg">
+			</div>
+			<div class="col6 homeBody">
+				<p><?= $content['body']; ?></p>
+			</div>
+			<div class="col4 blue box homeNews">
+				<h3>News</h3>
+				<p><?= $content['news']; ?></p>
+			</div>
+		</div>
+		<br>
+	<?
 }
 
 function htmlHomePageCategories($categories) {
-	echo "<div class=\"artistTop\">";
-	echo "<br><hr><br>";
+	?>
+		<hr>
+		<div class="content">
+			<div class="homeCategories">
+	<?
 	foreach (array_keys($categories) as $key) {
 		$link = sprintf(
-			"<div class=\"col2 \"><a href=\"/category/%s\" title=\"%s\">%s</a></div>\n",
+			"<div class=\"col2\"><a href=\"/category/%s\" title=\"%s\">%s</a></div>\n",
 			$categories[$key]['url'],
 			$categories[$key]['category'] . " - " . $categories[$key]['description'],
 			$categories[$key]['category']
 		);
 		echo $link;
 	}
-	echo "</div>";
-	echo "<div class=\"clearfix\"></div>";
-	echo "<br><hr><br>";
+	?>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+		<hr><br>
+	<?
 }
 
 function homePageCarousel($artists) {

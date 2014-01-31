@@ -585,6 +585,9 @@ function HomePage() {
 	require_once("templates/header.php");
 	require_once("templates/homepage.php");
 	require_once("templates/FWDconstructors.php"); // shit to make grid and carousel go
+	require_once("templates/Parsedown/Parsedown.php");
+	$content['body'] = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("body.txt")));
+	$content['news'] = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("news.txt")));
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Steve Beyer Productions - The Entertainment and Production Company";
@@ -599,7 +602,9 @@ function HomePage() {
 	htmlWavesStart();
 	homePageCarousel(gatherHighlightedArtists());
 	htmlBodyStart();
+	htmlHomePageTop();
 	htmlHomePageCategories(allPublicCategories());
+	htmlHomePageContent($content);
 	//htmlBreadcrumb($meta);
 	fwdConsCarousel(); // dump this stuff in at the bottom of html
 	htmlFooter($meta);

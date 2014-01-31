@@ -256,6 +256,38 @@ nav.menu ul:hover li{
 	position: relative;
 	margin: 12px auto 0px auto;
 }
+.homeCategories {
+	text-align: center;
+	position: relative;
+	max-width: 960px;
+	margin:0px auto 12px auto;
+}
+.homeCategories a {
+	line-height:20px;
+	font-size: 18px;
+	color:#dcdcdc;
+	text-decoration: none;
+	text-shadow: 1px 1px #333;
+	text-align: center;
+	//border: 1px solid #fff;
+}
+.homeCategories a:hover {
+	color: orange;
+}
+
+.homeBody {
+	padding: 4px;
+	text-align:justify;
+	padding-bottom: 20px;
+}
+.homeBody p + p { margin-top: 0.5em; }
+.homeBody h3 { line-height: 24px; }
+.homeBody p {
+	font-size:13px;
+	line-height: 15px;
+}
+
+.homeNews p + p { margin-top: 0.5em; }
 
 h1{
 	font-family: 'Droid Serif', serif;
@@ -276,7 +308,6 @@ h3{
 	font-size:16px !important;
 	font-family: 'Droid Serif', serif;
 	font-weight:bold;
-	color:#dcdcdc;
 	color: orange;
 }
 h4{font-size:11px !important;
