@@ -106,8 +106,8 @@ function ArtistPage() {
 			htmlBreadcrumb($meta);
 			htmlArtistPageTop($artistinfo);
 			htmlBodyStart();
-			htmlArtistPageBottom($artistinfo);
 			htmlStylesTags($artistinfo);
+			htmlArtistPageBottom($artistinfo);
 			htmlFooter($meta);
 			fwdConsGrid(); // dump this stuff in at the bottom of html
 		} else {
@@ -709,8 +709,17 @@ function gatherHighlightedArtists() {
 }
 
 function DisplayVideoPlayer($artistinfo) {
+	$vidcount = $artistinfo['media']['vidcount'];
+	if ($vidcount == 1) {
+		?>
+			<div class="artistVideoIndividual" style="text-align: center; max-width: 540px;"><div class="<?= $artistinfo['classname']; ?>" id="container<?= $artistinfo['media']['mid']; ?>">Loading video for <?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?></div></div>
+		<?
+	} elseif ($vidcount > 1) {
+		?>
+			<div class="col6 artistVideoIndividual"><div class="<?= $artistinfo['classname']; ?>" style="text-align: center; position: absolute;" id="container<?= $artistinfo['media']['mid']; ?>">Loading video for <?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?></div></div>
+		<?
+	}
 	?>
-	<div class="col6 artistVideoIndividual"><div class="<?= $artistinfo['classname']; ?>" id="container<?= $artistinfo['media']['mid']; ?>">Loading video for <?= ($artistinfo['use_display_name'])? $artistinfo['display_name'] : $artistinfo['name']; ?></div></div>
 	<script type="text/javascript">
 		jwplayer('container<?= $artistinfo['media']['mid']; ?>').setup({
 			'modes': [
@@ -1397,11 +1406,16 @@ function PrepareVideoPlayer($input) {
 		// I am the artistinfo's media keyed array
 		// If this is used, SHOW ALL (viewable) VIDEOS
 		//if (is_array($artistinfo['media'])) { // are there videos here (fixes error on the foreach line below)
-		if (count($artistinfo['media']['vidlength']) > 0) { // are there REALLY videos here (WTF is array? how about just count it?)
+		if (count($artistinfo['media']['vidlength']) > 0) { // This too does not actually count videos. grr, c'mon.
+			// run the loop once so I have an accurate video count plz
+			foreach ($artistinfo['media']['mid'] as $mid) {
+				if (((string)$_REQUEST['page'] === 'admin' OR (string)$artistinfo['media']['viewable'][$mid] == '1') AND ($artistinfo['media']['vidlength'][$mid] > 0)) {
+					$videocount++;
+				}
+			}
 			foreach ($artistinfo['media']['mid'] as $mid) {
 				// if in the admin page, or is viewable, and media is a video, ...
 				if (((string)$_REQUEST['page'] === 'admin' OR (string)$artistinfo['media']['viewable'][$mid] == '1') AND ($artistinfo['media']['vidlength'][$mid] > 0)) {
-					$videocount++;
 					// single out the one media ID for the Video Player
 					$tempartistinfo = $artistinfo;
 					unset ($tempartistinfo['media']);	// dump all the media info on this artist, replacing with the one video to display
@@ -1415,7 +1429,7 @@ function PrepareVideoPlayer($input) {
 							$tempartistinfo['media']['width'] = ceil($width / $scale);
 							$tempartistinfo['media']['height'] = ceil($height / $scale);
 							$tempartistinfo['media']['widthdisplay'] = $tempartistinfo['media']['width'];
-							$tempartistinfo['media']['heightdisplay'] = "	'height': '". $tempartistinfo['media']['height'] ."',";
+							$tempartistinfo['media']['heightdisplay'] = "'height': '". $tempartistinfo['media']['height'] ."',";
 						}
 					} else {
 						$tempartistinfo['media']['width'] = $artistinfo['media']['width'][$mid];
@@ -1446,6 +1460,7 @@ function PrepareVideoPlayer($input) {
 							date("F d, Y",$artistinfo['media']['published'][$mid])
 						);
 					}
+					$tempartistinfo['media']['vidcount'] = $videocount; // how many videos are there for this artist?
 					DisplayVideoPlayer($tempartistinfo);
 					if ((string)$_REQUEST['page'] === 'admin') {
 						AdminVideoPreviewChooser($tempartistinfo);
@@ -2216,8 +2231,8 @@ function AdminDeleteCategoryGo($targetcategoryurl) {
 		mysqli_real_escape_string($conn,$cid)
 	);
 	// delete the category image file from the system
-	unlink("$dirlocation/i/category/$fileid");
-	unlink("$dirlocation/i/category/original-$fileid"); // XXX: we're not deleting jpegs, only png.
+	@unlink("$dirlocation/i/category/$fileid");
+	@unlink("$dirlocation/i/category/original-$fileid"); // XXX: we're not deleting jpegs, only png.
 	if (!isEmpty($carousel_id)) {
 		unlink("$dirlocation/i/category/$carousel_id");
 		unlink("$dirlocation/i/category/original-$carousel_id");

@@ -123,7 +123,6 @@ function fwdConsGrid() {
 					gridPlayListAndSkinId:"gridPlaylist",
 					showContextMenu:"no",
 					//grid settings
-					//thumbnailOverlayType:"icons",
 					thumbnailOverlayType:"icons",
 					addMargins:"yes",
 					loadMoreThumbsButtonOffest:4,
@@ -137,9 +136,11 @@ function fwdConsGrid() {
 					thumbnailOverlayOpacity:.55,
 					//backgroundColor:"#000000",
 					thumbnailOverlayColor:"#000000",
-					thumbnailBackgroundColor:"#333333",
-					thumbnailBorderNormalColor:"#FFFFFF",
-					thumbnailBorderSelectedColor:"#DDDDDD",
+					//thumbnailBackgroundColor:"#333333",
+					thumbnailBackgroundColor: "rgba(0,0,0,0.7)",
+					//thumbnailBorderNormalColor:"#FFFFFF",
+					thumbnailBorderNormalColor: "rgba(255,255,255,0.5)",
+					thumbnailBorderSelectedColor:"#FFFFFF",
 					//combobox settings
 					startAtCategory:1,
 					selectLabel:"SELECT CATEGORIES",

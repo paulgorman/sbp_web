@@ -30,8 +30,14 @@ function htmlArtistPageTop($artistinfo) {
 				</div>
 			</div>
 			<div class="clearfix"></div>
-			<div class="col12 artistVideo">
+			<div class="artistVideo">
+			<table border="0" width="100%">
+			 <tr align="center">
+			  <td align="center">
 				<? PrepareVideoPlayer($artist); ?>
+				</td>
+			</tr>
+			</table>
 			</div>
 			<div class="clearfix"></div>
 		</div>
@@ -43,7 +49,7 @@ function htmlArtistPageBottom($artistinfo) {
 	$artist = $artistinfo[key($artistinfo)];
 	?>
 		<div class="artistTop">
-			<div class="artistGrid">
+			<div class="artistGrid box">
 				<div id="goGrid" style="width:100%;"></div>
 			</div>
 		</div>
@@ -119,6 +125,7 @@ function htmlStylesTags($artists) {
 	<?
 	foreach (array_keys($artists) as $aid) {
 		foreach (array_keys($artists[$aid]['styles']) as $key) {
+			if ($i > 8) { continue; }
 			$color = $colors[$i];
 			$i++;
 			if ($i == count($colors)) {
