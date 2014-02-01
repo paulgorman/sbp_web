@@ -612,6 +612,8 @@ function HomePage() {
 
 function ProductionPage() {
 	require_once("templates/header.php");
+	require_once("templates/Parsedown/Parsedown.php");
+	$content = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("production.txt")));
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Production Staging, Projection, Lighting, Sound Reinforcement - Steve Beyer Productions";
@@ -621,6 +623,7 @@ function ProductionPage() {
 	htmlMasthead($meta);
 	htmlNavigation($meta);
 	htmlWavesStart();
+	htmlContent($content);
 	htmlBodyStart();
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
@@ -628,6 +631,8 @@ function ProductionPage() {
 
 function EventPage() {
 	require_once("templates/header.php");
+	require_once("templates/Parsedown/Parsedown.php");
+	$content = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("event.txt")));
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Special Events - Steve Beyer Productions";
@@ -637,6 +642,7 @@ function EventPage() {
 	htmlMasthead($meta);
 	htmlNavigation($meta);
 	htmlWavesStart();
+	htmlContent($content);
 	htmlBodyStart();
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
@@ -644,6 +650,8 @@ function EventPage() {
 
 function DecorPage() {
 	require_once("templates/header.php");
+	require_once("templates/Parsedown/Parsedown.php");
+	$content = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("decor.txt")));
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Decor, Props, Fabrication, Floral, Design, Treatment, Centerpieces";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Decor, Props, Design, Floral, Fabrication, and Treatments - Steve Beyer Productions";
@@ -653,6 +661,7 @@ function DecorPage() {
 	htmlMasthead($meta);
 	htmlNavigation($meta);
 	htmlWavesStart();
+	htmlContent($content);
 	htmlBodyStart();
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
@@ -660,6 +669,8 @@ function DecorPage() {
 
 function WeddingPage() {
 	require_once("templates/header.php");
+	require_once("templates/Parsedown/Parsedown.php");
+	$content = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("wedding.txt")));
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Weddings - Steve Beyer Productions";
@@ -669,6 +680,7 @@ function WeddingPage() {
 	htmlMasthead($meta);
 	htmlNavigation($meta);
 	htmlWavesStart();
+	htmlContent($content);
 	htmlBodyStart();
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
@@ -676,6 +688,9 @@ function WeddingPage() {
 
 function AboutPage() {
 	require_once("templates/header.php");
+	require_once("templates/Parsedown/Parsedown.php");
+	$contentTop = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("about-top.txt")));
+	$contentBottom = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("about-bottom.txt")));
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "About & Contact - Steve Beyer Productions";
@@ -685,7 +700,9 @@ function AboutPage() {
 	htmlMasthead($meta);
 	htmlNavigation($meta);
 	htmlWavesStart();
+	htmlContent($contentTop);
 	htmlBodyStart();
+	htmlContent($contentBottom);
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
 }
@@ -1180,12 +1197,11 @@ function AdminArtistSaveSingle() {
 	}
 	// bio
 	if (isEmpty($_REQUEST['bio'])) {
-		$errors[] = "Missing the artist's bio. Please have at least a paragraph describing the artist.";
-	} else {
-		$bio = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['bio'])));
-		if ($bio !== $artistinfo['bio']) {
-			$artistsave['bio'] = $bio;
-		}
+		 echo "<div class='AdminError'>No artist's bio? Please try to have a paragraph describing the artist.</div>";
+	}
+	$bio = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['bio'])));
+	if ($bio !== $artistinfo['bio']) {
+		$artistsave['bio'] = $bio;
 	}
 	// display name
 	if (isEmpty($_REQUEST['display_name'])) {
@@ -1392,7 +1408,7 @@ function AdminArtistSaveSingle() {
 		} // no video changes
 	} // else there are errors!
 	if (isset($errors)) { // not included above since new errors could have been introduced
-		echo "<div class='AdminError'><B>There are some missing details preventing us from saving this artist.</B><ul>";
+		echo "<div class='AdminError'><B>There are some missing details, please check the form and re-submit.</B><ul>";
 		foreach ($errors as $error) {
 			echo "<li>$error</li>";
 		}
@@ -1560,9 +1576,13 @@ function AdminArtistSaveNew() {
 	// then go to AdminArtistSaveMedia() for the media processing
 	global $conn;
 	(isEmpty($_REQUEST['name']))? $errors[] = "Please enter the artist or act name." : $name = htmlspecialchars(makeCase(convert_smart_quotes(trim($_REQUEST['name']))));
-	(isEmpty($_REQUEST['slug']))? $errors[] = "Please provide a descriptive phrase about artist." : $slug = htmlspecialchars(makeCase(convert_smart_quotes(trim($_REQUEST['slug']))));
+	(isEmpty($_REQUEST['slug']))? $errors[] = "Please provide a short descriptive phrase about artist." : $slug = htmlspecialchars(makeCase(convert_smart_quotes(trim($_REQUEST['slug']))));
 	// XXX: we don't deal with CR/newlines or html/markup at all in bio field yet!
-	(isEmpty($_REQUEST['bio']))? $errors[] = "Missing the artist's bio. Please have at least a paragraph describing the artist." : $bio = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['bio'])));
+	if (isEmpty($_REQUEST['bio'])) {
+		echo "<div class='AdminError'>Missing the artist's bio. Please have at least a paragraph describing the artist.</div>"; 
+	} else {
+		$bio = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['bio'])));
+	}
 	if (isEmpty($_REQUEST['display_name'])) {
 		$display_name = ObfuscateArtistNameAutomatically(htmlspecialchars(convert_smart_quotes(trim($_REQUEST['name']))));
 	} else {

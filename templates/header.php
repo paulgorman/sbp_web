@@ -146,3 +146,14 @@ function htmlFooter($meta) {
 </html>
 	<?
 }
+
+function htmlContent($content) {
+	?>
+		<div class="content" style="max-width: 960px; margin: 0px auto 0px auto;">
+			<div class="col12 homeBody">
+				<?= $content; ?>
+			</div>
+		</div>
+		<br>
+	<?
+}

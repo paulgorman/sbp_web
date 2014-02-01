@@ -1,0 +1,21 @@
+<a href="mailto:steve@sbeyer.com" class="box artistsListBox managementListBox blue fl"><img src="/templates/sbp/sb.png" style="overflow:hidden" align="left" hspace="2" vspace="2" width="40%"><span class="artistsListBoxTextName">Steve Beyer</span><br><em>President</em><br> <span class="managementEmail">steve@sbeyer.com</span></a>
+<a href="mailto:kathleen@sbeyer.com" class="box artistsListBox managementListBox blue fl"><span class="artistsListBoxTextName">Kathleen Beyer</span><br><em>Chief Operations Officer</em><br> <span class="managementEmail">kathleen@sbeyer.com</span></a>
+<a href="mailto:bruce@sbeyer.com" class="box artistsListBox managementListBox blue fl"><img src="/templates/sbp/bs.png" style="overflow:hidden" align="left" hspace="2" vspace="2" width="40%"><span class="artistsListBoxTextName">Bruce Sampson</span><br><em>V.P. of Sales</em><br> <span class="managementEmail">bruce@sbeyer.com</span></a>
+<a href="mailto:accounting@sbeyer.com" class="box artistsListBox managementListBox blue fl"><span class="artistsListBoxTextName">Eliot Thomas</span><br><em>Chief Financial Officer</em><br> <span class="managementEmail">eliot@sbeyer.com</span></a>
+<a href="mailto:corinne@sbeyer.com" class="box artistsListBox managementListBox blue fl"><span class="artistsListBoxTextName">Corinne Allain</span><br><em>V.P. of Event Management</em><br> <span class="managementEmail">corinne@sbeyer.com</span></a>
+<a href="mailto:frank@sbeyer.com" class="box artistsListBox managementListBox blue fl"><img src="/templates/sbp/fj.png" style="overflow:hidden" valign="top" align="left" hspace="2" vspace="2" width="40%"><span class="artistsListBoxTextName">Frank Joseph</span><br><em>Agent</em><br> <span class="managementEmail">frank@sbeyer.com</span></a>
+<a href="mailto:joze@sbeyer.com" class="box artistsListBox managementListBox blue fl"><img src="/templates/sbp/jp.png" style="overflow:hidden" valign="top" align="left" hspace="2" vspace="2" width="40%"><span class="artistsListBoxTextName">Joze Perez</span><br><em>Agent</em><br> <span class="managementEmail">joze@sbeyer.com</span></a>
+<a href="mailto:tech@sbeyer.com" class="box artistsListBox managementListBox blue fl"><img src="/templates/sbp/pg.png" style="overflow:hidden" valign="top" align="left" hspace="2" vspace="2" width="40%"><span class="artistsListBoxTextName">Paul Gorman</span><br><em>Technical Services</em><br> <span class="managementEmail">paul@sbeyer.com</span></a>
+<a href="mailto:tech@sbeyer.com" class="box artistsListBox managementListBox blue fl"><span class="artistsListBoxTextName">Levi Velasquez</span><br><em>Media Services</em><br> <span class="managementEmail">levi@sbeyer.com</span></a>
+<div class="clearfix"></div>
+
+
+###	A Little History
+
+Steve Beyer Productions Inc, a licensed and insured Talent Agency and Production Company, was established in 1990 when Steve was the house pianist for Catch A Rising Star at Ballys.
+
+Steve was getting booked at hundreds of corporate events that called for everything from a single pianist to a full orchestra. It was only a matter of time before he needed to be in two places at the same time. He began booking other top notch acts to fill the entertainment needs at Ballys and a growing list of other top Vegas venues. As SBP grew, Steve held musical director positions with Ballys and Desert Inn Hotels. The transition to the business world was comfortable for him as his knowledge of entertainment's technical and talent needs was extremely vast from years of first hand experience.
+
+Today, SBP is producing entertainment for corporate events, showrooms and lounge engagements in all the major resorts of Las Vegas, the entertainment capital of the world, as well as a growing list of nationwide venues and events.
+
+The company is housed in a 10,000 sq. ft. facility in Henderson, NV that consists of office/sales staff, promo and marketing departments, Disc Jockey division, a large rehearsal facility, warehouse and a complete electronics repair and speaker re-coning shop. We are factory authorized by most major manufacturers of professional sound gear. We also possess video shooting and editing capability, as well as decor and meeting planning consultation and services.

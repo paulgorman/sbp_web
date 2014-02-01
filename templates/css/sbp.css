@@ -281,10 +281,30 @@ nav.menu ul:hover li{
 	padding-bottom: 20px;
 }
 .homeBody p + p { margin-top: 0.5em; }
-.homeBody h3 { line-height: 24px; }
+.homeBody h1 {
+	padding: 24px; 
+	font-style: normal;
+	font-size: 24px !important;
+	font-family: 'Droid Serif', serif;
+	line-height: 24px;
+	color: #dcdcdc;
+	margin-bottom: 0px;
+}
 .homeBody p {
 	font-size:13px;
 	line-height: 15px;
+}
+.homeBody ul {
+  list-style: disc;
+	padding-left: 24px;
+	line-height: 18px;
+	padding: 12px;
+	
+}
+.homeBody h2 { line-height: 24px; }
+.homeBody h3 {
+	line-height: 24px;
+	padding: 12px;
 }
 
 .homeNews p + p { margin-top: 0.5em; }
@@ -314,6 +334,7 @@ h4{font-size:11px !important;
 	font-family: 'Droid Serif', serif;
 	color:#dcdcdc;
 }
+h5{ padding-bottom: 12px; }
 p{
 	font-size:9pt;
 }
@@ -476,6 +497,26 @@ p.smallLabel{
 }
 
 .textlist a:hover {
+	color: orange;
+}
+
+.managementListBox {
+	line-height: 24px;
+	position: relative;
+	border-radius: 4px;
+	border: 1px solid #505050;
+	max-width: 960px;
+	margin-left: 6px;
+	margin-right: 6px;
+	margin-bottom: 6px!important;
+	width: 294px!important;
+	height: 100px!important;
+	overflow: hidden;
+	text-decoration: none;
+	color: white;
+	font-size: 16px;
+}
+.managementEmail {
 	color: orange;
 }
 
