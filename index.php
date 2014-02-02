@@ -40,6 +40,9 @@
 		case "uploadprogress":
 			UploadProgress();
 			break;
+		case "videoplay":
+			RecordHit();
+			break;
 		default:
 			RecordHit();
 			HomePage();

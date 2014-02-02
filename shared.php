@@ -762,6 +762,13 @@ function DisplayVideoPlayer($artistinfo) {
 			<?= ($artistinfo['media']['heightdisplay'])? $artistinfo['media']['heightdisplay'] : NULL ?>
 			'aspectratio': '<?= $artistinfo['media']['aspectratio']; ?>',
 		});
+		jwplayer('container<?= $artistinfo['media']['mid']; ?>').onPlay(function() {
+			var oRequest = new XMLHttpRequest();
+			var sURL = "http://" + self.location.hostname + "/videoplay/<?= $artistinfo['media']['mid']; ?>";
+			oRequest.open("GET",sURL,true);
+			oRequest.setRequestHeader("User-Agent",navigator.userAgent);
+			oRequest.send(null)
+		});
 	</script>
 	<?
 	/*
