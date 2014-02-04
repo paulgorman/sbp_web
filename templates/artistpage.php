@@ -94,6 +94,7 @@ function htmlArtistPageBottom($artistinfo) {
 						// if there's only the one photo, don't duplicate it down here...
 						foreach (array_keys($artist['media']['mid']) as $key) {
 							if ($artist['media']['vidlength'][$key] > 0) { continue; }
+							if ($artist['media']['viewable'][$key] != 1) { continue; }
 							?>
 				<ul>
 					<li data-type="media" data-url="/i/artist/original-<?= $artist['media']['filename'][$key]; ?>" data-target="_self"></li>

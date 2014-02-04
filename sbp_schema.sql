@@ -94,6 +94,7 @@ CREATE TABLE `sbpweb`.`media` (
 CREATE TABLE `sbpweb`.`sitehits` (
 	`hit_datetime` DATETIME NOT NULL ,
 	`hit_ip` VARCHAR(16) NOT NULL ,
+	`hit_addr` VARCHAR(255) NULL, 
 	`hit_url` VARCHAR(120) NOT NULL ,
 	`user_agent` VARCHAR(255) NULL ,
 	`referrer` VARCHAR(255) NULL ,

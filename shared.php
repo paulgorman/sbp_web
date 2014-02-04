@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20131125
+**  Last Edit: 20140203
 ****************************************/
 
 function Init() {
@@ -18,7 +18,7 @@ function Init() {
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
 	$_SESSION['last_move'] = $_SESSION['last_activity']; // testing how long page to page
-	if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 300)) {
+	if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 3600)) {
 		// last request was more than 60 minates ago (3600 seconds)
 		session_destroy();   // destroy session data in storage
 		session_unset();     // unset $_SESSION variable for the runtime
@@ -37,9 +37,10 @@ function Init() {
 
 function RecordHit() {
 	global $conn;
-	$query = sprintf("INSERT INTO sitehits (hit_datetime, hit_ip, hit_url, user_agent, referrer, sessionid, sesscount) values ('%s','%s','%s','%s','%s', '%s', %s);",
+	$query = sprintf("INSERT INTO `sitehits` (`hit_datetime`, `hit_ip`, `hit_addr`, `hit_url`, `user_agent`, `referrer`, `sessionid`, `sesscount`) values ('%s','%s','%s','%s','%s','%s', '%s', %s);",
 		mysqli_real_escape_string($conn, DatePHPtoSQL(time())),
 		mysqli_real_escape_string($conn, $_SERVER['REMOTE_ADDR']),
+		mysqli_real_escape_string($conn, $_SERVER['REMOTE_HOST']),
 		mysqli_real_escape_string($conn, $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']),
 		mysqli_real_escape_string($conn, $_SERVER['HTTP_USER_AGENT']),
 		mysqli_real_escape_string($conn, $_SERVER['HTTP_REFERRER']),
@@ -500,7 +501,7 @@ function CategoriesList() {
 
 				$query = sprintf(
 					"SELECT `filename`,`thumbwidth`,`thumbheight` 
-					 FROM `media` WHERE `aid` = %s AND `viewable` = 1 ORDER BY `is_highlighted` DESC, `width` DESC LIMIT 0,1",
+					 FROM `media` WHERE `aid` = %s ORDER BY `is_highlighted` DESC, `width` DESC LIMIT 0,1",
 					mysqli_real_escape_string($conn,$row['aid'])
 				);
 				$photoresult = mysqli_query($conn,$query);
