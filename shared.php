@@ -37,13 +37,13 @@ function Init() {
 
 function RecordHit() {
 	global $conn;
-	$query = sprintf("INSERT INTO `sitehits` (`hit_datetime`, `hit_ip`, `hit_addr`, `hit_url`, `user_agent`, `referrer`, `sessionid`, `sesscount`) values ('%s','%s','%s','%s','%s','%s', '%s', %s);",
+	$query = sprintf("INSERT INTO `sitehits` (`hit_datetime`, `hit_ip`, `hit_addr`, `hit_url`, `referrer`, `user_agent`, `sessionid`, `sesscount`) values ('%s','%s','%s','%s','%s','%s', '%s', %s);",
 		mysqli_real_escape_string($conn, DatePHPtoSQL(time())),
 		mysqli_real_escape_string($conn, $_SERVER['REMOTE_ADDR']),
 		mysqli_real_escape_string($conn, $_SERVER['REMOTE_HOST']),
 		mysqli_real_escape_string($conn, $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']),
+		mysqli_real_escape_string($conn, $_SERVER['HTTP_REFERER']),
 		mysqli_real_escape_string($conn, $_SERVER['HTTP_USER_AGENT']),
-		mysqli_real_escape_string($conn, $_SERVER['HTTP_REFERRER']),
 		mysqli_real_escape_string($conn, session_id()),
 		mysqli_real_escape_string($conn, $_SESSION['count'])
 	);
