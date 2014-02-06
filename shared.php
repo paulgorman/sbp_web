@@ -90,10 +90,21 @@ function ArtistPage() {
 		// Whoops, no artist name in the URL, show the categories
 		header("Location: http://". $_SERVER['HTTP_HOST'] ."/categories", TRUE, 302);
 	} else {
-		$artistinfo = getArtistInfo();
-		if (count($artistinfo) === 0) {
-			header("Location: http://". $_SERVER['HTTP_HOST'] ."/categories", TRUE, 302);
-		} elseif (count($artistinfo) === 1) {
+		$url = MakeURL(strtolower(trim($_REQUEST['url'])));
+		$artistinfo = getArtistInfoFromURL($url);
+		if (count($artistinfo) !== 1) {
+			$query = "SELECT `url`,`alt_url`,`name` FROM `artists` WHERE `is_active` = 1";
+			$result = mysqli_query($conn,$query);
+			while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+				$urls[] = $row['url'];
+				//$urls[] = $row['alt_url'];
+			}
+			$closestArtist = AltClosestWord($_REQUEST['url'],$urls);
+			$artistinfo = getArtistInfoFromURL($closestArtist);
+			// show multiple matching artist chooser
+			// XXX: Not Done
+		} 
+		if (count($artistinfo) === 1) {
 			$artistinfo = obfuscateArtistInfo($artistinfo);
 			$artistinfo = insertBreadCrumb($artistinfo);
 			$meta = getArtistMetaTags($artistinfo);
@@ -111,9 +122,8 @@ function ArtistPage() {
 			htmlArtistPageBottom($artistinfo);
 			htmlFooter($meta);
 			fwdConsGrid(); // dump this stuff in at the bottom of html
-		} else {
-			// show multiple matching artist chooser
-			// XXX: Not Done
+		} elseif (count($artistinfo) === 0) {
+			header("Location: http://". $_SERVER['HTTP_HOST'] ."/categories", TRUE, 302);
 		}
 	}
 }
@@ -124,8 +134,10 @@ function getArtistMetaTags($artistinfo) {
 	$meta['keywords'] = "Steve Beyer Productions, SBP, ";
 	foreach (array_keys($artistinfo) as $key) {
 		$meta['keywords'] .= $artistinfo[$key]['name'] . ", ";
-		foreach (array_keys($artistinfo[$key]['categories']) as $subkey) {
-			$meta['keywords'] .= $artistinfo[$key]['categories'][$subkey] . ", ";
+		if (count($artistinfo[$key]['categories']) > 0) {
+			foreach (array_keys($artistinfo[$key]['categories']) as $subkey) {
+				$meta['keywords'] .= $artistinfo[$key]['categories'][$subkey] . ", ";
+			}
 		}
 		foreach (array_keys($artistinfo[$key]['styles']) as $subkey) {
 			$meta['keywords'] .= $artistinfo[$key]['styles'][$subkey] . ", ";
@@ -155,11 +167,13 @@ function getArtistMetaTags($artistinfo) {
 		$meta['title'] .= $artistinfo[$key]['name'];
 		$meta['title'] .= " - ";
 		$meta['title'] .= $artistinfo[$key]['slug'];
-		$meta['title'] .= " (";
-		foreach (array_keys($artistinfo[$key]['categories']) as $subkey) {
-			$meta['title'] .= $artistinfo[$key]['categories'][$subkey] . ", ";
+		if (count($artistinfo[$key]['categories']) > 0) {
+			$meta['title'] .= " (";
+			foreach (array_keys($artistinfo[$key]['categories']) as $subkey) {
+				$meta['title'] .= $artistinfo[$key]['categories'][$subkey] . ", ";
+			}
+			$meta['title'] = substr($meta['title'], 0, -2) . ")";
 		}
-		$meta['title'] = substr($meta['title'], 0, -2) . ")";
 		$meta['description'] .= " / ";
 	}
 	$meta['description'] = substr($meta['description'], 0, -3);
@@ -172,8 +186,10 @@ function getArtistMetaTags($artistinfo) {
 	$meta['breadcrumb'][0]['name'] = "Talent";
 	$meta['breadcrumb'][0]['url'] = CurServerURL() . "talent";
 	if (count($artistinfo) === 1) {
-		$meta['breadcrumb'][1]['name'] = $artistinfo[$aid]['category'];
-		$meta['breadcrumb'][1]['url'] = curServerURL() . "category/" . $artistinfo[$aid]['caturl'];
+		if ($artistinfo[$aid]['category']) {
+			$meta['breadcrumb'][1]['name'] = $artistinfo[$aid]['category'];
+			$meta['breadcrumb'][1]['url'] = curServerURL() . "category/" . $artistinfo[$aid]['caturl'];
+		}
 		$meta['breadcrumb'][2]['name'] = $artistinfo[$aid]['name'];
 		$meta['breadcrumb'][2]['url'] = curPageURL();
 	} else {
@@ -247,9 +263,8 @@ function obfuscateArtistInfo($artistinfo) {
 	return ($artistinfo);
 }
 
-function getArtistInfo() {
+function getArtistInfoFromURL($url) {
 	global $conn;
-	$url = MakeURL(strtolower(trim($_REQUEST['url'])));
 	$artistnames = array(); // to find the nearest artist name
 	// search to find exact full URL match first
 	$query = sprintf(
@@ -3158,6 +3173,7 @@ function ClosestWord($input,$possibles) {
 	foreach ($possibles as $word) {
 		// calculate the distance between the input word,
 		// and the current word
+		//$lev = similar_text($input, $word);
 		$lev = levenshtein($input, $word);
 		// check for an exact match
 		if ($lev == 0) {
@@ -3177,4 +3193,60 @@ function ClosestWord($input,$possibles) {
 	}
 	//if ($shortest == 0)
 	return ($closest);
+}
+
+function btlfsa($word1,$word2) {
+	$score = 0;
+	$remainder  = preg_replace("/[".preg_replace("/[^A-Za-z0-9\']/",' ',$word1)."]/i",'',$word2);
+	$remainder .= preg_replace("/[".preg_replace("/[^A-Za-z0-9\']/",' ',$word2)."]/i",'',$word1);
+	$score      = strlen($remainder)*2;
+	// Take the difference in string length and add it to the score
+	$w1_len  = strlen($word1);
+	$w2_len  = strlen($word2);
+	$score  += $w1_len > $w2_len ? $w1_len - $w2_len : $w2_len - $w1_len;
+
+	$w1 = $w1_len > $w2_len ? $word1 : $word2;
+	$w2 = $w1_len > $w2_len ? $word2 : $word1;
+
+	for($i=0; $i < strlen($w1); $i++) {
+		if ( !isset($w2[$i]) || $w1[$i] != $w2[$i] ) {
+			$score++;
+		}
+	}
+	return $score;
+}
+
+function AltClosestWord($misspelled,$suggestions) {
+	// Firstly order an array based on levenshtein
+	$levenshtein_ordered = array();
+	foreach ( $suggestions as $suggestion ) {
+		$levenshtein_ordered[$suggestion] = levenshtein($misspelled,$suggestion);
+	}
+	asort($levenshtein_ordered, SORT_NUMERIC );
+	// Secondly order an array based on btlfsa
+	$btlfsa_ordered = array();
+	foreach ( $suggestions as $suggestion ) {
+		$btlfsa_ordered[$suggestion] = btlfsa($misspelled,$suggestion);
+	}
+	asort($btlfsa_ordered, SORT_NUMERIC );
+	$insertMeOnTop = array();
+	foreach ($btlfsa_ordered as $name => $cost) {
+		if (preg_match("/$misspelled/i",$name)) {
+			// if the artist name was in the URL, it wins regardless
+			$insertMeOnTop = array($name => 0);
+		}
+	}
+	if (count($insertMeOnTop) > 0) {
+		$btlfsa_ordered = array_reverse($btlfsa_ordered, true);
+		list($key, $value) = each($insertMeOnTop);
+		unset($btlfsa_ordered[$key]);
+		$btlfsa_ordered[$key] = $value;
+		$btlfsa_ordered = array_reverse($btlfsa_ordered, true);
+	}
+	reset($btlfsa_ordered);
+	//echo "<!--"; print_r ($btlfsa_ordered); echo "-->";
+	$closestword = key($btlfsa_ordered);
+	//echo $closestword;
+	//exit;
+	return($closestword);
 }
