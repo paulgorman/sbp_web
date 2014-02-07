@@ -183,8 +183,11 @@ function getArtistMetaTags($artistinfo) {
 	// step 1 : category name
 	// step 2 : artist name
 	$aid = $artistinfo[key($artistinfo)]['aid'];
-	$meta['breadcrumb'][0]['name'] = "Talent";
-	$meta['breadcrumb'][0]['url'] = CurServerURL() . "talent";
+	if (preg_match("/artist[s]?/",$_REQUEST['page'])) {
+		// this is an artist page, not an event media page
+		$meta['breadcrumb'][0]['name'] = "Talent";
+		$meta['breadcrumb'][0]['url'] = CurServerURL() . "talent";
+	}
 	if (count($artistinfo) === 1) {
 		if ($artistinfo[$aid]['category']) {
 			$meta['breadcrumb'][1]['name'] = $artistinfo[$aid]['category'];
@@ -202,8 +205,10 @@ function getArtistMetaTags($artistinfo) {
 		$meta['breadcrumb'][1] = substr($meta['breadcrumb'][1], 0, -2);
 	}	
 	// image
-	$meta['image']  = CurServerUrl() . "i/artist/";
-	$meta['image'] .= $artistinfo[$aid]['media']['filename'][key($artistinfo[$aid]['media']['filename'])];
+	if (isset($artistinfo[$aid]['media']['filename'])) {
+		$meta['image']  = CurServerUrl() . "i/artist/";
+		$meta['image'] .= $artistinfo[$aid]['media']['filename'][key($artistinfo[$aid]['media']['filename'])];
+	}
 	return ($meta);
 
 }
@@ -341,10 +346,15 @@ function getArtistInfoFromURL($url) {
 
 function insertBreadCrumb($artistinfo) {
 	// slap in the breadcrumbs for each artist in the array
-	foreach ($artistinfo as $key => $blah) {
-		$catarray = getCategoryBreadcrumb($artistinfo[$key]['cid']);
-		$artistinfo[$key]['category'] = $catarray['category'];
-		$artistinfo[$key]['caturl'] = $catarray['url'];
+	foreach (array_keys($artistinfo) as $key) {
+		if (preg_match("/event[s]?/",$_REQUEST['page'])) {
+			$artistinfo[$key]['category'] = "Event";
+			$artistinfo[$key]['caturl'] = "events";
+		} else {
+			$catarray = getCategoryBreadcrumb($artistinfo[$key]['cid']);
+			$artistinfo[$key]['category'] = $catarray['category'];
+			$artistinfo[$key]['caturl'] = $catarray['url'];
+		}
 	}
 	return ($artistinfo);
 }

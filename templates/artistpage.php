@@ -1,9 +1,13 @@
 <?
 function htmlArtistPageTop($artistinfo) {
 	$artist = $artistinfo[key($artistinfo)];
-	$hlighted_filename = $artist['media']['filename'][key($artist['media']['mid'])];
-	$hlighted_width = $artist['media']['thumbwidth'][key($artist['media']['mid'])];
-	$hlighted_height = $artist['media']['thumbheight'][key($artist['media']['mid'])];
+	if (isset($artist['media']['filename'])) {
+		$hlighted_filename = $artist['media']['filename'][key($artist['media']['mid'])];
+	}
+	if (isset($artist['media']['thumbwidth'])) {
+		$hlighted_width = $artist['media']['thumbwidth'][key($artist['media']['mid'])];
+		$hlighted_height = $artist['media']['thumbheight'][key($artist['media']['mid'])];
+	}
 	$hlighted_alt = $artist['name'];
 	$artist_bio = Parsedown::instance()->parse(htmlspecialchars_decode($artist['bio']));
 	?>

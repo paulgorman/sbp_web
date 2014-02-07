@@ -13,6 +13,9 @@
 			ScriptTime($starttime);
 			break;
 		case "artist":
+		case "artists":
+		case "event":
+		case "events":
 			RecordHit();
 			ArtistPage();
 			Scripttime($starttime);
@@ -21,7 +24,7 @@
 			RecordHit();
 			ProductionPage();
 			break;
-		case "event":
+		case "special":
 			RecordHit();
 			EventPage();
 			break;
