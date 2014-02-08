@@ -101,11 +101,11 @@ function htmlArtistPageBottom($artistinfo) {
 							if ($artist['media']['viewable'][$key] != 1) { continue; }
 							?>
 				<ul>
-					<li data-type="media" data-url="/i/artist/original-<?= $artist['media']['filename'][$key]; ?>" data-target="_self"></li>
+					<li data-type="media" data-url="/i/artist/original-<?= $artist['media']['filename'][$key]; ?>" data-target="_self" data-width="<?= $artist['media']['thumbwidth'][$key]; ?>" data-height="<?= $artist['media']['thumbheight'][$key]; ?>"></li>
 					<li data-thumbnail-path="/i/artist/<?= $artist['media']['filename'][$key]; ?>"></li>
 					<li data-thumbnail-text>
 						<p class="largeLabel"><?= $artist['name']; ?></p>
-						<p class="smallLabel"><?= $artist['slug']; ?></p>
+						<p class="smallLabel"><?= $artist['slug']; ?><br><?= $artist['media']['width'][$key]; ?> x <?= $artist['media']['height'][$key]; ?></p>
 					</li>
 					<li data-info="">
 						<p class="mediaDescriptionHeader"><?= $artist['name']; ?> High Resolution Image Download</p>

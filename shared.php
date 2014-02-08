@@ -725,7 +725,7 @@ function AboutPage() {
 	htmlHeader($meta);
 	htmlMasthead($meta);
 	htmlNavigation($meta);
-	htmlWavesStart();
+	htmlWavesFullStart();
 	htmlContent($contentTop);
 	htmlBodyStart();
 	htmlContent($contentBottom);

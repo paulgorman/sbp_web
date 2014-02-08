@@ -128,6 +128,8 @@ function fwdConsGrid() {
 					loadMoreThumbsButtonOffest:4,
 					thumbnailBaseWidth:240,
 					thumbnailBaseHeight:160,
+					//thumbnailBaseWidth:278,
+					//thumbnailBaseHeight:188,
 					nrOfThumbsToShowOnSet:27,
 					horizontalSpaceBetweenThumbnails:8,
 					verticalSpaceBetweenThumbnails:8,
