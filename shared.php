@@ -3073,7 +3073,6 @@ function ValidatePassword($password, $correctHash) {
     $salt = substr($correctHash, 0, 64); //get the salt from the front of the hash
     $validHash = substr($correctHash, 64, 128); //the SHA512
     $testHash = hash("sha512", $salt . $password); //hash the password being tested
-		echo "s: $salt<br>test $testHash<br>saved $validHash<br>";
     //if the hashes are exactly the same, the password is valid
     return $testHash === $validHash;
 }
