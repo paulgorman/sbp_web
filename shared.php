@@ -88,9 +88,31 @@ function isAdmin() {
 
 function AskForAdmin() {
 	require_once("templates/admin.php");
-	echo "Checking for Admin Access...";
-	$_SESSION['is_admin'] = TRUE;
-	htmlAdminLogin();
+	//$_SESSION['is_admin'] = TRUE;
+	htmlAdminLogin(NULL);
+}
+
+function ConfirmLogin() {
+	global $conn;
+	require_once("templates/admin.php");
+	$query = sprintf(
+		"SELECT `username`,`password` FROM `admins` WHERE `username` = '%s'",
+		mysqli_real_escape_string($conn,strtolower(trim(htmlspecialchars(strip_tags($_REQUEST['username'])))))
+	);
+	$result = mysqli_query($conn,$query);
+	if (mysqli_num_rows($result) > 0) {
+		list($username,$password) = mysqli_fetch_array($result, MYSQLI_ASSOC);
+		$passwordGuess = trim(htmlspecialchars(strip_tags($_REQUEST['password'])));
+		if (ValidatePassword($passwordGuess,$password)) {
+			$_SESSION['is_admin'] = TRUE;
+			header("Location: http://". $_SERVER['HTTP_HOST'] ."/admin/", TRUE, 302);
+		} else {
+			htmlAdminLogin("Invalid Password");
+		}
+	} else {
+		// XXX: I know, but it's my boss, I gotta help him a little when he typos his username
+		htmlAdminLogin("Invalid Username");
+	}
 }
 
 function ArtistPage() {

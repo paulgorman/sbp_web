@@ -1,8 +1,46 @@
 <?
 /* admin html templates */
 
-function htmlAdminLogin() {
-
+function htmlAdminLogin($message) {
+	?>
+	<html>
+		<head>
+			<title>SBP Admin Login</title>
+			<link rel="stylesheet" type="text/css" href="/templates/css/responsiveboilerplate.css">
+			<link rel="stylesheet" type="text/css" href="/templates/css/sbp.css">
+		</head>
+		<body>
+		<form method="POST" action="/login">
+			<div class="content" style="max-width: 960px; margin: 0px auto 0px auto;">
+			<br>
+				<div class="box dark carousel col12" style="border: 1px solid #fff;">
+					<? if (!isEmpty($message)) { 
+						?>
+							<div class="col12" style="width: 95%;margin: 10px;padding: 10px;border: 1px solid #fff; background-color: orange"><?= $message; ?></div>
+						  <div class="clearfix">
+						<?
+					}
+					?>
+					<div class="col1">&nbsp;</div>
+					<div class="col2" style="text-align:left;">Username:</div>
+					<div class="col2"><input type="text" name="username"></div>
+					<div class="clearfix"></div>
+					<div class="col12">&nbsp;</div>
+					<div class="clearfix">
+					<div class="col1">&nbsp;</div>
+					<div class="col2" style="text-align:left;">Password:</div>
+					<div class="col2"><input type="password" name="password"></div>
+					<div class="col12">&nbsp;</div>
+					<div class="clearfix">
+					<div class="col1">&nbsp;</div>
+					<div class="col2">&nbsp;</div><div class="col1"><input type="submit" value="Log In"></div>
+					<div class="col12">&nbsp;</div>
+				</div>
+			</div>
+		</form>
+		</body>
+	</html>
+	<?
 }
 
 

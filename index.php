@@ -6,6 +6,8 @@
 		case "admin":
 			if (isAdmin()) {
 				ShowAdminPage();
+			} elseif ($_REQUEST['url'] == "login") {
+				ConfirmLogin();
 			} else {
 				AskForAdmin();
 			}

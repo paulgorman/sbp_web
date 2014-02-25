@@ -4,7 +4,7 @@
 
 -- DANGER!!! XXX --------------
 -- DROP ALL TABLES FOR A FRESH START HERE 
-DROP TABLE IF EXISTS artists, artistcategories, artistmembers, artistlocations, locations, categories, media, sitehits, artiststyles, styles;
+DROP TABLE IF EXISTS artists, artistcategories, artistmembers, artistlocations, locations, categories, media, sitehits, artiststyles, styles, admins;
 -- DANGER!!! XXX --------------
 
 CREATE TABLE `sbpweb`.`artists` (
@@ -116,3 +116,7 @@ CREATE TABLE `sbpweb`.`styles` (
 	INDEX(`name`)
 ) ENGINE=InnoDB;
 
+CREATE TABLE `sbpweb`.`admins` (
+	`username` VARCHAR(16) NOT NULL PRIMARY KEY,
+	`password` VARCHAR(16) NOT NULL
+) ENGINE=InnoDB;
