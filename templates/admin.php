@@ -99,6 +99,49 @@ function AdminArtistsButtonBar() {
 	<?
 }
 
+function AdminShowNewAdminForm() {
+	?>
+		<form method="POST" action="/admin/admin_users" enctype="multipart/form-data">
+			<input type="hidden" name="function" value="save_new_admin">
+			<div class="AdminCategoryListingAddContainer">
+				<div class="AdminCategoryListingAddHeader">ADD NEW ADMINISTRATIVE USER</div>
+				<div class="AdminCategoryListingAddItem">Username</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="username" size="40"></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">Password</div>
+				<div class="AdminCategoryListingAddValue"><input type="password" name="password" size="40"></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add User"></div>
+				<div class="clear"></div>
+			</div> <!-- class="AdminCategoryListingAddContainer" -->
+		</form>
+	<?
+}
+
+function AdminShowAdminsList($admins) {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemDescription">Administrative Users</div>
+				<div class="AdminCategoryListItemURL">[<a href="/admin/admin_users/add_admin">New Administrator</a>]</div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($admins as $key => $username) { ?>
+				<form method="POST" action="/admin/admins/edit/<?= $username; ?>" name="edit<?= $username; ?>">
+					<input type="hidden" name="function" value="edit">
+					<input type="hidden" name="username" value="<?= $username; ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $username; ?>'].submit(); return false;">
+						<div class="AdminCategoryListItemCategory"></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $username; ?>'].submit(); return false;"><?= $username; ?></div>
+					</div>
+				</form>
+			<? } ?>
+			<div class="AdminCategoryListHeader">
+			</div>
+		</div>
+	<?	
+}
+
 function AdminArtistListPage($artists,$page) {
 	?>
 		<div class="AdminCategoryListContainer">

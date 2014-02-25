@@ -101,9 +101,9 @@ function ConfirmLogin() {
 	);
 	$result = mysqli_query($conn,$query);
 	if (mysqli_num_rows($result) > 0) {
-		list($username,$password) = mysqli_fetch_array($result, MYSQLI_ASSOC);
+		$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
 		$passwordGuess = trim(htmlspecialchars(strip_tags($_REQUEST['password'])));
-		if (ValidatePassword($passwordGuess,$password)) {
+		if (ValidatePassword($passwordGuess,$row['password'])) {
 			$_SESSION['is_admin'] = TRUE;
 			header("Location: http://". $_SERVER['HTTP_HOST'] ."/admin/", TRUE, 302);
 		} else {
@@ -972,7 +972,8 @@ function ShowAdminPage() {
 		"Styles" => "styles_list",
 		"Locations" => "locations_list",
 		"Featured" => "categories_featured",
-		"Blog" => "blog_editor",
+		//"Blog" => "blog_editor",
+		"Admins" => "admin_users",
 		"Metrics" => "web_stats"
 	);
 	include("templates/admin.php");
@@ -981,6 +982,18 @@ function ShowAdminPage() {
 	if (isEmpty($_REQUEST['url']) || ((string)$_REQUEST['url'] === "web_stats")) {
 		AdminDisplaySiteStats();
 	} else {
+		if ($_REQUEST['url'] == "admin_users") {
+			switch($_REQUEST['function']) {
+				case "add_admin":
+					AdminAddAdmin();
+					break;
+				case "save_new_admin":
+					AdminSaveNewAdmin();
+					break;
+				default:
+					AdminAdminsList();
+			}
+		}
 		if ($_REQUEST['url'] == "categories_list") {
 			switch($_REQUEST['function']) {
 				case "add_category":
@@ -1104,6 +1117,31 @@ function ShowAdminPage() {
 			}
 		}
 	}
+}
+
+function AdminAdminsList() {
+	global $conn;
+	$query = "SELECT `username` FROM `admins` ORDER BY `username` ASC";
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminShowAdminsList($row);
+}
+
+function AdminAddAdmin() {
+	AdminShowNewAdminForm();
+}
+
+function AdminSaveNewAdmin() {
+	global $conn;
+	$password = HashPassword(htmlspecialchars(strip_tags(trim($_REQUEST['password']))));
+	$username = strtolower(htmlspecialchars(strip_tags(trim($_REQUEST['username']))));
+	$query = sprintf(
+		"INSERT INTO `admins` (`username`,`password`) VALUES ('%s','%s')",
+		mysqli_real_escape_string($conn,$username),
+		mysqli_real_escape_string($conn,$password)
+	);
+	$result = mysqli_query($conn,$query);
+	AdminAdminsList();
 }
 
 function AdminArtistDelete($aid) {

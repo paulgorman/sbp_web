@@ -118,5 +118,5 @@ CREATE TABLE `sbpweb`.`styles` (
 
 CREATE TABLE `sbpweb`.`admins` (
 	`username` VARCHAR(16) NOT NULL PRIMARY KEY,
-	`password` VARCHAR(16) NOT NULL
+	`password` VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
