@@ -442,7 +442,10 @@ function getArtistCategory($aid) {
 
 function FaceBookLike() {
 	$url = CurPageURL();                                                                                                                                                         
-	?><div style="margin-bottom: 10px;" class="fb-like" data-colorscheme="dark" data-href="<?= $url; ?>" data-width="320" data-layout="standard" data-action="like" data-show-faces="false" data-share="true"></div><?
+	?>
+		<div id="fb-root"></div>
+		<div style="margin-bottom: 10px;" class="fb-like" data-colorscheme="dark" data-href="<?= $url; ?>" data-width="320" data-layout="standard" data-action="like" data-show-faces="false" data-share="true"></div>
+	<?
 }
 
 function CategoriesList() {

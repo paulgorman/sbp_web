@@ -36,6 +36,10 @@ RewriteRule ^uploadprogress[/]? index.php?page=uploadprogress [QSA,L,NC]
 # Video started playing
 RewriteRule ^videoplay/([0-9]+) index.php?page=videoplay&mid=$1 [QSA,L,NC]
 
+# Facebook Like Button Logging
+RewriteRule ^liked/(.*) index.php?page=liked&url=$1 [QSA,L,NC]
+RewriteRule ^disliked/(.*) index.php?page=liked&url=$1 [QSA,L,NC]
+
 # static pages just a couple possible typos
 RewriteRule ^tag/([a-zA-Z0-9_-]+) index.php?page=findbytag&tag=$1 [QSA,L,NC]
 RewriteRule ^about[/]? index.php?page=about [QSA,L,NC]

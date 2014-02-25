@@ -50,6 +50,9 @@
 		case "videoplay":
 			RecordHit();
 			break;
+		case "liked":
+			RecordHit();
+			break;
 		default:
 			RecordHit();
 			HomePage();
