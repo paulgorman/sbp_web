@@ -33,6 +33,8 @@ function htmlHeader($dataArray) {
 		<meta property="og:url" content="<?= $dataArray['url']; ?>" />
 		<meta property="og:description" content="<?= $dataArray['description']; ?>" />
 		<meta property="og:site_name" content="Steve Beyer Productions" />
+		<meta property="fb:app_id" content="596042810479776" />
+		<meta property="fb:admins" content="529514765" />
 		<meta name="twitter:card" content="summary" />
 		<meta name="twitter:title" content="<?= $dataArray['title']; ?>" />
 		<meta name="twitter:description" content="<?= $dataArray['description']; ?>" />

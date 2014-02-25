@@ -1,6 +1,11 @@
 <?
 /* admin html templates */
 
+function htmlAdminLogin() {
+
+}
+
+
 function AdminHead($curfunction,$adminfunctions) {
 	$tempadminfunctionsflipped = array_flip ($adminfunctions);
 	?><!DOCTYPE html>

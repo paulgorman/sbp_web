@@ -9,7 +9,6 @@ function htmlArtistPageTop($artistinfo) {
 		$hlighted_height = $artist['media']['thumbheight'][key($artist['media']['mid'])];
 	}
 	$hlighted_alt = $artist['name'];
-	$artist_bio = Parsedown::instance()->parse(htmlspecialchars_decode($artist['bio']));
 	?>
 		<div class="artistTop">
 			<div class="col6 fl artistHeadImageContainer"><!-- Artist Highlighted Photo -->
@@ -30,8 +29,9 @@ function htmlArtistPageTop($artistinfo) {
 				<h1><?= $artist['name']; ?></h1>
 				<h3><?= $artist['slug']; ?></h3>
 				<div class="artistBio">
-					<?= $artist_bio; ?>
+					<?= $artist['bio']; ?>
 				</div>
+			<? FaceBookLike(); ?>
 			</div>
 			<div class="clearfix"></div>
 			<div class="artistVideo">

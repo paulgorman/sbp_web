@@ -603,6 +603,22 @@ p.smallLabel{
 	padding-top: 1em;
 }
 
+/* This CSS is used for the artist page "more" link */
+.more {
+	display: none;
+}
+a.showLink, a.hideLink {
+	text-decoration: none;
+	color: #FFF;
+}
+a.hideLink {
+	background: transparent url(up.gif) no-repeat left;
+}
+a.showLink:hover, a.hideLink:hover {
+	color: orange;
+	text-decoration: none;
+}
+
 @media handheld, only screen and (max-width: 980px) {
 	hr,.cats{
 		width: 100%;

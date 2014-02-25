@@ -19,6 +19,7 @@ RewriteRule ^templates/sbp/(.*) - [L]
 RewriteRule ^templates/skin_modern_silver/(.*) - [L]
 RewriteRule ^templates/skin_minimal_dark_round/(.*) - [L]
 RewriteRule ^favicon.ico - [L]
+RewriteRule ^sbp/(.*) - [L]
 
 RewriteRule ^[/]?$ index.php?page=home [QSA,L]
 

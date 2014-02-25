@@ -4,7 +4,11 @@
 	Init();
 	switch($_REQUEST['page']) {
 		case "admin":
-			//ShowAdminPage();
+			if (isAdmin()) {
+				ShowAdminPage();
+			} else {
+				AskForAdmin();
+			}
 			ScriptTime($starttime);
 			break;
 		case "categories":

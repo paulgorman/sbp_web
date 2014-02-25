@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20140203
+**  Last Edit: 20140224
 ****************************************/
 
 function Init() {
@@ -80,6 +80,19 @@ function DebugShow() {
 	echo "</div>";
 }
 
+function isAdmin() {
+	if ($_SESSION['is_admin'] === TRUE) {
+		return TRUE;
+	}
+}
+
+function AskForAdmin() {
+	require_once("templates/admin.php");
+	echo "Checking for Admin Access...";
+	$_SESSION['is_admin'] = TRUE;
+	htmlAdminLogin();
+}
+
 function ArtistPage() {
 	global $conn;
 	require_once("templates/header.php");
@@ -110,6 +123,8 @@ function ArtistPage() {
 			$meta = getArtistMetaTags($artistinfo);
 			$meta['css'][] = "Rb-ui.css";
 			$meta['js'][] = "jwplayer/jwplayer.js";
+			$meta['js'][] = "facebook.js";
+			$meta['js'][] = "more.js";
 			$meta['js'][] = "FWDGrid.js";
 			htmlHeader($meta);
 			htmlMasthead($meta);
@@ -270,6 +285,7 @@ function obfuscateArtistInfo($artistinfo) {
 
 function getArtistInfoFromURL($url) {
 	global $conn;
+	require_once("templates/Parsedown/Parsedown.php");
 	$artistnames = array(); // to find the nearest artist name
 	// search to find exact full URL match first
 	$query = sprintf(
@@ -338,6 +354,35 @@ function getArtistInfoFromURL($url) {
 			$artistnames[$aid]['media']['viewable'][$row['mid']] = $row['viewable'];
 			$artistnames[$aid]['media']['published'][$row['mid']] = DateSQLtoPHP($row['published']);
 		}
+		// prepare the artist bio for mobile and desktop view
+		// XXX Hardcoded at 850 characters
+		$browser = get_browser(null, true); 
+		if ($browser['ismobiledevice'] > 0) {
+			$artistnames[$aid]['bio'] = Parsedown::instance()->parse(htmlspecialchars_decode($artistnames[$aid]['bio']));
+		} else {
+			$bio = $artistnames[$aid]['bio'];
+			$sentences = preg_split('/((?<=[.?!])\s+(?=[a-z]))/i', $bio, NULL, PREG_SPLIT_DELIM_CAPTURE); // break only on complete sentences
+			$length = 0;
+			$firstpart = "";
+			$secondpart = "";
+			foreach ($sentences as $sentence) {
+				$length = strlen($sentence) + $length;
+				if ($length < 850) {
+					$firstpart .= $sentence ." ";
+				} else {
+					$secondpart .= $sentence;
+				}
+			}
+			if (!isEmpty($secondpart)) {
+				$firstpart = Parsedown::instance()->parse(htmlspecialchars_decode($firstpart));
+				$firstpart .= "<a href=\"#\" id=\"continued-show\" class=\"showLink\" onclick=\"showHide('continued');return false;\">More &#9660;</a>";
+				$secondpart = "<div style=\"margin-top: 6px;\" id=\"continued\" class=\"more\">" . Parsedown::instance()->parse($secondpart) . "</div>";
+				$artistnames[$aid]['bio'] = $firstpart . $secondpart;
+			} else {
+				$artistnames[$aid]['bio'] = Parsedown::instance()->parse(htmlspecialchars_decode($firstpart));
+			}
+
+		}
 		mysqli_free_result($result);
 		return ($artistnames);
 	}
@@ -393,6 +438,11 @@ function getArtistCategory($aid) {
 		}
 	}
 	return($cid);
+}
+
+function FaceBookLike() {
+	$url = CurPageURL();                                                                                                                                                         
+	?><div style="margin-bottom: 10px;" class="fb-like" data-colorscheme="dark" data-href="<?= $url; ?>" data-width="320" data-layout="standard" data-action="like" data-show-faces="false" data-share="true"></div><?
 }
 
 function CategoriesList() {
@@ -743,7 +793,7 @@ function gatherHighlightedArtists() {
 		FROM `artists`
 		LEFT OUTER JOIN `media` ON `media`.`aid` = `artists`.`aid`
 		WHERE `artists`.`is_active` = 1 AND `artists`.`is_highlighted` = 1 AND `artists`.`is_searchable` = 1
-		AND `media`.`viewable` = 1 AND `media`.`is_highlighted` = 1";
+		AND `media`.`viewable` = 1 AND `media`.`is_highlighted` = 1 ORDER BY RAND()";
 	$result = mysqli_query($conn,$query);
 	$artists = array();
 	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
@@ -3157,6 +3207,7 @@ function CurPageURL() {
 	} else {
 		$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
 	}
+	$pageURL = preg_replace('/\?.*/', '', $pageURL); // drop any query string crap that comes in from Facebook Like/Share links
 	return $pageURL;
 }
 
