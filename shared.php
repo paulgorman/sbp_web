@@ -1123,8 +1123,10 @@ function AdminAdminsList() {
 	global $conn;
 	$query = "SELECT `username` FROM `admins` ORDER BY `username` ASC";
 	$result = mysqli_query($conn,$query);
-	$row = mysqli_fetch_assoc($result);
-	AdminShowAdminsList($row);
+	while ($row = mysqli_fetch_assoc($result)) {                                                                                                                                           
+		$admins[] = $row['username'];
+	}   
+	AdminShowAdminsList($admins);
 }
 
 function AdminAddAdmin() {
