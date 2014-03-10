@@ -26,9 +26,9 @@ function Init() {
 	$_SESSION['last_activity'] = time(); // update last activity time stamp
 	// lets count how many pages visitor's looked at
 	isset($_SESSION['count']) ? $_SESSION['count']++ : $_SESSION['count'] = 0;
-	$dirlocation = "/home/presence/sbp_web";	// no trailing slash.
 	$host  = "localhost";
 	$db    = "sbpweb";
+	$dirlocation = "/home/presence/sbp_web";	// no trailing slash. // default, overridden in db.php
 	require_once("db.php");
 	$conn = mysqli_connect($host, $user, $pass, $db) or die(mysqli_error());
 	$pagination = "20";	// number of entries per "page"
