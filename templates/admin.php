@@ -963,7 +963,7 @@ function AdminArtistFormSingle($artistinfo) {
 					</div>
 				</div>
 				<div class="AdminArtistEditHeader">
-					<B><?= $artistinfo['name'] ?></B>
+					<B><a href="<?= CurServerUrl(); ?>artist/<?= $artistinfo['url']; ?>"</a><?= $artistinfo['name'] ?></a></B>
 				</div>
 				<div class="AdminArtistLastUpdateHeader">
 					Last updated <?= nicetime($artistinfo['last_updated']) ?>

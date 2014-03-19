@@ -389,7 +389,7 @@ function getArtistInfoFromURL($url) {
 			$secondpart = "";
 			foreach ($sentences as $sentence) {
 				$length = strlen($sentence) + $length;
-				if ($length < 850) {
+				if ($length < 900) {
 					$firstpart .= $sentence ." ";
 				} else {
 					$secondpart .= $sentence;

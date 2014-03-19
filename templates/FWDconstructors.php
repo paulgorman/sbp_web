@@ -130,7 +130,7 @@ function fwdConsGrid() {
 					thumbnailBaseHeight:160,
 					//thumbnailBaseWidth:278,
 					//thumbnailBaseHeight:188,
-					nrOfThumbsToShowOnSet:27,
+					nrOfThumbsToShowOnSet:57,
 					horizontalSpaceBetweenThumbnails:8,
 					verticalSpaceBetweenThumbnails:8,
 					thumbnailBorderSize:4,
