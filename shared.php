@@ -392,14 +392,16 @@ function getArtistInfoFromURL($url) {
 				if ($length < 900) {
 					$firstpart .= $sentence ." ";
 				} else {
-					$secondpart .= $sentence;
+					$secondpart .= $sentence . " ";
 				}
 			}
 			if (!isEmpty($secondpart)) {
 				$firstpart = Parsedown::instance()->parse(htmlspecialchars_decode($firstpart));
 				$firstpart .= "<a href=\"#\" id=\"continued-show\" class=\"showLink\" onclick=\"showHide('continued');return false;\">More &#9660;</a>";
-				$secondpart = "<div style=\"margin-top: 6px;\" id=\"continued\" class=\"more\">" . Parsedown::instance()->parse($secondpart) . "</div>";
-				$artistnames[$aid]['bio'] = $firstpart . $secondpart;
+				$secondpartparsed = "<div style=\"margin-top: 6px;\" id=\"continued\" class=\"more\">";
+				$secondpartparsed .= Parsedown::instance()->parse($secondpart);
+				$secondpartparsed .= "</div>";
+				$artistnames[$aid]['bio'] = $firstpart . $secondpartparsed;
 			} else {
 				$artistnames[$aid]['bio'] = Parsedown::instance()->parse(htmlspecialchars_decode($firstpart));
 			}

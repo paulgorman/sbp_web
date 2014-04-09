@@ -226,6 +226,8 @@ nav.menu ul:hover li{
 .artistBio blockquote { padding:1.5em 1em 1.825em 1em; font-family:georgia,serif;font-style: italic;  }
 .artistBio blockquote:before { content:"\201C";font-size:2.5em;margin-left:-.625em; font-family:georgia,serif;color:#aaa;line-height:0; }/* From Tripoli  */
 .artistBio blockquote > p {padding:0; margin:0; font-size: 1.1em; line-height: 0.1em;}
+.artistBio a:link,.artistBio a:visited,.artistBio a:active { color: orange; }
+.artistBio a:hover { color: yellow; }
 
 .artistVideo {
 	max-width: 960px;
@@ -609,7 +611,7 @@ p.smallLabel{
 }
 a.showLink, a.hideLink {
 	text-decoration: none;
-	color: #FFF;
+	color: orange;
 }
 a.hideLink {
 	background: transparent url(up.gif) no-repeat left;
