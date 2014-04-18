@@ -50,7 +50,7 @@ RewriteRule ^login /index.php?page=admin&url=login [QSA,L,NC]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ / [R=301]
+RewriteRule ^(.*)$ / [R=302]
 
 <Files ".ht*">
 deny from all
