@@ -5,9 +5,6 @@ RewriteEngine on
 
 RewriteRule ^server-status - [L]
 RewriteRule ^server-info - [L]
-RewriteRule ^i - [L]
-RewriteRule ^m - [L]
-RewriteRule ^sources - [L]
 RewriteRule ^favicon.ico - [L]
 RewriteRule ^robots.txt - [L]
 RewriteRule ^humans.txt - [L]
@@ -41,16 +38,19 @@ RewriteRule ^liked/(.*) index.php?page=liked&url=$1 [QSA,L,NC]
 RewriteRule ^disliked/(.*) index.php?page=liked&url=$1 [QSA,L,NC]
 
 # static pages just a couple possible typos
-RewriteRule ^tag/([a-zA-Z0-9_-]+) index.php?page=findbytag&tag=$1 [QSA,L,NC]
-RewriteRule ^about[/]? index.php?page=about [QSA,L,NC]
-RewriteRule ^production[/]? index.php?page=production [QSA,L,NC]
-RewriteRule ^special[/]? index.php?page=special [QSA,L,NC]
-RewriteRule ^decor[/]? index.php?page=decor [QSA,L,NC]
-RewriteRule ^(wedding|weddings)[/]? index.php?page=wedding [QSA,L,NC]
-RewriteRule ^(about|contact)[/]? index.php?page=about[QSA,L,NC]
+RewriteRule ^tag/([a-zA-Z0-9_-]+) /index.php?page=findbytag&tag=$1 [QSA,L,NC]
+RewriteRule ^about[/]? /index.php?page=about [QSA,L,NC]
+RewriteRule ^production[/]? /index.php?page=production [QSA,L,NC]
+RewriteRule ^special[/]? /index.php?page=special [QSA,L,NC]
+RewriteRule ^decor[/]? /index.php?page=decor [QSA,L,NC]
+RewriteRule ^(wedding|weddings)[/]? /index.php?page=wedding [QSA,L,NC]
+RewriteRule ^(about|contact)[/]? /index.php?page=about[QSA,L,NC]
 RewriteRule ^admin[/]?([a-z_-]+)?[/]?([a-z_-]+)?[/]?([a-zA-Z0-9]+)? /index.php?page=admin&url=$1&function=$2&listpage=$3 [QSA,L,NC]
 RewriteRule ^login /index.php?page=admin&url=login [QSA,L,NC]
-RewriteRule ^(.*)$ index.php?page=404 [QSA,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ / [R=301]
 
 <Files ".ht*">
 deny from all
