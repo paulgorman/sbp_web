@@ -37,7 +37,7 @@ function Init() {
 
 function RecordHit() {
 	global $conn;
-	$query = sprintf("INSERT INTO `sitehits` (`hit_datetime`, `hit_ip`, `hit_addr`, `hit_url`, `referrer`, `user_agent`, `sessionid`, `sesscount`) values ('%s','%s','%s','%s','%s','%s', '%s', %s);",
+	$query = sprintf("INSERT DELAYED INTO `sitehits` (`hit_datetime`, `hit_ip`, `hit_addr`, `hit_url`, `referrer`, `user_agent`, `sessionid`, `sesscount`) values ('%s','%s','%s','%s','%s','%s', '%s', %s);",
 		mysqli_real_escape_string($conn, DatePHPtoSQL(time())),
 		mysqli_real_escape_string($conn, $_SERVER['REMOTE_ADDR']),
 		mysqli_real_escape_string($conn, $_SERVER['REMOTE_HOST']),
