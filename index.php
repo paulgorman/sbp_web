@@ -22,6 +22,7 @@
 		case "artists":
 		case "event":
 		case "events":
+		case "images":
 			RecordHit();
 			ArtistPage();
 			Scripttime($starttime);

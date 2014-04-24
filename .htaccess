@@ -17,6 +17,7 @@ RewriteRule ^templates/skin_modern_silver/(.*) - [L]
 RewriteRule ^templates/skin_minimal_dark_round/(.*) - [L]
 RewriteRule ^favicon.ico - [L]
 RewriteRule ^sbp/(.*) - [L]
+RewriteRule ^sl.php - [L]
 
 RewriteRule ^[/]?$ index.php?page=home [QSA,L]
 
@@ -24,7 +25,7 @@ RewriteRule ^[/]?$ index.php?page=home [QSA,L]
 # literally /Artists or /artist/ or /artists/ will show all artists, but 
 # 	/artist/band_name or /artists/band_name or /Artist/Band_Name will show that one band
 # $page name and $url
-RewriteRule ^(event[s]?|artist[s]?)[/]?([a-zA-Z0-9_-]+)? index.php?page=$1&url=$2 [QSA,L,NC]
+RewriteRule ^(event[s]?|artist[s]?|images)[/]?([a-zA-Z0-9_-]+)? index.php?page=$1&url=$2 [QSA,L,NC]
 RewriteRule ^(category|catagories|categories|catagoreies|talent)[/]?([a-zA-Z0-9_-]+)? index.php?page=categories&url=$2 [QSA,L,NC] 
 
 # File upload progress bar
