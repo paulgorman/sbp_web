@@ -2454,16 +2454,18 @@ function AdminEditSubCategories($parent) {
 	);
 	$result = mysqli_query($conn,$query);
 	$subcategorieslist = array();
-	while ($row = mysqli_fetch_assoc($result)) {
-		$subcategorieslist[] = array(
-			"url" => $row['url'],
-			"category" => $row['subcategory'],
-			"description" => $row['description'],
-			"parent_cid" => $row['parent_cid']
-		);
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_assoc($result)) {
+			$subcategorieslist[] = array(
+				"url" => $row['url'],
+				"category" => $row['subcategory'],
+				"description" => $row['description'],
+				"parent_cid" => $row['parent_cid']
+			);
+		}
+		aasort($subcategorieslist,"category");
+		AdminShowSubCategories($subcategorieslist);
 	}
-	aasort($subcategorieslist,"category");
-	AdminShowSubCategories($subcategorieslist);
 }
 
 function AdminSelectCategories($aid = NULL) {
