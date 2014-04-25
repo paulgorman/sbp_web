@@ -1020,7 +1020,7 @@ function ShowAdminPage() {
 					AdminListArtistsByCategory();
 					break;
 				case "add_sub_category":
-					AdminSaveNewSubcCategory();
+					AdminSaveNewSubCategory();
 					AdminEditSingleCategory(GetCatUrlFromCID($_REQUEST['form_cid']));
 					break;
 				default:
@@ -2691,7 +2691,7 @@ function AdminSaveNewCategory() {
 	}
 }
 
-function AdminSaveNewSubcCategory() {
+function AdminSaveNewSubCategory() {
 	// save a NEW Sub-category
 	global $conn;
 	if (isEmpty($_REQUEST['form_category']) || isEmpty($_REQUEST['form_description'])) {
@@ -2719,9 +2719,9 @@ function AdminSaveNewSubcCategory() {
 		);
 		if (mysqli_query($conn,$query) === TRUE) {
 			echo "<div class='AdminSuccess'>Sub-Category <B>$category</B> [$url] Successfully Added.</div>";
-			foreach (array_keys($_REQUEST) as $key) {
-				unset ($_REQUEST[$key]);	// XXX: Uncool but sufficient way to empty the web form
-			}
+			unset ($_REQUEST['form_category']);	// XXX: Uncool but sufficient way to empty the web form
+			unset ($_REQUEST['form_description']);
+			unset ($_REQUEST['form_url']);
 		} else {
 			echo "<div class='AdminError'>Sub-Category <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
 		}
