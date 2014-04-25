@@ -1019,6 +1019,10 @@ function ShowAdminPage() {
 				case "search_category":
 					AdminListArtistsByCategory();
 					break;
+				case "add_sub_category":
+					AdminSaveNewSubcCategory();
+					AdminEditSingleCategory(GetCatUrlFromCID($_REQUEST['form_cid']));
+					break;
 				default:
 					AdminEditCategories();
 			}
@@ -2438,6 +2442,30 @@ function AdminEditCategories() {
 	AdminShowCategories($categorieslist);
 }
 
+function AdminEditSubCategories($parent) {
+	global $conn;
+	if (preg_match("/^[0-9]+$/",$parent)) {
+		$parent_cid = $parent;
+	} else {
+		$parent_cid = CategoryIDFromURL($parent);
+	}
+	$query = sprintf("SELECT * FROM `subcategories` WHERE `parent_cid` = '%s'",
+		mysqli_real_escape_string($conn,$parent_cid)
+	);
+	$result = mysqli_query($conn,$query);
+	$subcategorieslist = array();
+	while ($row = mysqli_fetch_assoc($result)) {
+		$subcategorieslist[] = array(
+			"url" => $row['url'],
+			"category" => $row['subcategory'],
+			"description" => $row['description'],
+			"parent_cid" => $row['parent_cid']
+		);
+	}
+	aasort($subcategorieslist,"category");
+	AdminShowSubCategories($subcategorieslist);
+}
+
 function AdminSelectCategories($aid = NULL) {
 	// for adding or editing an artist
 	// XXX: This does not respect user-defined priority/sequence order from webform or database
@@ -2489,6 +2517,16 @@ function CategoryNameFromURL($caturl) {
 	$row = mysqli_fetch_assoc($result);
 	mysqli_free_result($result);
 	return ($row['category']);
+}
+
+function CategoryIDFromURL($caturl) {
+	// simple turn categoryurl to cid
+	global $conn;
+	$query = sprintf("SELECT `cid` FROM `categories` WHERE `url` = '%s'", mysqli_real_escape_string($conn,$caturl));
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	mysqli_free_result($result);
+	return ($row['cid']);
 }
 
 function GetCatUrlFromCID($cid) {
@@ -2650,6 +2688,44 @@ function AdminSaveNewCategory() {
 		} else {
 			echo "<div class='AdminError'>Category Entry <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
 		}
+	}
+}
+
+function AdminSaveNewSubcCategory() {
+	// save a NEW Sub-category
+	global $conn;
+	if (isEmpty($_REQUEST['form_category']) || isEmpty($_REQUEST['form_description'])) {
+		echo "<div class='AdminError'>Please fill in Category Name, Description and the Category Graphic</div>";
+	} else {
+		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
+		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
+		if (isEmpty($url)) {
+			$url = MakeURL(strtolower($category));
+		}
+		if (CheckForFiles()) {
+			list ($fileid, $filename) = SaveFile("artist")[0]; // for Categories, only one image uploaded.  // XXX: I suck, just calling this an artist image
+			$newfileid = ResizeImage($fileid,"artist"); // 600x400
+		} else {
+			$error = "<div class='AdminError'>No Sub-category image uploaded!</div>";
+		}
+		$parent_cid = preg_replace("/[^0-9]/","",$_REQUEST['form_cid']);
+		$query = sprintf("INSERT INTO `subcategories` (`url`,`subcategory`,`description`,`parent_cid`,`image_filename`,`image_id`) VALUES ('%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($conn,$url),
+			mysqli_real_escape_string($conn,$category),
+			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description'])))),
+			mysqli_real_escape_string($conn,$parent_cid),
+			mysqli_real_escape_string($conn,$filename),
+			mysqli_real_escape_string($conn,$newfileid)
+		);
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'>Sub-Category <B>$category</B> [$url] Successfully Added.</div>";
+			foreach (array_keys($_REQUEST) as $key) {
+				unset ($_REQUEST[$key]);	// XXX: Uncool but sufficient way to empty the web form
+			}
+		} else {
+			echo "<div class='AdminError'>Sub-Category <B>$category</B> [$url] Failed to Save!<br>". mysqli_error($conn) ."</div>";
+		}
+		echo $error;
 	}
 }
 

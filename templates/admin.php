@@ -553,6 +553,51 @@ function AdminShowCategories ($categorieslist) {
 	<?
 }
 
+function AdminShowSubCategories ($categorieslist) {
+	// asdf make sure $categorieslist array has a key/value for parent_cid
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemURL">URL</div>
+				<div class="AdminCategoryListItemCategory">Sub-Category</div>
+				<div class="AdminCategoryListItemDescription">Description</div>
+			</div>
+			<div class="clear"></div>
+			<? foreach ($categorieslist as $catkey => $catvalues) { ?>
+				<div class="AdminCategoryListRow">
+					<form method="POST" action="/admin/categories_list" name="edit<?= $catvalues['url']; ?>">
+						<div class="AdminCategoryListItemURL" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['url'] ?></div>
+						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['category'] ?></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;"><?=$catvalues['description'] ?></div>
+						<div class="AdminCategoryListItemIcon" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;">
+							<input type="hidden" name="parent_cid" value="<?= $catvalues['parent_cid']; ?>">
+							<input type="hidden" name="categoryurl" value="<?= $catvalues['url']; ?>">
+							<input type="hidden" name="function" value="edit_subcategory">
+							<a href="javascript:;" onclick="document.forms['edit<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategoryEditIcon" title="Edit '<?= $catvalues['category'] ?>' Sub-Category"></a>
+						</div> <!-- class="AdminCategoryListItem" -->
+					</form>
+					<div class="AdminCategoryListItemIcon">
+						<form method="POST" action="/admin/categories_list" name="del<?= $catvalues['url']; ?>">
+							<input type="hidden" name="parent_cid" value="<?= $catvalues['parent_cid']; ?>">
+							<input type="hidden" name="categoryurl" value="<?= $catvalues['url']; ?>">
+							<input type="hidden" name="function" value="del_subcategory">
+							<a href="javascript:;" onclick="document.forms['del<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategoryRemoveIcon" title="Remove '<?= $catvalues['category']; ?>' Sub-Category"></a>
+						</form>
+					</div>
+					<div class="AdminCategoryListItemIcon">
+						<form method="POST" action="/admin/categories_list" name="search<?= $catvalues['url']; ?>">
+							<input type="hidden" name="parent_cid" value="<?= $catvalues['parent_cid']; ?>">
+							<input type="hidden" name="categoryurl" value="<?= $catvalues['url']; ?>">
+							<input type="hidden" name="function" value="search_subcategory">
+							<a href="javascript:;" onclick="document.forms['search<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategorySearchIcon" title="Show all artists in the '<?= $catvalues['category']; ?>' Sub-Category"></a>
+						</form>
+					</div>
+				</div>  <!-- class="AdminCategoryListRow" -->
+			<? } ?>
+		</div> <!-- AdminCategoryListContainer -->
+	<?
+}
+
 function AdminShowDeleteConfirmation($id,$desc,$urlDo,$urlCancel,$nextfunction) {
 	?>
 		<div class="AdminWarning">
@@ -644,8 +689,11 @@ function AdminEditCategory($dataarray) {
 			</div> <!-- AdminCategoryListContainer -->
 		</form>
 
+		<? AdminEditSubCategories($dataarray['cid']); ?>
+
 		<form method="POST" action="/admin/categories_list" enctype="multipart/form-data">
-			<input type="hidden" name="function" value="add_sub_category">
+			<input type="hidden" name="function" value="add_sub_category" style="display:none">
+			<input method="hidden" name="form_cid" value="67" style="display:none">
 			<div class="AdminCategoryListingAddContainer">
 				<div class="AdminCategoryListingAddHeader">ADD NEW SUB-CATEGORY</div>
 				<div class="AdminCategoryListingAddItem">Sub-Category Name:</div>
