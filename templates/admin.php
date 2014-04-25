@@ -627,11 +627,14 @@ function AdminEditCategory($dataarray) {
     		<div class="AdminCategoryListingEditItem">Highlighted</div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" id="is_highlighted" onclick="showHide();" name="is_highlighted" class="regular-checkbox big-checkbox" <?= ($dataarray['is_highlighted']?'CHECKED ':'') ?>/><label title="Highlighted in the Featured Carousel" for="is_highlighted"></label>
-				<input name="carousel_image" id="carousel_image" style="visibility: hidden;" class="filesToUpload" size="40" type="file" multiple="">
-				<? if (!isEmpty($dataarray['carousel_id'])) { ?>
-					<img src="/i/category/<?= $dataarray['carousel_id']; ?>">
-				<? } ?>
+					<input name="carousel_image" id="carousel_image" style="visibility: hidden;" class="filesToUpload" size="40" type="file" multiple="">
 				</div>
+				<div class="clear"></div>
+				<div>asdf</div>
+		<div class="clear"></div>
+				<? if (!isEmpty($dataarray['carousel_id'])) { ?>
+					<div class="AdminCategoryListingEditItem"><img border="1" src="/i/category/<?= $dataarray['carousel_id']; ?>"></div>
+				<? } ?>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddSubmit">
 					<input type="submit" value="Update Category">
@@ -639,6 +642,27 @@ function AdminEditCategory($dataarray) {
 				</div>
 				<div class="clear"></div>
 			</div> <!-- AdminCategoryListContainer -->
+		</form>
+
+		<form method="POST" action="/admin/categories_list" enctype="multipart/form-data">
+			<input type="hidden" name="function" value="add_sub_category">
+			<div class="AdminCategoryListingAddContainer">
+				<div class="AdminCategoryListingAddHeader">ADD NEW SUB-CATEGORY</div>
+				<div class="AdminCategoryListingAddItem">Sub-Category Name:</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_category" value="<?= MakeCase(htmlspecialchars(trim($_REQUEST['form_category']))); ?>" size="20"></div>
+				<div class="AdminCategoryListingAddItem">URL:</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" placeholder="Optional" name="form_url" value="<?= htmlspecialchars(trim($_REQUEST['form_url'])); ?>" size="15" style="text-transform: lowercase"></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">Description:</div>
+				<div class="AdminCategoryListingAddValue"><input type="text" name="form_description" value="<?= htmlspecialchars(trim($_REQUEST['form_description'])); ?>" size="40"></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem">Sub-Category Logo:</div>
+				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple=""></div>
+				<div class="AdminCategoryListItemURL">600x400 PNG/JPG</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Sub-Category"></div>
+				<div class="clear"></div>
+			</div> <!-- class="AdminCategoryListingAddContainer" -->
 		</form>
 	<?
 }

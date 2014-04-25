@@ -120,3 +120,15 @@ CREATE TABLE `sbpweb`.`admins` (
 	`username` VARCHAR(16) NOT NULL PRIMARY KEY,
 	`password` VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
+
+CREATE TABLE `sbpweb`.`subcategories` (
+	`subid` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`subcategory` VARCHAR(40) NOT NULL UNIQUE,
+	`url` VARCHAR(50) NOT NULL UNIQUE,
+	`parent_cid` INT NOT NULL,
+	`description` VARCHAR(250),
+	`image_filename` VARCHAR(30) NULL,
+	`image_id` CHAR(17) NULL,
+	INDEX(`parent_cid`),
+	INDEX(`url`)
+) ENGINE=InnoDB;
