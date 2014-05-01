@@ -4,6 +4,7 @@
  * By Markus Junginger, http://jars.de
  * modified by Markus Knigge for the windows sidebar server gadget
  */
+date_default_timezone_set('America/Los_Angeles');
 header("Content-Type: application/rss+xml"); 
 $MJ_LINK='http://'.$_SERVER['HTTP_HOST'].$_SERVER["PHP_SELF"];
 ?>
@@ -23,7 +24,7 @@ $MJ_LINK='http://'.$_SERVER['HTTP_HOST'].$_SERVER["PHP_SELF"];
     } else {
     	$load=@file_get_contents('/proc/loadavg');
     }
-    if(!$load) {
+    if(!$loadArray) {
       $load= 'Sorry, no load average available for your server';
       $info = 'PHP >= 5.1.3 or access to /proc/loadavg is required.';
     } 
