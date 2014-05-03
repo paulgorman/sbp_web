@@ -466,10 +466,12 @@ function getArtistCategory($aid) {
 
 function FaceBookLike() {
 	$url = CurPageURL();                                                                                                                                                         
-	?>
-		<div id="fb-root"></div>
-		<div style="margin-bottom: 10px;" class="fb-like" data-colorscheme="dark" data-href="<?= $url; ?>" data-width="320" data-layout="standard" data-action="like" data-show-faces="false" data-share="true"></div>
-	<?
+	if (getDntStatus() === FALSE) {
+		?>
+			<div id="fb-root"></div>
+			<div style="margin-bottom: 10px;" class="fb-like" data-colorscheme="dark" data-href="<?= $url; ?>" data-width="320" data-layout="standard" data-action="like" data-show-faces="false" data-share="true"></div>
+		<?
+	}
 }
 
 function CategoriesList() {
@@ -3455,4 +3457,10 @@ function AltClosestWord($misspelled,$suggestions) {
 	//echo $closestword;
 	//exit;
 	return($closestword);
+}
+
+function getDntStatus() {
+	// returns TRUE if Do-Not-Track is on and is equal to 1,
+	// returns FALSE if DNT is unset or not equal to 1.
+	return (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1);
 }
