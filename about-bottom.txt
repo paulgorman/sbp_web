@@ -7,6 +7,7 @@
 <a href="mailto:joze@sbeyer.com" class="box artistsListBox managementListBox blue fl"><span class="artistsListBoxTextName">Joze Perez</span><br><em>Agent</em><br> <span class="managementEmail">joze@sbeyer.com</span></a>
 <a href="mailto:tech@sbeyer.com" class="box artistsListBox managementListBox blue fl"><img src="/templates/sbp/pg.png" style="overflow:hidden; margin-top: -5px!important; margin-left 5px; margin-right: 25px!important;" valign="top" align="left" hspace="2" vspace="2" width="35%"><span class="artistsListBoxTextName">Paul Gorman</span><br><em>Technical Services</em><br> <span class="managementEmail">paul@sbeyer.com</span></a>
 <a href="mailto:tech@sbeyer.com" class="box artistsListBox managementListBox blue fl"><img src="/templates/sbp/lv.png" style="overflow:hidden; margin-top: -5px;" valign="top" align="left" hspace="2" vspace="2" width="40%"><span class="artistsListBoxTextName">Levi Velasquez</span><br><em>Media Services</em><br> <span class="managementEmail">levi@sbeyer.com</span></a>
+<a href="mailto:veronica@sbeyer.com" class="box artistsListBox managementListBox blue fl"><span class="artistsListBoxTextName">Veronica Tirado</span><br><em>PR &amp; Social Communications</em><br> <span class="managementEmail">veronica@sbeyer.com</span></a>
 <div class="clearfix"></div>
 
 
