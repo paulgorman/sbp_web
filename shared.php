@@ -739,18 +739,20 @@ function ProductionPage() {
 function EventPage() {
 	require_once("templates/header.php");
 	require_once("templates/Parsedown/Parsedown.php");
-	$content = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("event.txt")));
+	$contentTop = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("event-top.txt")));
+	$contentBottom = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("event-bottom.txt")));
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
-	$meta['title'] = "Special Events - Steve Beyer Productions";
+	$meta['title'] = "Weddings &amp; Special Events - Steve Beyer Productions";
 	$meta['url'] = CurPageURL();
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	htmlHeader($meta);
 	htmlMasthead($meta);
 	htmlNavigation($meta);
-	htmlWavesStart();
-	htmlContent($content);
+	htmlWavesStartShort();
+	htmlContent($contentTop);
 	htmlBodyStart();
+	htmlContent($contentBottom);
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
 }
@@ -774,6 +776,7 @@ function DecorPage() {
 	htmlFooter($meta);
 }
 
+/* Removed 20140603 
 function WeddingPage() {
 	require_once("templates/header.php");
 	require_once("templates/Parsedown/Parsedown.php");
@@ -792,6 +795,7 @@ function WeddingPage() {
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
 }
+*/
 
 function AboutPage() {
 	require_once("templates/header.php");

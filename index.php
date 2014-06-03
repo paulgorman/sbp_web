@@ -39,10 +39,6 @@
 			RecordHit();
 			DecorPage();
 			break;
-		case "wedding":
-			RecordHit();
-			WeddingPage();
-			break;
 		case "about":
 			RecordHit();
 			AboutPage();

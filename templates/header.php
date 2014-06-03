@@ -72,9 +72,8 @@ function htmlNavigation($meta) {
 					<li><a href="/" title="Home Page">Home</a></li>
 					<li><a href="/talent/" title="Entertainment and Talent Categories List">Talent</a></li>
 					<li><a href="/production/" title="Production Management, Rigging, Lighting, Sound, Video, Rentals, and Equipment">Production</a></li>
-					<li><a href="/special/" title="Planning and Preparation of Special Events">Event Planning</a></li>
+					<li><a href="/special/" title="Planning and Preparation of Weddings &amp; Special Events">Weddings/Events</a></li>
 					<li><a href="/decor/" title="Furnishings and Accents">Decor</a></li>
-					<li><a href="/wedding/" title="Special Requirements and Wishes of Beautiful Weddings">Weddings</a></li>
 					<li><a href="/about/" title="Contact, Biographical, and Support Information">About Us</a></li>
 				</ul>
 			</nav>
@@ -85,9 +84,8 @@ function htmlNavigation($meta) {
 							<li><a href="/" title="Home Page">Home</a></li>
 							<li><a href="/talent/" title="Entertainment and Talent Categories List">Talent</a></li>
 							<li><a href="/production/" title="Production Management, Rigging, Lighting, Sound, Video, Rentals, and Equipment">Production</a></li>
-							<li><a href="/special/" title="Planning and Preparation of Special Events">Event Planning</a></li>
+							<li><a href="/special/" title="Planning and Preparation of Weddings &amp; Special Events">Weddings/Events</a></li>
 							<li><a href="/decor/" title="Furnishings and Accents">Decor</a></li>
-							<li><a href="/wedding/" title="Special Requirements and Wishes of Beautiful Weddings">Weddings</a></li>
 							<li><a href="/about/" title="Contact, Biographical, and Support Information">About Us</a></li>
 						</ul>
 					</li>
