@@ -103,6 +103,13 @@ function htmlWavesStart() {
 	<?
 }
 
+function htmlWavesStartShort() {
+	?>
+	<!-- dark waves -->
+	<div class="dark carouselFull col12">
+	<?
+}
+
 function htmlWavesFullStart() {
 	?>
 	<!-- dark waves artist page -->

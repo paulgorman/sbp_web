@@ -718,7 +718,8 @@ function HomePage() {
 function ProductionPage() {
 	require_once("templates/header.php");
 	require_once("templates/Parsedown/Parsedown.php");
-	$content = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("production.txt")));
+	$contentTop = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("production-top.txt")));
+	$contentBottom = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("production-bottom.txt")));
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Production Staging, Projection, Lighting, Sound Reinforcement - Steve Beyer Productions";
@@ -727,9 +728,10 @@ function ProductionPage() {
 	htmlHeader($meta);
 	htmlMasthead($meta);
 	htmlNavigation($meta);
-	htmlWavesStart();
-	htmlContent($content);
+	htmlWavesStartShort();
+	htmlContent($contentTop);
 	htmlBodyStart();
+	htmlContent($contentBottom);
 	//htmlBreadcrumb($meta);
 	htmlFooter($meta);
 }
