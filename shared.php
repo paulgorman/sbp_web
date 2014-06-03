@@ -2070,7 +2070,8 @@ function AdminArtistListSearchResults() {
 		$search = htmlspecialchars(strip_tags(strtolower(trim($_REQUEST['q']))));
 	}
 	$query = sprintf(
-		"SELECT * FROM `artists` WHERE `name` LIKE '%%%s%%' ORDER BY `name`",
+		"SELECT * FROM `artists` WHERE `name` LIKE '%%%s%%' OR `alt_url` LIKE '%%%s%%' ORDER BY `name`",
+		mysqli_real_escape_string($conn,$search),
 		mysqli_real_escape_string($conn,$search)
 	);
 	$result = mysqli_query($conn,$query);
