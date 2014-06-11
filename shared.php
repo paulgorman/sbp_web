@@ -2064,13 +2064,22 @@ function AdminListArtistByStyle() {
 
 function AdminArtistListSearchResults() {
 	global $conn;
+	// ASDF
 	if (isEmpty($_REQUEST['q'])) {
 		$search = htmlspecialchars(strip_tags(strtolower(trim($_REQUEST['listpage']))));
 	} else {
 		$search = htmlspecialchars(strip_tags(strtolower(trim($_REQUEST['q']))));
 	}
+	$search = preg_replace('/[\W]+/', '', $search);	// remove punctuation and dashes
 	$query = sprintf(
-		"SELECT * FROM `artists` WHERE `name` LIKE '%%%s%%' OR `alt_url` LIKE '%%%s%%' ORDER BY `name`",
+		"
+			SELECT * FROM `artists` WHERE 
+			REPLACE(REPLACE(`name`,' ',''),'-','') LIKE '%%%s%%' OR 
+			REPLACE(REPLACE(`alt_url`,'-',''),'_','') LIKE '%%%s%%' OR 
+			REPLACE(REPLACE(`display_name`,'.',''),'-','') LIKE '%%%s%%' 
+			ORDER BY `name`
+		",
+		mysqli_real_escape_string($conn,$search),
 		mysqli_real_escape_string($conn,$search),
 		mysqli_real_escape_string($conn,$search)
 	);

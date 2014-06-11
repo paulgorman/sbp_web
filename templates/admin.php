@@ -322,7 +322,9 @@ function AdminArtistListPageBySearchResult($artists,$page) {
 					<input type="hidden" name="function" value="edit">
 					<input type="hidden" name="aid" value="<?= $values['aid']; ?>">
 					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
-						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
+						<div class="AdminCategoryListItemCategory"><a href="/artists/<?= $values['url']; ?>" title="<?= $values['url']; ?>"><?= $values['name'] ?></a></div>
+						<div class="AdminCategoryListItemIcon"><a href="/artists/<?= $values['alt_url']; ?>" title="<?= $values['alt_url']; ?>">(<?= $values['display_name'] ?>)</a></div>
+						<div class="AdminCategoryListItemIcon"></div>
 						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= $values['slug'] ?></div>
 						<div class="AdminCategoryListItemCategory" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;"><?= nicetime($values['last_updated']); ?></div>
 						<? AdminArtistListIconColumn($values); ?>
