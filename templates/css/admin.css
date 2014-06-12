@@ -297,15 +297,24 @@ td {
 .AdminCategoryListItemCategory {
 	padding: 4px;
 	float: left;
-	width: 15em;
+	width: 17em;
+	color: #444;
+}
+
+.AdminCategoryListItemLastUpdated {
+	padding: 4px;
+	float: left;
+	width: 12em;
 	color: #444;
 }
 
 .AdminCategoryListItemDescription {
 	padding: 4px;
 	float: left;
-	width: 40em;
+	width: 36em;
 	color: #444;
+	height: 1em;
+	overflow: hidden;
 }
 
 .AdminCategoryListItemIcon {
@@ -313,6 +322,14 @@ td {
 	width: 22px;
 	height: 1.5em;
 	vertical-align: top;
+}
+.AdminCategoryListItemShort {
+	float: left;
+	padding: 4px;
+	color: #444;
+	width: 5em;
+	height: 1em;
+	overflow: hidden;
 }
 
 .AdminCategoryRemoveIcon {
