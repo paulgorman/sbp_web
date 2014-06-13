@@ -1283,6 +1283,7 @@ function ObfuscateArtistNameAutomatically($name) {
 	// crappy way of guessing a band's obfuscated "display" name: first whole word, then first letter of each additional word
 	// unless only two words, then initials all the way
 	// logic subject to be totally changed on SB's whim
+	$name = preg_replace("/[^a-zA-Z0-9\/\\_|+ ]/", '', $name);  // do not want "'" in names like "'N Demand"
 	$words = explode(" ", $name);
 	$display_name = "";
 	$counter = 0;
@@ -1292,7 +1293,7 @@ function ObfuscateArtistNameAutomatically($name) {
 		} elseif (count($words) == 2) {
 			foreach ($words as $word) {
 				$display_name .= strtoupper(substr($word,0,1));
-				$display_name .= ".";
+				$display_name .= ". ";
 			}
 		} elseif (count($words) >= 3) {
 			foreach ($words as $word) {
@@ -1313,6 +1314,28 @@ function ObfuscateArtistNameAutomatically($name) {
 		}
 	}
 	return (makeCase(trim($display_name)));
+}
+
+function UniqueObfuscatedArtistName($name) {
+	// roll through teh database and choose a unique obfsd name for this artist
+	// prevents the "AR" =~ "Ashley Red | Al Robinson" iss.
+	global $conn;
+	$query = sprintf("SELECT `display_name` FROM `artists` WHERE `display_name` = '%s'", mysqli_real_escape_string($conn,$name));
+	$result = mysqli_query($conn,$query);
+	if (mysqli_num_rows($result) == 0) {
+		return ($name);
+	} else {
+		// go loop for a new alturl
+		$number = 1;
+		$basename = $name; // increment the number, not append another digit
+		while (!$done) {
+			$name = "$basename $number"; // HEY THERES A SPACE HERE 
+			$query = sprintf("SELECT `display_name` FROM `artists` WHERE `display_name` = '%s'", mysqli_real_escape_string($conn,$name));
+			$result = mysqli_query($conn,$query);
+			(mysqli_num_rows($result) == 0)? $done++ : $number++; 
+		}
+		return ($name);
+	}
 }
 
 function AdminArtistSaveSingle() {
@@ -1373,7 +1396,7 @@ function AdminArtistSaveSingle() {
 	}
 	if ($display_name !== $artistinfo['display_name']) {
 			$artistsave['alt_url'] = GetAltUrl(MakeURL(preg_replace("/\.\s/","",strtolower($display_name))));
-			$artistsave['display_name'] = $display_name;
+			$artistsave['display_name'] = UniqueObfuscatedArtistName($display_name);
 	}
 	// alt-url standalone change
 	if (isEmpty($artistsave['alt_url'])) {
@@ -1746,9 +1769,9 @@ function AdminArtistSaveNew() {
 		$bio = htmlspecialchars(convert_smart_quotes(trim($_REQUEST['bio'])));
 	}
 	if (isEmpty($_REQUEST['display_name'])) {
-		$display_name = ObfuscateArtistNameAutomatically(htmlspecialchars(convert_smart_quotes(trim($_REQUEST['name']))));
+		$display_name = UniqueObfuscatedArtistName(ObfuscateArtistNameAutomatically(htmlspecialchars(convert_smart_quotes(trim($_REQUEST['name'])))));
 	} else {
-		$display_name = htmlspecialchars(makeCase(convert_smart_quotes(trim($_REQUEST['display_name']))));
+		$display_name = UniqueObfuscatedArtistName(htmlspecialchars(makeCase(convert_smart_quotes(trim($_REQUEST['display_name'])))));
 	}
 	$use_display_name = isset($_REQUEST['use_display_name']);
 	$is_active = isset($_REQUEST['is_active']);
@@ -1858,8 +1881,9 @@ function GetAltUrl($alturl) {
 	} else {
 		// go loop for a new alturl
 		$number = 1;
+		$basename = $alturl; // increment the number, not append another digit
 		while (!$done) {
-			$alturl = "$alturl$number";
+			$alturl = "$basename$number";
 			$query = sprintf("SELECT `alt_url` FROM `artists` WHERE `alt_url` = '%s'", mysqli_real_escape_string($conn,$alturl));
 			$result = mysqli_query($conn,$query);
 			(mysqli_num_rows($result) == 0)? $done++ : $number++; 
@@ -2064,7 +2088,6 @@ function AdminListArtistByStyle() {
 
 function AdminArtistListSearchResults() {
 	global $conn;
-	// ASDF
 	if (isEmpty($_REQUEST['q'])) {
 		$search = htmlspecialchars(strip_tags(strtolower(trim($_REQUEST['listpage']))));
 	} else {
@@ -3291,7 +3314,7 @@ function MakeURL($str, $replace=array(), $delimiter='-') {
 	$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
 	$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
 	$clean = strtolower(trim($clean, '-'));
-	$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
+	$clean = trim(preg_replace("/[\/_|+ -]+/", $delimiter, $clean));
 	return $clean;
 }
 
