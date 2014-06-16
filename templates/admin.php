@@ -503,6 +503,13 @@ function AdminShowCategories ($categorieslist) {
 							<a href="javascript:;" onclick="document.forms['search<?= $catvalues['url']; ?>'].submit(); return false;" class="AdminCategorySearchIcon" title="Show all artists in the '<?= $catvalues['category']; ?>' Category"></a>
 						</form>
 					</div>
+					<?
+						if ($catvalues['subs'] > 0) {
+							echo "<div class='AdminCategoryPlusIcon' title='Sub-Categories'></div>";
+						} else {
+							echo "<div class='AdminCategoryEmptyIcon'></div>";
+						}
+					?>
 				</div>  <!-- class="AdminCategoryListRow" -->
 			<? } ?>
 		</div> <!-- AdminCategoryListContainer -->

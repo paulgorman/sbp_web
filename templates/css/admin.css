@@ -412,6 +412,16 @@ td {
 	float: left;
 }
 
+.AdminCategoryPlusIcon {
+	background-image: url('/templates/icons/Add.png');
+	background-size: 18px;
+	background-repeat: no-repeat;
+	padding-left: 22px;
+	height: 1.5em;
+	vertical-align:top;
+	float: left;
+}
+
 .AdminCategoryInactiveIcon {
 	background-image: url('/templates/icons/Grey.png');
 	background-size: 18px;

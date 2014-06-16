@@ -2470,12 +2470,22 @@ function AdminEditCategories() {
 	$result = mysqli_query($conn,$query);
 	$categorieslist = array();
 	while ($row = mysqli_fetch_assoc($result)) {
+		// does this category have subcategories?
+		$subs = 0;
+		$query = sprintf("SELECT `subid` FROM `subcategories` WHERE `parent_cid` = '%s'",
+			mysqli_real_escape_string($conn,$row['cid'])
+		);
+		$subresult = mysqli_query($conn,$query);
+		if (mysqli_num_rows($subresult) > 0) {
+			$subs++;
+		}
 		$categorieslist[] = array(
 			"url" => $row['url'],
 			"category" => $row['category'],
 			"description" => $row['description'],
 			"published" => $row['published'],
-			"highlighted" => $row['is_highlighted']
+			"highlighted" => $row['is_highlighted'],
+			"subs" => $subs
 		);
 	}
 	mysqli_free_result($result);
