@@ -10,13 +10,11 @@ function htmlHomePageTop () {
 function htmlHomePageContent($content) {
 	?>
 		<div class="content">
-			<div class="col2">
+			<div class="col7 homeBody">
 				<img src="/templates/sbp/1.jpg">
-			</div>
-			<div class="col6 homeBody">
 				<p><?= $content['body']; ?></p>
 			</div>
-			<div class="col4 blue box homeNews">
+			<div class="col5 blue box homeNews">
 				<h3>News</h3>
 				<p><?= $content['news']; ?></p>
 			</div>
