@@ -25,13 +25,16 @@ function htmlHomePageContent($content) {
 
 function htmlHomePageCategories($categories) {
 	?>
-		<hr>
-		<div class="content">
-			<div class="homeCategories">
+		<div id="sideDrawer" class="closed">
+			<div class="button"></div>
+			<div class="container">
+				<h1>Categories</h1>
+				<hr />
+				<ul>
 	<?
 	foreach (array_keys($categories) as $key) {
 		$link = sprintf(
-			"<div class=\"col2\"><a href=\"/category/%s\" title=\"%s\">%s</a></div>\n",
+			"<li><a href=\"/category/%s\" title=\"%s\">%s</a></li>\n",
 			$categories[$key]['url'],
 			$categories[$key]['category'] . " - " . $categories[$key]['description'],
 			$categories[$key]['category']
@@ -39,10 +42,30 @@ function htmlHomePageCategories($categories) {
 		echo $link;
 	}
 	?>
+				</ul>
+				<div class="bg"></div>
 			</div>
-			<div class="clearfix"></div>
 		</div>
-		<hr><br>
+	<?
+}
+
+function htmlHomePageCategoriesJS() {
+	?>
+		<script>
+			$('#sideDrawer .button').click(function(){
+				$('#sideDrawer').toggleClass('opened');
+				$('#sideDrawer').toggleClass('closed');
+			});
+			$('nav').hover(function(){
+				if ($(window).width() < 900){
+					$('#sideDrawer').stop().fadeOut(250);	
+				}
+			}, function(){
+				if ($(window).width() < 900){
+					$('#sideDrawer').stop().fadeIn(250);	
+				}
+			});
+		</script>
 	<?
 }
 

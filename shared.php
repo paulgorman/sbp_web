@@ -705,13 +705,14 @@ function HomePage() {
 	htmlMasthead($meta);
 	htmlNavigation($meta);
 	htmlWavesStart();
-	homePageCarousel(gatherHighlightedArtists());
+	//ASDF homePageCarousel(gatherHighlightedArtists());
 	htmlBodyStart();
 	htmlHomePageTop();
 	htmlHomePageCategories(allPublicCategories());
 	htmlHomePageContent($content);
 	//htmlBreadcrumb($meta);
-	fwdConsCarousel(); // dump this stuff in at the bottom of html
+	//fwdConsCarousel(); // dump this stuff in at the bottom of html
+	htmlHomePageCategoriesJS();
 	htmlFooter($meta);
 }
 

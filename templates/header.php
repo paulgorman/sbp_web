@@ -46,6 +46,7 @@ function htmlHeader($dataArray) {
 		<? if (isset($dataArray['css'])) { foreach ($dataArray['css'] as $css) { ?> 
 			<link rel="stylesheet" href="/templates/css/<?= $css; ?>" />
 		<? } } ?>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<? if (isset($dataArray['js'])) { foreach ($dataArray['js'] as $js) { ?> 
 			<script type="text/javascript" src="/templates/js/<?= $js; ?>"></script>
 		<? } } ?>
