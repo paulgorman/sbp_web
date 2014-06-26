@@ -825,7 +825,7 @@ a.showLink:hover, a.hideLink:hover {
 	position: fixed;
 	z-index: 100;
 	width: 200px;
-	height: 498px;
+	height: 527px;
 	top: 50%;
 	left: 0;
 	margin-top: -239px;	
@@ -880,9 +880,9 @@ a.showLink:hover, a.hideLink:hover {
 	z-index:10;
 	text-transform:uppercase;
 	font-size: 20px !important;
-	padding-left: 20px;
-	padding-bottom: 4px;
-	padding-top: 8px;
+	padding-left: 21px;
+	padding-bottom: 2px;
+	padding-top: 6px;
 	margin:0;
 	font-family: 'Droid Sans', sans-serif;
 	font-style:normal;
@@ -899,7 +899,7 @@ a.showLink:hover, a.hideLink:hover {
 	z-index:10;
 	font-weight: bold;
 	line-height: 1.25em;
-	margin-top: 12px;	
+	margin-top: 8px;	
 	list-style: none;	
 }
 #sideDrawer .container li{
@@ -933,7 +933,7 @@ a.showLink:hover, a.hideLink:hover {
 	-webkit-box-shadow: none;
 	box-shadow:         none;	
 }
-@media all and (max-height:498px){
+@media all and (max-height:527px){
 	#sideDrawer{
 		top:0;
 		margin-top:0;
