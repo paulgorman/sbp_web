@@ -832,7 +832,7 @@ function gatherHighlightedArtists() {
 		FROM `artists`
 		LEFT OUTER JOIN `media` ON `media`.`aid` = `artists`.`aid`
 		WHERE `artists`.`is_active` = 1 AND `artists`.`is_highlighted` = 1 AND `artists`.`is_searchable` = 1
-		AND `media`.`viewable` = 1 AND `media`.`is_highlighted` = 1 ORDER BY RAND() LIMIT 8";
+		AND `media`.`viewable` = 1 AND `media`.`is_highlighted` = 1 ORDER BY RAND()";
 	$result = mysqli_query($conn,$query);
 	$artists = array();
 	while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {

@@ -171,7 +171,7 @@ function homePageHighlightedGalleryJS() {
 		<script>
 		$(document).ready(function(){
 			$("#photoGrid").justifiedGallery({
-				lastRow: 'justify',
+				lastRow: 'hide',
 				rowHeight: 200,
 				captions: false,
 				margins: 15
