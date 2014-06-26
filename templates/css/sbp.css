@@ -825,7 +825,7 @@ a.showLink:hover, a.hideLink:hover {
 	position: fixed;
 	z-index: 100;
 	width: 200px;
-	height: 478px;
+	height: 498px;
 	top: 50%;
 	left: 0;
 	margin-top: -239px;	
@@ -879,10 +879,10 @@ a.showLink:hover, a.hideLink:hover {
 	position:relative;
 	z-index:10;
 	text-transform:uppercase;
-	font-size: 22px !important;
+	font-size: 20px !important;
 	padding-left: 20px;
-	padding-bottom: 10px;
-	padding-top: 12px;
+	padding-bottom: 4px;
+	padding-top: 8px;
 	margin:0;
 	font-family: 'Droid Sans', sans-serif;
 	font-style:normal;
@@ -912,8 +912,8 @@ a.showLink:hover, a.hideLink:hover {
 	left:0;
 	width:100%;
 	height:100%;
-	opacity: .98;
-	filter: alpha(opacity=.98);	
+	opacity: .88;
+	filter: alpha(opacity=.88);	
 	background: #1b1927;
 	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJod…IgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=);
 	background: -moz-linear-gradient(top, #1b1927 0%, #1a1929 5%, #1a1826 17%, #171723 21%, #171522 36%, #13131f 40%, #14121f 49%, #13111c 49%, #12101b 53%, #12121c 62%, #10101a 65%, #100e19 100%);
@@ -933,7 +933,7 @@ a.showLink:hover, a.hideLink:hover {
 	-webkit-box-shadow: none;
 	box-shadow:         none;	
 }
-@media all and (max-height:478px){
+@media all and (max-height:498px){
 	#sideDrawer{
 		top:0;
 		margin-top:0;
