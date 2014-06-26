@@ -700,18 +700,21 @@ function HomePage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	$meta['css'][] = "skin_modern_silver.css";
 	//$meta['js'][] = "FWDRoyal3DCarousel.js";
-	$meta['js'][] = "FWDRoyal3DCarousel_uncompressed.js";
+	//$meta['js'][] = "FWDRoyal3DCarousel_uncompressed.js";
+	$meta['js'][] = "justifiedGallery.js";
 	htmlHeader($meta);
 	htmlMasthead($meta);
 	htmlNavigation($meta);
-	htmlWavesStart();
-	//ASDF homePageCarousel(gatherHighlightedArtists());
+	htmlWavesFullStart();
+	//homePageCarousel(gatherHighlightedArtists());
+	homePageHighlightedGallery(gatherHighlightedArtists());
 	htmlBodyStart();
 	htmlHomePageTop();
 	htmlHomePageCategories(allPublicCategories());
 	htmlHomePageContent($content);
 	//htmlBreadcrumb($meta);
 	//fwdConsCarousel(); // dump this stuff in at the bottom of html
+	homePageHighlightedGalleryJS();
 	htmlHomePageCategoriesJS();
 	htmlFooter($meta);
 }

@@ -144,3 +144,40 @@ function homePageCarousel($artists) {
 		</ul><!-- /CarouselPlaylist -->
 	<?
 }
+
+function homePageHighlightedGallery($artists) {
+	?>
+		<div class="highlightedGallery">
+			<div id="photoGrid">
+		<?
+			foreach (array_keys($artists) as $key) {
+				?><a class="photo" href="/artist/<?= $artists[$key]['url']; ?>" data-target="_self">
+					<img src="/i/artist/<?= $artists[$key]['filename']; ?>" alt="<?= $artists['name']; ?>"/>
+					<div class="caption">
+						<div class="main"><?= $artists[$key]['name']; ?></div>
+						<div class="subCaption"><?= $artists[$key]['slug']; ?></div>
+					</div>
+				</a>
+				<?
+			}
+		?>
+			</div>
+		</div>
+	<?
+}
+
+function homePageHighlightedGalleryJS() {
+	?>
+		<script>
+		$(document).ready(function(){
+			$("#photoGrid").justifiedGallery({
+				lastRow: 'justify',
+				rowHeight: 200,
+				captions: false,
+				margins: 15
+			});
+		});
+		</script>
+	<?
+}
+

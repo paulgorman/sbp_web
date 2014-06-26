@@ -153,6 +153,12 @@ nav.menu ul:hover li{
 	padding-bottom: 12px;
 }
 
+.highlightedGallery {
+	max-width: 960px;
+	margin: 0 auto 12px auto;
+	height: 100%;
+}
+
 .purple{
 	text-align:center;
 	margin-left:0!important;
