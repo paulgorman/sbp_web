@@ -95,6 +95,53 @@ function htmlNavigation($meta) {
 	<?
 }
 
+function htmlDropDownNavigation($navdata) {
+	?>
+		<nav class="nav col12">
+			<ul>
+				<li><a href="/" title="Home Page">Home</a></li>
+				<li><a href="/talent/" title="Entertainment and Talent Categories List">Talent</a>
+					<ul class="sub1">
+						<?
+							foreach (array_keys($navdata) as $categorykey) {
+								foreach (array_keys($navdata[$categorykey]) as $subcatkey) {
+									if ($subcatkey == 0) { 
+										$line = sprintf(
+											"
+											<li><a href=\"%s\" title=\"%s\">%s</a><span class=\"arrow\">&#x25b6;</span>
+											<ul class=\"sub2\">
+											",
+											$navdata[$categorykey][0]['url'],
+											$navdata[$categorykey][0]['description'],
+											$navdata[$categorykey][0]['name']
+										);
+										echo $line;
+									} else {
+										$line = sprintf(
+											"
+												<li><a href=\"%s\" title=\"%s\">%s</a></li>
+											",
+											$navdata[$categorykey][$subcatkey]['url'],
+											$navdata[$categorykey][$subcatkey]['description'],
+											$navdata[$categorykey][$subcatkey]['name']
+										);
+										echo $line;
+									}
+								}
+								echo "</ul>\n";
+							}
+						?>
+					</ul>
+				</li>
+				<li><a href="/production/" title="Production Management, Rigging, Lighting, Sound, Video, Rentals, and Equipment">Production</a></li>
+				<li><a href="/special/" title="Planning and Preparation of Weddings &amp; Special Events">Weddings/Events</a></li>
+				<li><a href="/decor/" title="Furnishings and Accents">Decor</a></li>
+				<li><a href="/about/" title="Contact, Biographical, and Support Information">About Us</a></li>
+			</ul>
+		</nav>
+	<?
+}
+
 function htmlWavesStart() {
 	?>
 	<!-- dark waves -->
