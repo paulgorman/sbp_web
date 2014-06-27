@@ -150,7 +150,7 @@ function ArtistPage() {
 			$meta['js'][] = "FWDGrid.js";
 			htmlHeader($meta);
 			htmlMasthead($meta);
-			htmlNavigation($meta);
+			htmlDropDownNavigation(gatherNavData());
 			htmlWavesFullStart();
 			htmlBreadcrumb($meta);
 			htmlArtistPageTop($artistinfo);
@@ -516,7 +516,7 @@ function CategoriesList() {
 			// display all the categories
 			htmlHeader($meta);
 			htmlMasthead($meta);
-			htmlNavigation($meta);
+			htmlDropDownNavigation(gatherNavData());
 			htmlWavesStart();
 			htmlBreadcrumb($meta);
 			ListCategoryCarousel($highlightedList);
@@ -662,7 +662,7 @@ function CategoriesList() {
 			$_SESSION['category'] = $categoryInfo['cid'];
 			htmlHeader($meta);
 			htmlMasthead($meta);
-			htmlNavigation($meta);
+			htmlDropDownNavigation(gatherNavData());
 			if (count($artistsHighlighted) > 0) {
 				htmlWavesStart();
 				htmlBreadcrumb($meta);
@@ -704,7 +704,6 @@ function HomePage() {
 	$meta['js'][] = "justifiedGallery.js";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	//htmlNavigation($meta);
 	htmlDropDownNavigation(gatherNavData());
 	htmlWavesFullStart();
 	//homePageCarousel(gatherHighlightedArtists());
@@ -732,7 +731,7 @@ function ProductionPage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	htmlNavigation($meta);
+	htmlDropDownNavigation(gatherNavData());
 	htmlWavesStartShort();
 	htmlContent($contentTop);
 	htmlBodyStart();
@@ -753,7 +752,7 @@ function EventPage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	htmlNavigation($meta);
+	htmlDropDownNavigation(gatherNavData());
 	htmlWavesStartShort();
 	htmlContent($contentTop);
 	htmlBodyStart();
@@ -773,7 +772,7 @@ function DecorPage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	htmlNavigation($meta);
+	htmlDropDownNavigation(gatherNavData());
 	htmlWavesStart();
 	htmlContent($content);
 	htmlBodyStart();
@@ -814,7 +813,7 @@ function AboutPage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	htmlNavigation($meta);
+	htmlDropDownNavigation(gatherNavData());
 	htmlWavesFullStart();
 	htmlContent($contentTop);
 	htmlBodyStart();

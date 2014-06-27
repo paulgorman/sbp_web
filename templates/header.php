@@ -97,6 +97,7 @@ function htmlNavigation($meta) {
 
 function htmlDropDownNavigation($navdata) {
 	?>
+		<!-- Standard Navigation -->
 		<nav class="nav col12">
 			<ul>
 				<li><a href="/" title="Home Page">Home</a></li>
@@ -106,21 +107,17 @@ function htmlDropDownNavigation($navdata) {
 							foreach (array_keys($navdata) as $categorykey) {
 								foreach (array_keys($navdata[$categorykey]) as $subcatkey) {
 									if ($subcatkey == 0) { 
-										$line = sprintf(
-											"
+										$line = sprintf("
 											<li><a href=\"%s\" title=\"%s\">%s</a><span class=\"arrow\">&#x25b6;</span>
-											<ul class=\"sub2\">
-											",
+											<ul class=\"sub2\">",
 											$navdata[$categorykey][0]['url'],
 											$navdata[$categorykey][0]['description'],
 											$navdata[$categorykey][0]['name']
 										);
 										echo $line;
 									} else {
-										$line = sprintf(
-											"
-												<li><a href=\"%s\" title=\"%s\">%s</a></li>
-											",
+										$line = sprintf("
+												<li><a href=\"%s\" title=\"%s\">%s</a></li>",
 											$navdata[$categorykey][$subcatkey]['url'],
 											$navdata[$categorykey][$subcatkey]['description'],
 											$navdata[$categorykey][$subcatkey]['name']
@@ -139,6 +136,51 @@ function htmlDropDownNavigation($navdata) {
 				<li><a href="/about/" title="Contact, Biographical, and Support Information">About Us</a></li>
 			</ul>
 		</nav>
+		<!-- end Standard Navigation -->
+		<!-- Mobile (compressed menu) Navigation -->
+		<nav class="menu nav col12">
+			<ul>
+				<li><img src="/templates/sbp/more.png">&nbsp;Menu
+					<ul class="sub1">
+						<li><a href="/" title="Home Page">Home</a></li>
+						<li><a href="/talent/" title="Entertainment and Talent Categories List">Talent</a><span class="arrow">&#x25b6;</span>
+							<!-- Sub-level 2 -->
+							<ul class="sub2">
+								<?
+									foreach (array_keys($navdata) as $categorykey) {
+										foreach (array_keys($navdata[$categorykey]) as $subcatkey) {
+											if ($subcatkey == 0) { 
+												$line = sprintf("
+													<li><a href=\"%s\" title=\"%s\">%s</a><span class=\"arrow\">&#x25b6;</span><ul class=\"sub3\">",
+													$navdata[$categorykey][0]['url'],
+													$navdata[$categorykey][0]['description'],
+													$navdata[$categorykey][0]['name']
+												);
+												echo $line;
+											} else {
+												$line = sprintf("
+													<li><a href=\"%s\" title=\"%s\">%s</a></li>",
+													$navdata[$categorykey][$subcatkey]['url'],
+													$navdata[$categorykey][$subcatkey]['description'],
+													$navdata[$categorykey][$subcatkey]['name']
+												);
+												echo $line;
+											}
+										}
+										echo "</ul>\n";
+									}
+								?>
+							</ul>
+						</li>
+						<li><a href="/production/" title="Production Management, Rigging, Lighting, Sound, Video, Rentals, and Equipment">Production</a></li>
+						<li><a href="/special/" title="Planning and Preparation of Weddings &amp; Special Events">Weddings/Events</a></li>
+						<li><a href="/decor/" title="Furnishings and Accents">Decor</a></li>
+						<li><a href="/about/" title="Contact, Biographical, and Support Information">About Us</a></li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+		<!-- end Mobile (compressed menu) Navigation -->
 	<?
 }
 

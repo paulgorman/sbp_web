@@ -550,7 +550,7 @@ p.smallLabel{
 
 .artistsListBoxText {
 	text-decoration: none;
-	z-index:100;
+	/* z-index:90; // messes with dropdown nav */
 	position:relative;    
 	border-radius:4px;
 	color:white;
