@@ -1,4 +1,3 @@
 User-agent: *
-Disallow: /i/
 Disallow: /m/
-Disallow: /templates/
+Disallow: /admin/

@@ -2960,7 +2960,8 @@ function ResizeImage($fileid,$purpose) {
 		$ffmpeg = new ffmpeg_movie("$dirlocation/m/$fileid");
 		$totalframes = $ffmpeg->getFrameCount();
 		// XXX: This takes some time to render
-		for ($i = 1; $i < 5; $i++) {
+		for ($i = 1; $i < 4; $i++) {
+			echo "rendering preview $i using frame ". ceil($totalframes*($i * "0.1")) ." of $totalframes\n<br>";
 			$thumbnailname = substr($fileid,0,-4) . "-$i.jpg";
 			$frame = $ffmpeg->getFrame(ceil($totalframes*($i * "0.1"))); // make four thumbnails every 100 frames
 			$gd_image = $frame->toGDImage();
