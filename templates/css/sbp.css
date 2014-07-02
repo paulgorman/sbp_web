@@ -301,6 +301,8 @@ nav.menu ul:hover li{
 .homeBody p {
 	font-size:14px;
 	line-height: 16px;
+	line-height: 2vmin;
+	font-size: 1.8vmin;
 }
 .homeBody ul {
   list-style: disc;
