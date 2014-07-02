@@ -147,7 +147,8 @@ function ArtistPage() {
 			$meta['js'][] = "jwplayer/jwplayer.js";
 			$meta['js'][] = "facebook.js";
 			$meta['js'][] = "more.js";
-			$meta['js'][] = "FWDGrid.js";
+			$meta['js'][] = "justifiedGallery.js";
+			//$meta['js'][] = "FWDGrid.js";
 			htmlHeader($meta);
 			htmlMasthead($meta);
 			htmlDropDownNavigation(gatherNavData());
@@ -156,9 +157,11 @@ function ArtistPage() {
 			htmlArtistPageTop($artistinfo);
 			htmlBodyStart();
 			htmlStylesTags($artistinfo);
-			htmlArtistPageBottom($artistinfo);
+			//htmlArtistPageBottom($artistinfo);
+			htmlArtistPageBottomGallery($artistinfo);
+			htmlArtistPageGalleryJS();
 			htmlFooter($meta);
-			fwdConsGrid(); // dump this stuff in at the bottom of html
+			//fwdConsGrid(); // dump this stuff in at the bottom of html
 		} elseif (count($artistinfo) === 0) {
 			header("Location: http://". $_SERVER['HTTP_HOST'] ."/categories", TRUE, 302);
 		}

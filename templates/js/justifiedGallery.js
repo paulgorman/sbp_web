@@ -55,11 +55,11 @@
 		}
 
 		function onEntryMouseEnterForCaption (sender) {
-			$(sender.currentTarget).find('.caption').stop().fadeTo(500, 0.7);
+			$(sender.currentTarget).find('.caption').stop().fadeTo(10, 1.0);
 		}
 
 		function onEntryMouseLeaveForCaption (sender) {
-			$(sender.currentTarget).find('.caption').stop().fadeTo(500, 0.0);
+			$(sender.currentTarget).find('.caption').stop().fadeTo(100, 0.0);
 		}
 
 		function displayEntry($entry, x, y, imgWidth, imgHeight, rowHeight, context) {

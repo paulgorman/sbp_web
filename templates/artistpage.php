@@ -48,7 +48,6 @@ function htmlArtistPageTop($artistinfo) {
 	<?
 }
 
-
 function htmlArtistPageBottom($artistinfo) {
 	$artist = $artistinfo[key($artistinfo)];
 	?>
@@ -119,7 +118,51 @@ function htmlArtistPageBottom($artistinfo) {
 			</ul>
 		</ul>
 	<?
+}
 
+function htmlArtistPageBottomGallery($artistinfo) {
+	$artist = $artistinfo[key($artistinfo)];
+	?>
+		<div class="artistTop">
+			<div class="artistGrid box">
+				<div id="photoGrid" class="alt1">
+				<?
+					if (count($artist['media']['mid']) > 1) {
+						// if there's only the one photo, don't duplicate it down here...
+						foreach (array_keys($artist['media']['mid']) as $key) {
+							if ($artist['media']['vidlength'][$key] > 0) { continue; }	// no videos allowed
+							if ($artist['media']['viewable'][$key] != 1) { continue; }
+							?>
+									<a class="photo" href="/i/artist/original-<?= $artist['media']['filename'][$key]; ?>">
+										<img src="/i/artist/<?= $artist['media']['filename'][$key]; ?>" alt="<?= number_format($artist['media']['width'][$key]); ?> x <?= number_format($artist['media']['height'][$key]); ?> Published: <?= nicetime(date("r",$artist['media']['published'][$key])); ?>" />
+										<!--<span class="icon"></span>-->
+									</a>
+							<?
+						}
+					}
+				?>
+				</div>
+			</div>
+		</div>
+	<?
+}
+
+function htmlArtistPageGalleryJS() {
+	?>
+		<script>
+		$(document).ready(function(){
+			$("#photoGrid").justifiedGallery({
+				lastRow: 'nojustify', // justify / nojustify / hide
+				sizeRangeSuffixes: {'lt100':'', 'lt240':'', 'lt320':'', 'lt500':'', 'lt640':'', 'lt1024':''},
+				rowHeight: 300,
+				captions: true,
+				captionsAnimationDuration: 0,
+				captionsVisibleOpacity: .2,
+				margins: 15
+			});
+		});
+		</script>
+	<?
 }
 
 function htmlStylesTags($artists) {
