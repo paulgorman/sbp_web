@@ -151,12 +151,11 @@ function htmlArtistPageGalleryJS() {
 		<script>
 		$(document).ready(function(){
 			$("#photoGrid").justifiedGallery({
-				lastRow: 'nojustify', // justify / nojustify / hide
+				lastRow: 'justify', // justify / nojustify / hide
+				maxRowHeight : -1, //negative value = no limits, 0 = 1.5 * rowHeight
 				sizeRangeSuffixes: {'lt100':'', 'lt240':'', 'lt320':'', 'lt500':'', 'lt640':'', 'lt1024':''},
 				rowHeight: 300,
 				captions: true,
-				captionsAnimationDuration: 0,
-				captionsVisibleOpacity: .2,
 				margins: 15
 			});
 		});
