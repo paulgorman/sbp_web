@@ -133,9 +133,8 @@ function htmlArtistPageBottomGallery($artistinfo) {
 							if ($artist['media']['vidlength'][$key] > 0) { continue; }	// no videos allowed
 							if ($artist['media']['viewable'][$key] != 1) { continue; }
 							?>
-									<a class="photo" href="/i/artist/original-<?= $artist['media']['filename'][$key]; ?>">
-										<img src="/i/artist/<?= $artist['media']['filename'][$key]; ?>" alt="<?= number_format($artist['media']['width'][$key]); ?> x <?= number_format($artist['media']['height'][$key]); ?> Published: <?= nicetime(date("r",$artist['media']['published'][$key])); ?>" />
-										<!--<span class="icon"></span>-->
+									<a class="photo" href="/i/artist/original-<?= $artist['media']['filename'][$key]; ?>" alt="<?= $artist['name']; ?> Photo #<?= sprintf('%02d',$key); ?>">
+										<img src="/i/artist/<?= $artist['media']['filename'][$key]; ?>" alt="<?= $artist['name']; ?> #<?= sprintf('%02d', $key); ?><br><?= number_format($artist['media']['width'][$key]); ?> x <?= number_format($artist['media']['height'][$key]); ?><br>Published <?= nicetime(date("r",$artist['media']['published'][$key])); ?>" />
 									</a>
 							<?
 						}
