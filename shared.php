@@ -2540,10 +2540,13 @@ function AdminArtistDeleteGo($aid) {
 	$query = "SELECT `filename`,`filetype` FROM `media` WHERE `aid` = $aid";
 	$result = mysqli_query($conn, $query);	
 	while ($row = mysqli_fetch_assoc($result)) {
-		($row['filetype'] == "mp4")? $type = "m" : $type = "i";
 		$filename = $row['filename'];
-		unlink ("$dirlocation/$type/artist/$filename");
-		unlink ("$dirlocation/$type/artist/original-$filename");
+		if ($row['filetype'] == "mp4") {
+			unlink ("$dirlocation/m/$filename");
+		} else {
+			unlink ("$dirlocation/i/artist/$filename");
+			unlink ("$dirlocation/i/artist/original-$filename");
+		}
 	}
 	// delete from database tables
 	$tables = array("artiststyles","artistcategories","artistlocations","artistmembers","media","artists");
