@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20140224
+**  Last Edit: 20140708
 ****************************************/
 
 function Init() {
@@ -3435,19 +3435,44 @@ function StateOptionsDropDown($active) {
 }
 
 function convert_smart_quotes($string) {
-	$search = array(
-		chr(145),
-		chr(146),
-		chr(147),
-		chr(148),
-		chr(151)
+	// utf-8
+ $search = array(
+	 	"\xe2\x80\x98",
+		"\xe2\x80\x99",
+		"\xe2\x80\x9c",
+		"\xe2\x80\x9d",
+		"\xe2\x80\x93",
+		"\xe2\x80\x94",
+		"\xe2\x80\xa6"
 	);
 	$replace = array(
 		"'",
 		"'",
 		'"',
 		'"',
-		'-'
+		'-',
+		'--',
+		'...'
+	);
+	$string = str_replace($search, $replace, $string);
+	// windows
+	$search = array(
+		chr(133),
+		chr(145),
+		chr(146),
+		chr(147),
+		chr(148),
+		chr(150),
+		chr(151)
+	);
+	$replace = array(
+		'...',
+		"'",
+		"'",
+		'"',
+		'"',
+		'-',
+		'--'
 	);
 	return str_replace($search, $replace, $string);
 }
