@@ -1145,8 +1145,15 @@ function ShowAdminPage() {
 				case "del_category":
 					AdminDeleteCategory($_REQUEST['categoryurl']);
 					break;
+				case "del_subcategory":
+					AdminDeleteSubCategory($_REQUEST['categoryurl']);
+					break;
 				case "del_category_for_reals":
 					AdminDeleteCategoryGo($_REQUEST['targetcategoryurl']);
+					AdminEditCategories();
+					break;
+				case "del_subcategory_for_reals":
+					AdminDeleteSubCategoryGo($_REQUEST['targetcategoryurl']);
 					AdminEditCategories();
 					break;
 				case "edit_category":
@@ -2532,6 +2539,12 @@ function AdminDeleteCategory($targetcategoryurl) {
 	AdminShowDeleteConfirmation($targetcategoryurl,$targetcategoryurl,$url,$url,$nextfunction);  
 }
 
+function AdminDeleteSubCategory($targetcategoryurl) {
+	$nextfunction = "del_subcategory_for_reals";
+	$url = "categories_list";
+	AdminShowDeleteConfirmation($targetcategoryurl,$targetcategoryurl,$url,$url,$nextfunction);  
+}
+
 function AdminArtistDeleteGo($aid) {
 	global $conn;
 	global $dirlocation;
@@ -2598,6 +2611,30 @@ function AdminDeleteCategoryGo($targetcategoryurl) {
 		echo "<div class='AdminSuccess'>The light is green, the trap is clean.</div>";
 	} else {
 		echo "<div class='AdminError'>Hmm, couldn't delete '$cid' from categories.". mysqli_error($conn) ."</div>";
+	}
+}
+
+function AdminDeleteSubCategoryGo($targetcategoryurl) {
+	global $conn;
+	global $dirlocation;
+	$query = sprintf("SELECT `subid`,`image_id` FROM `subcategories` WHERE `url` = '%s'",
+		mysqli_real_escape_string($conn,$targetcategoryurl)
+	);
+	$result = mysqli_query($conn,$query);
+	list($subid,$fileid) = mysqli_fetch_array($result);
+	if ($isEmpty($subid)) {
+		echo "<div class='AdminError'>Derp, there's no subid for $targetcategoryurl.". mysqli_error($conn) ."</div>";
+	} else {
+		$query = sprintf("DELETE FROM `artistsubcategories` WHERE `subid` = %s",
+			mysqli_real_escape_string($conn,$subid)
+		);
+		@unlink("$dirlocation/i/category/$fileid");
+		@unlink("$dirlocation/i/category/original-$fileid");
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'>Silly Subcategory, Say Sayonara!</div>";
+		} else {
+			echo "<div class='AdminError'>O NOES! '$subid' is too hardcore. ". mysqli_error($conn) ."</div>";
+		}
 	}
 }
 

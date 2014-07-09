@@ -4,7 +4,7 @@
 
 -- DANGER!!! XXX --------------
 -- DROP ALL TABLES FOR A FRESH START HERE 
-DROP TABLE IF EXISTS artists, artistcategories, artistmembers, artistlocations, locations, categories, media, sitehits, artiststyles, styles, admins;
+-- DROP TABLE IF EXISTS artists, artistcategories, artistsubcategories, artistmembers, artistlocations, locations, categories, media, sitehits, artiststyles, styles, admins;
 -- DANGER!!! XXX --------------
 
 CREATE TABLE `sbpweb`.`artists` (
@@ -131,4 +131,11 @@ CREATE TABLE `sbpweb`.`subcategories` (
 	`image_id` CHAR(17) NULL,
 	INDEX(`parent_cid`),
 	INDEX(`url`)
+) ENGINE=InnoDB;
+
+CREATE TABLE `sbpweb`.`artistsubcategories` (
+	`aid` INT NOT NULL,
+	`subid` INT NOT NULL,
+	INDEX(`aid`),
+	INDEX(`subid`)
 ) ENGINE=InnoDB;
