@@ -1159,6 +1159,9 @@ function ShowAdminPage() {
 				case "edit_category":
 					AdminEditSingleCategory($_REQUEST['categoryurl']);
 					break;
+				case "edit_subcategory":
+					AdminEditSingleSubCategory($_REQUEST['categoryurl']);
+					break;
 				case "save_category":
 					AdminSaveSingleCategory($_REQUEST['form_cid']);
 					AdminEditSingleCategory(GetCatUrlFromCID($_REQUEST['form_cid']));
@@ -2456,6 +2459,22 @@ function AdminEditSingleCategory($targetcategoryurl) {
 	mysqli_free_result($result);
 }
 
+function AdminEditSingleSubCategory($targetcategoryurl) {
+	global $conn;
+	$query = sprintf("SELECT * FROM `subcategories` WHERE `url` = '%s'",
+		mysqli_real_escape_string($conn,$targetcategoryurl)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	$query = sprintf("SELECT `category` FROM `categories` WHERE `cid` = '%s'",
+		mysqli_real_escape_string($conn,$row['parent_cid'])
+	);
+	$result = mysqli_query($conn,$query);
+	list($category) = mysqli_fetch_array($result);
+	$row['category'] = $category;
+	AdminEditSubCategory($row);
+}
+
 function AdminSaveSingleCategory($cid) {
 	// save an existing category that was just edited
 	global $conn;
@@ -2622,18 +2641,25 @@ function AdminDeleteSubCategoryGo($targetcategoryurl) {
 	);
 	$result = mysqli_query($conn,$query);
 	list($subid,$fileid) = mysqli_fetch_array($result);
-	if ($isEmpty($subid)) {
+	if (isEmpty($subid)) {
 		echo "<div class='AdminError'>Derp, there's no subid for $targetcategoryurl.". mysqli_error($conn) ."</div>";
 	} else {
 		$query = sprintf("DELETE FROM `artistsubcategories` WHERE `subid` = %s",
 			mysqli_real_escape_string($conn,$subid)
 		);
-		@unlink("$dirlocation/i/category/$fileid");
-		@unlink("$dirlocation/i/category/original-$fileid");
-		if (mysqli_query($conn,$query) === TRUE) {
-			echo "<div class='AdminSuccess'>Silly Subcategory, Say Sayonara!</div>";
+		if (mysqli_query($conn,$query) === FALSE) {
+			echo "<div class='AdminError'>Snap, couldn't delete '$subid' from artistsubcategories! ". mysqli_error($conn) ."</div>";
 		} else {
-			echo "<div class='AdminError'>O NOES! '$subid' is too hardcore. ". mysqli_error($conn) ."</div>";
+			$query = sprintf("DELETE FROM `subcategories` WHERE `subid` = '%s'",
+				mysqli_real_escape_string($conn,$subid)
+			);
+			@unlink("$dirlocation/i/category/$fileid");
+			@unlink("$dirlocation/i/category/original-$fileid");
+			if (mysqli_query($conn,$query) === TRUE) {
+				echo "<div class='AdminSuccess'>Silly Subcategory, Say Sayonara!</div>";
+			} else {
+				echo "<div class='AdminError'>O NOES! '$subid' is too hardcore. ". mysqli_error($conn) ."</div>";
+			}
 		}
 	}
 }

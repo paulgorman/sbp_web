@@ -724,6 +724,44 @@ function AdminEditCategory($dataarray) {
 	<?
 }
 
+function AdminEditSubCategory($dataarray) {
+	?>
+		<form method="POST" action="/admin/categories_list" enctype="multipart/form-data">
+			<input method="hidden" name="function" value="save_subcategory" style="display:none">
+			<input method="hidden" name="form_subid" value="<?= $dataarray['subid'] ?>" style="display:none">
+			<div class="AdminCategoryListContainer">
+				<div class="AdminCategoryListingEditHeader">Edit Sub-Category Properties for "<?= $dataarray['subcategory'] ?>", child of "<?= $dataarray['category']; ?>"</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Short Name:</div>
+				<div class="AdminCategoryListingAddValue">
+					<input type="text" name="form_subcategory" size="20" value="<?= $dataarray['subcategory']?>">
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Nice Description:</div>
+				<div class="AdminCategoryListingAddValue">
+					<input type="text" name="form_description" size="50" value="<?= $dataarray['description'] ?>">
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">URL:</div>
+				<div class="AdminCategoryListingAddValue">
+					<input type="text" name="form_url" size="20" value="<?= $dataarray['url'] ?>" style="text-transform: lowercase">
+				</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Stored Image:</div>
+				<div class="AdminCategoryListingShowImage"><img src="/i/category/<?= $dataarray['image_id'] ?>"></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingEditItem">Image Name:</div>
+				<div class="AdminCategoryListItemURL"><?= $dataarray['image_filename'] ?></div>
+				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple="" accept="image/png"></div>
+				<div class="AdminCategoryListItemURL">728x90 PNG</div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddItem"></div>
+				<div class="clear"></div>
+			</div> <!-- AdminCategoryListContainer -->
+		</form>
+	<?
+}
+
 function AdminEditLocation($dataarray) {
 	?>
 		<form method="POST" action="/admin/locations_list" enctype="multipart/form-data">
