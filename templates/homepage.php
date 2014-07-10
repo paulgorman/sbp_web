@@ -25,7 +25,7 @@ function htmlHomePageContent($content) {
 
 function htmlHomePageCategories($categories) {
 	?>
-		<div id="sideDrawer" class="closed">
+		<div id="sideDrawer" class="closed" style="height: <?= (count($categories) + 3) * 20 ?>px;">
 			<div class="button"></div>
 			<div class="container">
 				<h1>Categories</h1>
