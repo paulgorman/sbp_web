@@ -550,7 +550,7 @@ function AdminShowCategories ($categorieslist) {
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="published" id="published" class="regular-checkbox big-checkbox" CHECKED /><label title="Publicly Displayed in Categories Listing" for="published"></label>
 				</div>
-    		<div class="AdminCategoryListingAddItem"><label for="highlighted">Highlighted</label></div>
+    		<div class="AdminCategoryListingAddItem"><label for="highlighted">Highlighted (1024x680)</label></div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" name="highlighted" id="highlighted" onclick="showHide();" class="regular-checkbox big-checkbox" /><label title="Highlighted in the Carousel" for="highlighted"></label>
 					<input name="carousel_image" id="carousel_image" style="visibility: hidden;" class="filesToUpload" size="40" type="file" multiple="" accept="image/png">
@@ -678,7 +678,7 @@ function AdminEditCategory($dataarray) {
 					<input type="checkbox" id="published" name="published" class="regular-checkbox big-checkbox" <?= ($dataarray['published']?'CHECKED ':'') ?>/><label title="Publicly Displayed in Categories Listing" for="published"></label>
 				</div>
 
-    		<div class="AdminCategoryListingEditItem">Highlighted</div>
+    		<div class="AdminCategoryListingEditItem">Highlighted (1024x680)</div>
     		<div class="AdminCategoryListingCheckBox">
 					<input type="checkbox" id="is_highlighted" onclick="showHide();" name="is_highlighted" class="regular-checkbox big-checkbox" <?= ($dataarray['is_highlighted']?'CHECKED ':'') ?>/><label title="Highlighted in the Featured Carousel" for="is_highlighted"></label>
 					<input name="carousel_image" id="carousel_image" style="visibility: hidden;" class="filesToUpload" size="40" type="file" multiple="">
@@ -702,7 +702,7 @@ function AdminEditCategory($dataarray) {
 
 		<form method="POST" action="/admin/categories_list" enctype="multipart/form-data">
 			<input type="hidden" name="function" value="add_sub_category" style="display:none">
-			<input method="hidden" name="form_cid" value="67" style="display:none">
+			<input method="hidden" name="form_cid" value="<?= $dataarray['cid']; ?>" style="display:none">
 			<div class="AdminCategoryListingAddContainer">
 				<div class="AdminCategoryListingAddHeader">ADD NEW SUB-CATEGORY</div>
 				<div class="AdminCategoryListingAddItem">Sub-Category Name:</div>
@@ -715,7 +715,7 @@ function AdminEditCategory($dataarray) {
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Sub-Category Logo:</div>
 				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple=""></div>
-				<div class="AdminCategoryListItemURL">600x400 PNG/JPG</div>
+				<div class="AdminCategoryListItemURL">1024x680 PNG/JPG</div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddSubmit"><input type="submit" value="Add Sub-Category"></div>
 				<div class="clear"></div>
@@ -729,6 +729,7 @@ function AdminEditSubCategory($dataarray) {
 		<form method="POST" action="/admin/categories_list" enctype="multipart/form-data">
 			<input method="hidden" name="function" value="save_subcategory" style="display:none">
 			<input method="hidden" name="form_subid" value="<?= $dataarray['subid'] ?>" style="display:none">
+			<input method="hidden" name="form_cid" value="<?= $dataarray['parent_cid'] ?>" style="display:none">
 			<div class="AdminCategoryListContainer">
 				<div class="AdminCategoryListingEditHeader">Edit Sub-Category Properties for "<?= $dataarray['subcategory'] ?>", child of "<?= $dataarray['category']; ?>"</div>
 				<div class="clear"></div>
@@ -748,14 +749,19 @@ function AdminEditSubCategory($dataarray) {
 				</div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">Stored Image:</div>
-				<div class="AdminCategoryListingShowImage"><img src="/i/category/<?= $dataarray['image_id'] ?>"></div>
+				<div class="AdminCategoryListingShowImage"><img src="/i/artist/<?= $dataarray['image_id'] ?>"></div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingEditItem">Image Name:</div>
 				<div class="AdminCategoryListItemURL"><?= $dataarray['image_filename'] ?></div>
 				<div class="AdminCategoryListingAddValue"><input name="filesToUpload[]" class="filesToUpload" size="40" id="1" type="file" multiple="" accept="image/png"></div>
-				<div class="AdminCategoryListItemURL">728x90 PNG</div>
+				<div class="AdminCategoryListItemURL">1024x680</div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem"></div>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddSubmit">
+					<input type="submit" value="Update Category">
+					<input type="button" name="Cancel" value="Cancel" onclick="window.location='/admin/categories_list'">
+				</div>
 				<div class="clear"></div>
 			</div> <!-- AdminCategoryListContainer -->
 		</form>

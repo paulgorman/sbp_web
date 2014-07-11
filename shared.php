@@ -1166,6 +1166,10 @@ function ShowAdminPage() {
 					AdminSaveSingleCategory($_REQUEST['form_cid']);
 					AdminEditSingleCategory(GetCatUrlFromCID($_REQUEST['form_cid']));
 					break;
+				case "save_subcategory":
+					AdminSaveSingleSubCategory($_REQUEST['form_subid']);
+					AdminEditSingleCategory(GetCatUrlFromCID($_REQUEST['form_cid']));
+					break;
 				case "search_category":
 					AdminListArtistsByCategory();
 					break;
@@ -2552,6 +2556,51 @@ function AdminSaveSingleCategory($cid) {
 	}
 }
 
+function AdminSaveSingleSubCategory($subid) {
+	global $conn;
+	global $dirlocation;
+	if (CheckForFiles()) {
+		//asdf
+		list ($fileid, $filename) = SaveFile("artist")[0]; // for Categories, only one image uploaded.  // XXX: I suck, just calling this an artist image
+		$newfileid = ResizeImage($fileid,"artist"); // 600x400
+	}
+	if ( (isEmpty($_REQUEST['form_url'])) || (isEmpty($_REQUEST['form_subcategory'])) || (isEmpty($_REQUEST['form_description'])) ) {
+		echo "<div class='AdminError'>Please fill in all three Category fields</div>";
+	} else {
+		$subid = preg_replace("/\[^0-9]/","",trim($subid));
+		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
+		$subcategory = htmlspecialchars(trim($_REQUEST['form_subcategory']));
+		if ($filename) {
+			// delete the old category image file from the system
+			$query = sprintf("SELECT `image_id` FROM `subcategories` WHERE `subid` = '%s'", mysqli_real_escape_string($conn,$subid));
+			$result = mysqli_query($conn,$query);
+			list($old_fileid) = mysqli_fetch_array($result);
+			unlink("$dirlocation/i/artist/$old_fileid");	// XXX: It's an artist image, not a category image. I suck.
+			unlink("$dirlocation/i/artist/original-$old_fileid"); // XXX: It's an artist image, not a category image. I suck.
+			$query = sprintf("UPDATE `subcategories` SET `url` = '%s', `subcategory` = '%s', `description` = '%s', `image_filename` = '%s', `image_id` = '%s' WHERE `subid` = '%s'",
+				mysqli_real_escape_string($conn,$url),
+				mysqli_real_escape_string($conn,$subcategory),
+				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
+				mysqli_real_escape_string($conn,$filename),
+				mysqli_real_escape_string($conn,$newfileid),
+				mysqli_real_escape_string($conn,$subid)
+			);
+		} else {
+			$query = sprintf("UPDATE `subcategories` SET `url` = '%s', `subcategory` = '%s', `description` = '%s' WHERE `subid` = '%s'",
+				mysqli_real_escape_string($conn,$url),
+				mysqli_real_escape_string($conn,$subcategory),
+				mysqli_real_escape_string($conn,htmlspecialchars(trim($_REQUEST['form_description']))),
+				mysqli_real_escape_string($conn,$subid)
+			);
+		}
+		if (mysqli_query($conn,$query) === TRUE) {
+			echo "<div class='AdminSuccess'>Sub-category Entry <B>$subcategory</B> [$url] Successfully Updated.</div>";
+		} else {
+			echo "<div class='AdminError'>Sub-category Entry <B>$subcategory</B> [$url] Failed to Update!<br>". mysqli_error($conn) ."</div>";
+		}
+	}
+}
+
 function AdminDeleteCategory($targetcategoryurl) {
 	$nextfunction = "del_category_for_reals";
 	$url = "categories_list";
@@ -2950,10 +2999,10 @@ function AdminSaveNewSubCategory() {
 	if (isEmpty($_REQUEST['form_category']) || isEmpty($_REQUEST['form_description'])) {
 		echo "<div class='AdminError'>Please fill in Category Name, Description and the Category Graphic</div>";
 	} else {
-		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
+		$subcategory = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
 		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
 		if (isEmpty($url)) {
-			$url = MakeURL(strtolower($category));
+			$url = MakeURL(strtolower($subcategory));
 		}
 		if (CheckForFiles()) {
 			list ($fileid, $filename) = SaveFile("artist")[0]; // for Categories, only one image uploaded.  // XXX: I suck, just calling this an artist image
@@ -2964,14 +3013,14 @@ function AdminSaveNewSubCategory() {
 		$parent_cid = preg_replace("/[^0-9]/","",$_REQUEST['form_cid']);
 		$query = sprintf("INSERT INTO `subcategories` (`url`,`subcategory`,`description`,`parent_cid`,`image_filename`,`image_id`) VALUES ('%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($conn,$url),
-			mysqli_real_escape_string($conn,$category),
+			mysqli_real_escape_string($conn,$subcategory),
 			mysqli_real_escape_string($conn,htmlspecialchars(ucwords(trim($_REQUEST['form_description'])))),
 			mysqli_real_escape_string($conn,$parent_cid),
 			mysqli_real_escape_string($conn,$filename),
 			mysqli_real_escape_string($conn,$newfileid)
 		);
 		if (mysqli_query($conn,$query) === TRUE) {
-			echo "<div class='AdminSuccess'>Sub-Category <B>$category</B> [$url] Successfully Added.</div>";
+			echo "<div class='AdminSuccess'>Sub-Category <B>$subcategory</B> [$url] Successfully Added.</div>";
 			unset ($_REQUEST['form_category']);	// XXX: Uncool but sufficient way to empty the web form
 			unset ($_REQUEST['form_description']);
 			unset ($_REQUEST['form_url']);
