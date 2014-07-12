@@ -563,7 +563,6 @@ function AdminShowCategories ($categorieslist) {
 }
 
 function AdminShowSubCategories ($categorieslist) {
-	// asdf make sure $categorieslist array has a key/value for parent_cid
 	?>
 		<div class="AdminCategoryListContainer">
 			<div class="AdminCategoryListHeader">
@@ -684,7 +683,6 @@ function AdminEditCategory($dataarray) {
 					<input name="carousel_image" id="carousel_image" style="visibility: hidden;" class="filesToUpload" size="40" type="file" multiple="">
 				</div>
 				<div class="clear"></div>
-				<div>asdf</div>
 		<div class="clear"></div>
 				<? if (!isEmpty($dataarray['carousel_id'])) { ?>
 					<div class="AdminCategoryListingEditItem"><img border="1" src="/i/category/<?= $dataarray['carousel_id']; ?>"></div>
@@ -861,6 +859,15 @@ function AdminArtistFormNew() {
           $.bsmSelect.plugins.compatibility()
         ]
       });
+      $("#SubCategories").bsmSelect({
+        addItemTarget: 'bottom',
+        animate: true,
+        highlight: true,
+        plugins: [
+          $.bsmSelect.plugins.sortable({ axis : 'y', opacity : 0.5 }, { listSortableClass : 'bsmListSortableCustom' }),
+          $.bsmSelect.plugins.compatibility()
+        ]
+			});
       $("#Styles").bsmSelect({
         addItemTarget: 'bottom',
         animate: true,
@@ -1010,6 +1017,15 @@ function AdminArtistFormSingle($artistinfo) {
           $.bsmSelect.plugins.compatibility()
         ]
       });
+      $("#SubCategories").bsmSelect({
+        addItemTarget: 'bottom',
+        animate: true,
+        highlight: true,
+        plugins: [
+          $.bsmSelect.plugins.sortable({ axis : 'y', opacity : 0.5 }, { listSortableClass : 'bsmListSortableCustom' }),
+          $.bsmSelect.plugins.compatibility()
+        ]
+      });
       $("#Styles").bsmSelect({
         addItemTarget: 'bottom',
         animate: true,
@@ -1144,6 +1160,10 @@ function AdminArtistFormSingle($artistinfo) {
 						<?= AdminSelectCategories($artistinfo['aid']); ?>
 					</select>
 				</div>
+				<div class="clear"></div>
+
+				<? AdminSelectSubCategories($artistinfo); ?>
+
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">
 					<label for="Styles">Performance Styles</label>

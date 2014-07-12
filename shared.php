@@ -1383,6 +1383,15 @@ function GatherArtistInfo($aid) {
 	while ($row = mysqli_fetch_assoc($result)) {
 		$artistinfo['categories'][$row['cid']] = $row['cid'];
 	}
+	//subcats
+	$artistinfo['subcategories'] = array();
+	$query = sprintf("SELECT `subid` FROM `artistsubcategories` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
+	$result = mysqli_query($conn,$query);
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_assoc($result)) {
+			$artistinfo['subcategories'][$row['subid']] = $row['subid'];
+		}
+	}
 	mysqli_free_result($result);
 	$query = sprintf("SELECT `lid` FROM `artistlocations` WHERE `aid` = %s", mysqli_real_escape_string($conn,$aid));
 	$result = mysqli_query($conn,$query);
@@ -1586,6 +1595,14 @@ function AdminArtistSaveSingle() {
 	} else {
 		$errors[] = "Please select one or more categories for this artist.";
 	}
+	// subcategories
+	$subcategories = array();
+	foreach ($_REQUEST['subcategories'] as $key => $value) {
+		$subcategories[$key] = preg_replace("/[^0-9]/","",$value);
+	}
+	if (array_diff($subcategories, $artistinfo['subcategories']) || array_diff($artistinfo['subcategories'], $subcategories)) {
+		$artistsave['artistsubcategories'] = $subcategories;
+	}
 	// styles
 	if (isset($_REQUEST['styles'])) {
 		$styles = array();
@@ -1615,7 +1632,7 @@ function AdminArtistSaveSingle() {
 	if (!isset($errors)) {
 		if (count($artistsave) > 1) { // more than just the AID...
 			foreach ($artistsave as $field => $value) {
-				if (preg_match("/(aid|artistcategories|artiststyles|artistlocations)/",$field)) {
+				if (preg_match("/(aid|artistcategories|artistsubcategories|artiststyles|artistlocations)/",$field)) {
 					continue;
 				} else {
 					$query = sprintf("UPDATE `artists` SET `%s` = '%s' WHERE `aid` = %s",
@@ -1637,8 +1654,8 @@ function AdminArtistSaveSingle() {
 				$errors[] = "<B>Did not update artist information!</B> Database Failure: ".mysqli_error($conn);
 			}
 		}
-		foreach (array("artistcategories" => "cid","artiststyles" => "sid","artistlocations" => "lid") as $table => $column) {
-			if (count($artistsave[$table]) > 0) {
+		foreach (array("artistcategories" => "cid","artiststyles" => "sid","artistlocations" => "lid", "artistsubcategories" => "subid") as $table => $column) {
+			if ( (count($artistsave[$table]) > 0) || ($table == "artistsubcategories") ){
 				// wipe out old data
 				$query = sprintf("DELETE FROM `%s` WHERE `aid` =  '%s'", 
 					mysqli_real_escape_string($conn, $table),
@@ -2560,7 +2577,6 @@ function AdminSaveSingleSubCategory($subid) {
 	global $conn;
 	global $dirlocation;
 	if (CheckForFiles()) {
-		//asdf
 		list ($fileid, $filename) = SaveFile("artist")[0]; // for Categories, only one image uploaded.  // XXX: I suck, just calling this an artist image
 		$newfileid = ResizeImage($fileid,"artist"); // 600x400
 	}
@@ -2809,6 +2825,69 @@ function AdminSelectCategories($aid = NULL) {
 		);
 	}
 	return($string);
+}
+
+function AdminSelectSubCategories($artistinfo) {
+	// $artistinfo['aid'] and array in $artistinfo['categories'] of cid=>cid
+	// XXX: This does not respect user-defined priority/sequence order from webform or database
+	global $conn;
+	$subcategorieslist = array();
+	$artistsubcategories = array();
+	$parentcatslist = array();
+	foreach ($artistinfo['categories'] as $cid) {
+		$parent_cids .= "$cid,";
+	}
+	$parent_cids = substr($parent_cids, 0, -1);
+	$query = sprintf("SELECT * FROM `subcategories` WHERE `parent_cid` IN (%s) ORDER BY `subcategory`",
+		mysqli_real_escape_string($conn,$parent_cids)
+	);
+	$result = mysqli_query($conn,$query);
+	if (mysqli_num_rows($result) > 0) {
+		while ($row = mysqli_fetch_assoc($result)) {
+			$subcategorieslist[$row['subid']] = $row['subcategory'];
+			$parentquery = "SELECT `category` FROM `categories` WHERE `cid` = '". $row['parent_cid'] ."'";
+			$parentresult = mysqli_query($conn,$parentquery);
+			$parentrow = mysqli_fetch_assoc($parentresult);
+			$parentcatslist[$row['subid']] = $parentrow['category'];
+			mysqli_free_result($parentresult);
+		}
+		mysqli_free_result($result);
+		if ($artistinfo['aid']) {
+			$query = sprintf("SELECT `subid` FROM `artistsubcategories` WHERE `aid` = %s",
+				mysqli_real_escape_string($conn,$artistinfo['aid'])
+			);
+			$result = mysqli_query($conn,$query);
+			while ($row = mysqli_fetch_assoc($result)) {
+				$artistsubcategories[$row['subid']] = TRUE;
+			}
+		}
+		?>
+				<div class="AdminCategoryListingAddItem" style="margin-left: 2em;">
+					<label for="SubCategories">SubCategories</label>
+				</div>
+				<div class="AdminCategoryListingAddDropDown">
+					<select id="SubCategories" multiple="multiple" name="subcategories[]" title="SubCategories" class="sminit">
+		<?
+		foreach($subcategorieslist as $subid => $subcategory) {
+			$s = 0; // selected flag
+			if ($artistsubcategories[$subid]) {
+				// if artist is assigned to category is in the database
+				$s++;
+			}
+			$string .= sprintf("<option value='%s'%s>%s &#8594; %s</option>",
+				$subid,
+				($s > 0)? ' selected' : '',
+				$parentcatslist[$subid],
+				$subcategory
+			);
+		}
+		echo $string;
+		?>
+					</select>
+				</div>
+			<div class="clear"></div>
+		<?
+	}
 }
 
 function CategoryNameFromURL($caturl) {
