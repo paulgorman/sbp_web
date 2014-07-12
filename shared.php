@@ -1600,9 +1600,7 @@ function AdminArtistSaveSingle() {
 	foreach ($_REQUEST['subcategories'] as $key => $value) {
 		$subcategories[$key] = preg_replace("/[^0-9]/","",$value);
 	}
-	if (array_diff($subcategories, $artistinfo['subcategories']) || array_diff($artistinfo['subcategories'], $subcategories)) {
-		$artistsave['artistsubcategories'] = $subcategories;
-	}
+	$artistsave['artistsubcategories'] = $subcategories;
 	// styles
 	if (isset($_REQUEST['styles'])) {
 		$styles = array();
