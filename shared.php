@@ -1597,8 +1597,10 @@ function AdminArtistSaveSingle() {
 	}
 	// subcategories
 	$subcategories = array();
-	foreach ($_REQUEST['subcategories'] as $key => $value) {
-		$subcategories[$key] = preg_replace("/[^0-9]/","",$value);
+	if (count($_REQUEST['subcategories']) > 0 ) {
+		foreach ($_REQUEST['subcategories'] as $key => $value) {
+			$subcategories[$key] = preg_replace("/[^0-9]/","",$value);
+		}
 	}
 	$artistsave['artistsubcategories'] = $subcategories;
 	// styles
