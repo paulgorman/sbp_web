@@ -450,6 +450,7 @@ function getArtistCategory($aid) {
 	if (strlen(preg_replace("/[^0-9]/","",$_SESSION['category'])) >= 1 ) {
 		// did the web visitor pass through a category listing page?
 		$cid = preg_replace("/[^0-9]/","",$_SESSION['category']);
+		// FIXME XXX ASDF is the artist really under this category?
 	} else {
 		// no category was in the session, prolly a direct link, so go pick a category for this one artist
 		$query = sprintf(
@@ -534,6 +535,7 @@ function CategoriesList() {
 	} else {
 		// all published artists in a specific category
 		$url = MakeURL(strtolower(trim($_REQUEST['url'])));
+		$subcat = MakeURL(strtolower(trim($_REQUEST['subcat'])));
 		// what are all the categories we can choose from?
 		$categorynames = array();
 		$categoryurls= array();
