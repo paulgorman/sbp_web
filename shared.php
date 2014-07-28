@@ -14,6 +14,7 @@ function Init() {
 	global $dirlocation;
 	global $pagination;
 	global $videowidth;
+	global $navDropDownTweaks;
 	error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
@@ -151,7 +152,8 @@ function ArtistPage() {
 			//$meta['js'][] = "FWDGrid.js";
 			htmlHeader($meta);
 			htmlMasthead($meta);
-			htmlDropDownNavigation(gatherNavData());
+			htmlDropDownNavigationSingle(gatherNavData());
+			//htmlDropDownNavigationFull(gatherNavData());
 			htmlWavesFullStart();
 			htmlBreadcrumb($meta);
 			htmlArtistPageTop($artistinfo);
@@ -520,7 +522,8 @@ function CategoriesList() {
 			// display all the categories
 			htmlHeader($meta);
 			htmlMasthead($meta);
-			htmlDropDownNavigation(gatherNavData());
+			htmlDropDownNavigationSingle(gatherNavData());
+			//htmlDropDownNavigationFull(gatherNavData());
 			htmlWavesStart();
 			htmlBreadcrumb($meta);
 			ListCategoryCarousel($highlightedList);
@@ -667,7 +670,8 @@ function CategoriesList() {
 			$_SESSION['category'] = $categoryInfo['cid'];
 			htmlHeader($meta);
 			htmlMasthead($meta);
-			htmlDropDownNavigation(gatherNavData());
+			htmlDropDownNavigationSingle(gatherNavData());
+			//htmlDropDownNavigationFull(gatherNavData());
 			if (count($artistsHighlighted) > 0) {
 				htmlWavesStart();
 				htmlBreadcrumb($meta);
@@ -709,7 +713,8 @@ function HomePage() {
 	$meta['js'][] = "justifiedGallery.js";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	htmlDropDownNavigation(gatherNavData());
+	htmlDropDownNavigationSingle(gatherNavData());
+	//htmlDropDownNavigationFull(gatherNavData());
 	htmlWavesFullStart();
 	//homePageCarousel(gatherHighlightedArtists());
 	homePageHighlightedGallery(gatherHighlightedArtists());
@@ -736,7 +741,8 @@ function ProductionPage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	htmlDropDownNavigation(gatherNavData());
+	htmlDropDownNavigationSingle(gatherNavData());
+	//htmlDropDownNavigationFull(gatherNavData());
 	htmlWavesStartShort();
 	htmlContent($contentTop);
 	htmlBodyStart();
@@ -757,7 +763,8 @@ function EventPage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	htmlDropDownNavigation(gatherNavData());
+	htmlDropDownNavigationSingle(gatherNavData());
+	//htmlDropDownNavigationFull(gatherNavData());
 	htmlWavesStartShort();
 	htmlContent($contentTop);
 	htmlBodyStart();
@@ -777,7 +784,8 @@ function DecorPage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	htmlDropDownNavigation(gatherNavData());
+	htmlDropDownNavigationSingle(gatherNavData());
+	//htmlDropDownNavigationFull(gatherNavData());
 	htmlWavesStart();
 	htmlContent($content);
 	htmlBodyStart();
@@ -818,7 +826,8 @@ function AboutPage() {
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	htmlHeader($meta);
 	htmlMasthead($meta);
-	htmlDropDownNavigation(gatherNavData());
+	htmlDropDownNavigationSingle(gatherNavData());
+	//htmlDropDownNavigationFull(gatherNavData());
 	htmlWavesFullStart();
 	htmlContent($contentTop);
 	htmlBodyStart();
