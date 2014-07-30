@@ -14,7 +14,6 @@ function Init() {
 	global $dirlocation;
 	global $pagination;
 	global $videowidth;
-	global $navDropDownTweaks;
 	error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	date_default_timezone_set('America/Los_Angeles');
 	session_start(); // I want to track people thru the site
@@ -96,9 +95,10 @@ function AskForAdmin() {
 function ConfirmLogin() {
 	global $conn;
 	require_once("templates/admin.php");
+	$username = preg_replace("/[^A-Za-z]/", '', strtolower(trim(htmlspecialchars(strip_tags($_REQUEST['username'])))));
 	$query = sprintf(
 		"SELECT `username`,`password` FROM `admins` WHERE `username` = '%s'",
-		mysqli_real_escape_string($conn,strtolower(trim(htmlspecialchars(strip_tags($_REQUEST['username'])))))
+		mysqli_real_escape_string($conn,$username)
 	);
 	$result = mysqli_query($conn,$query);
 	if (mysqli_num_rows($result) > 0) {
@@ -106,12 +106,16 @@ function ConfirmLogin() {
 		$passwordGuess = trim(htmlspecialchars(strip_tags($_REQUEST['password'])));
 		if (ValidatePassword($passwordGuess,$row['password'])) {
 			$_SESSION['is_admin'] = TRUE;
+			// XXX: half-ass way to log admin logins
+			error_log("Admin Page Login Success: $username" , 0); 
 			header("Location: http://". $_SERVER['HTTP_HOST'] ."/admin/", TRUE, 302);
 		} else {
+			error_log("Admin Page Login Password Failure: $username" , 0); 
 			htmlAdminLogin("Invalid Password");
 		}
 	} else {
 		// XXX: I know, but it's my boss, I gotta help him a little when he typos his username
+		error_log("Admin Page Login Username Failure: $username" , 0); 
 		htmlAdminLogin("Invalid Username");
 	}
 }
@@ -1124,8 +1128,7 @@ function ShowAdminPage() {
 		"Categories" => "categories_list",
 		"Styles" => "styles_list",
 		"Locations" => "locations_list",
-		"Featured" => "categories_featured",
-		//"Blog" => "blog_editor",
+		"Pages" => "pages",
 		"Admins" => "admin_users",
 		"Metrics" => "web_stats"
 	);
@@ -1238,6 +1241,13 @@ function ShowAdminPage() {
 					break;
 				default:
 					AdminListLocations();
+			}
+		}
+		if ($_REQUEST['url'] == "pages") {
+			AdminPagesButtonBar(); // display that additional nav/button bar
+			switch ($_REQUEST['function']) {
+				default:
+					AdminPagesList();
 			}
 		}
 		if ($_REQUEST['url'] == "artists") {
@@ -2144,6 +2154,11 @@ function MediaInfo($fileid,$purpose) {
 		$mediainfo['filetype'] = "mp4";
 	}
 	return ($mediainfo);
+}
+
+function AdminPagesList() {
+	global $conn;
+	AdminPagesListPage();
 }
 
 function AdminArtistList() {

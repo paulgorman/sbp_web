@@ -142,6 +142,38 @@ function AdminShowAdminsList($admins) {
 	<?	
 }
 
+function AdminPagesButtonBar() {
+	?>
+		<div  class="adminNavSubHolder">
+			<div class="adminNavSubItem"><a href='/admin/pages/home'>Home</a></div>
+			<div class="adminNavSubItem"><a href='/admin/pages/production'>Production</a></div>
+			<div class="adminNavSubItem"><a href='/admin/pages/events'>Weddings/Events</a></div>
+			<div class="adminNavSubItem"><a href='/admin/pages/decor'>Decor</a></div>
+			<div class="adminNavSubItem"><a href='/admin/pages/about'>About</a></div>
+			<div class="adminNavSubItem"><a href='/admin/pages/news'>News</a></div>
+		</div>
+	<?
+}
+
+function AdminPagesListPage() {
+	?>
+		<div class="AdminCategoryListContainer">
+			<div class="AdminCategoryListHeader">
+				<div class="AdminCategoryListItemURL">Page Editor</div>
+			</div>
+			<div class="clear"></div>
+				<form method="POST" action="/admin/artists/edit/<?= $values['aid']; ?>" name="edit<?= $values['aid']; ?>">
+					<input type="hidden" name="function" value="edit">
+					<input type="hidden" name="page" value="<?= $page ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
+					</div>
+				</form>
+			<div class="AdminCategoryListHeader">
+			</div>
+		</div>
+	<?
+}
+
 function AdminArtistListPage($artists,$page) {
 	?>
 		<div class="AdminCategoryListContainer">
