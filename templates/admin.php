@@ -953,7 +953,7 @@ function AdminArtistFormNew() {
 				</div>
 				<div class="clear"></div>
 				<div class="AdminCategoryListingAddItem">Bio</div>
-				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="85" name="bio" wrap="virtual"><?= htmlspecialchars(trim($_REQUEST['bio'])); ?></textarea></div>
+				<div class="AdminCategoryListingAddTextBox"><textarea style="resize: both;" rows="8" cols="85" name="bio" wrap="virtual"><?= htmlspecialchars(trim($_REQUEST['bio'])); ?></textarea></div>
 				<div class="clear">&nbsp;</div>
 
 				<div class="AdminCategoryListingAddItem">
@@ -1175,7 +1175,7 @@ function AdminArtistFormSingle($artistinfo) {
 				<div class="AdminCategoryListingAddTextBox"><textarea rows="2" cols="50" name="slug" wrap="virtual"><?= $artistinfo['slug']; ?></textarea></div>
 				<div class="clear">&nbsp;</div>
 				<div class="AdminArtistLabel">Bio:</div>
-				<div class="AdminCategoryListingAddTextBox"><textarea rows="8" cols="65" name="bio" wrap="virtual"><?= $artistinfo['bio']; ?></textarea></div>
+				<div class="AdminCategoryListingAddTextBox"><textarea style="resize: both;" rows="8" cols="65" name="bio" wrap="virtual"><?= $artistinfo['bio']; ?></textarea></div>
 				<div class="clear">&nbsp;</div>
 
 				<div class="AdminArtistLabel">URL:</div>
