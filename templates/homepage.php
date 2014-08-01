@@ -11,12 +11,10 @@ function htmlHomePageContent($content) {
 	?>
 		<div class="content">
 			<div class="col7 homeBody">
-				<img src="/templates/sbp/1.jpg">
-				<p><?= $content['body']; ?></p>
+				<?= $content['body']; ?>
 			</div>
 			<div class="col5 blue box homeNews">
-				<h3>News</h3>
-				<p><?= $content['news']; ?></p>
+				<?= $content['news']; ?>
 			</div>
 		</div>
 		<br>

@@ -6,7 +6,7 @@
 **  Concept: Steve Beyer
 **  Code: Presence
 **
-**  Last Edit: 20140708
+**  Last Edit: 20140731
 ****************************************/
 
 function Init() {
@@ -715,21 +715,25 @@ function CategoriesList() {
 	}
 }
 
+function GetPageContent($page) {
+	global $conn;
+	$query = "SELECT `html` FROM `pages` WHERE `pagename` = '$page'";
+	$result = mysqli_query($conn,$query);
+	return (mysqli_fetch_array($result)[0]);
+}
+
 function HomePage() {
+	$content['body'] = GetPageContent("home");
+	$content['news'] = GetPageContent("news");
 	require_once("templates/header.php");
 	require_once("templates/homepage.php");
 	require_once("templates/FWDconstructors.php"); // shit to make grid and carousel go
-	require_once("templates/Parsedown/Parsedown.php");
-	$content['body'] = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("body.txt")));
-	$content['news'] = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("news.txt")));
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['url'] = CurPageURL();
 	$meta['image'] = CurServerUrl() . "sbp.png";
 	$meta['css'][] = "skin_modern_silver.css";
-	//$meta['js'][] = "FWDRoyal3DCarousel.js";
-	//$meta['js'][] = "FWDRoyal3DCarousel_uncompressed.js";
 	$meta['js'][] = "justifiedGallery.js";
 	htmlHeader($meta);
 	htmlMasthead($meta);
@@ -751,9 +755,8 @@ function HomePage() {
 
 function ProductionPage() {
 	require_once("templates/header.php");
-	require_once("templates/Parsedown/Parsedown.php");
-	$contentTop = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("production-top.txt")));
-	$contentBottom = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("production-bottom.txt")));
+	$contentTop = GetPageContent("production-top");
+	$contentBottom = GetPageContent("production-bottom");
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Production Staging, Projection, Lighting, Sound Reinforcement - Steve Beyer Productions";
@@ -773,9 +776,8 @@ function ProductionPage() {
 
 function EventPage() {
 	require_once("templates/header.php");
-	require_once("templates/Parsedown/Parsedown.php");
-	$contentTop = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("event-top.txt")));
-	$contentBottom = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("event-bottom.txt")));
+	$contentTop = GetPageContent("special-top");
+	$contentBottom = GetPageContent("special-bottom");
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Weddings &amp; Special Events - Steve Beyer Productions";
@@ -795,8 +797,7 @@ function EventPage() {
 
 function DecorPage() {
 	require_once("templates/header.php");
-	require_once("templates/Parsedown/Parsedown.php");
-	$content = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("decor.txt")));
+	$content = GetPageContent("decor-top");
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Decor, Props, Fabrication, Floral, Design, Treatment, Centerpieces";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "Decor, Props, Design, Floral, Fabrication, and Treatments - Steve Beyer Productions";
@@ -836,9 +837,8 @@ function WeddingPage() {
 
 function AboutPage() {
 	require_once("templates/header.php");
-	require_once("templates/Parsedown/Parsedown.php");
-	$contentTop = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("about-top.txt")));
-	$contentBottom = Parsedown::instance()->parse(htmlspecialchars_decode(file_get_contents("about-bottom.txt")));
+	$contentTop = GetPageContent("about-top");
+	$contentBottom = GetPageContent("about-bottom");
 	$meta['keywords'] = "Steve Beyer Productions, SBP, Las Vegas, Talent, Musicians, Artists, Bands, Entertainment, Decor, Production, Wedding, Special Events";
 	$meta['description'] = "Steve Beyer Productions - The Entertainment and Production Company";
 	$meta['title'] = "About & Contact - Steve Beyer Productions";
