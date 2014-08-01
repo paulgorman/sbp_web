@@ -1407,7 +1407,7 @@ function AdminPageImageClipboard() {
 		$newfilename = "$filename.png";
 		rename (
 			$dirlocation . "/i/pages/$filename",
-			$dirlocation . "/i/pages/$newname"
+			$dirlocation . "/i/pages/$newfilename"
 		);
 		echo stripslashes(json_encode(array("filelink" => "/i/pages/$newfilename")));
 	} else {
