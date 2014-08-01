@@ -52,6 +52,16 @@
 		case "liked":
 			RecordHit();
 			break;
+		case "adminpageimageupload":
+			if (isAdmin()) {
+				AdminPageImageUpload();
+			}
+			break;
+		case "adminpageimageclipboard":
+			if (isAdmin()) {
+				AdminPageImageClipboard();
+			}
+			break;
 		default:
 			RecordHit();
 			HomePage();

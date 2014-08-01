@@ -9,6 +9,7 @@ Install
 * git clone git://github.com/paulgorman/sbp_web.git
 * mkdir -p sbp_web/i/artist
 * mkdir sbp_web/i/category
+* mkdir sbp_web/i/pages
 * mkdir sbp_web/m
 * chown -R www:www sbp_web/m sbp_web/i
 * mysqladmin create sbpweb

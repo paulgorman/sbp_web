@@ -38,6 +38,10 @@ RewriteRule ^videoplay/([0-9]+) index.php?page=videoplay&mid=$1 [QSA,L,NC]
 RewriteRule ^liked/(.*) index.php?page=liked&url=$1 [QSA,L,NC]
 RewriteRule ^disliked/(.*) index.php?page=liked&url=$1 [QSA,L,NC]
 
+# Admin Image Uploading
+RewriteRule ^adminpageimageupload[/]? index.php?page=adminpageimageupload [QSA,L,NC]
+RewriteRule ^adminpageimageclipboard[/]? index.php?page=adminpageimageclipboard [QSA,L,NC]
+
 # static pages just a couple possible typos
 RewriteRule ^tag/([a-zA-Z0-9_-]+) /index.php?page=findbytag&tag=$1 [QSA,L,NC]
 RewriteRule ^about[/]? /index.php?page=about [QSA,L,NC]
@@ -45,7 +49,7 @@ RewriteRule ^production[/]? /index.php?page=production [QSA,L,NC]
 RewriteRule ^(special|wedding|weddings|special-event|events-weddings|event-wedding|weddings-events|wedding-event|special-events)[/]? /index.php?page=special [QSA,L,NC]
 RewriteRule ^decor[/]? /index.php?page=decor [QSA,L,NC]
 RewriteRule ^(about|contact)[/]? /index.php?page=about[QSA,L,NC]
-RewriteRule ^admin[/]?([a-z_-]+)?[/]?([a-z_-]+)?[/]?([a-zA-Z0-9]+)? /index.php?page=admin&url=$1&function=$2&listpage=$3 [QSA,L,NC]
+RewriteRule ^admin[/]?([a-z_-]+)?[/]?([a-z_-]+)?[/]?([a-zA-Z0-9_-]+)? /index.php?page=admin&url=$1&function=$2&listpage=$3 [QSA,L,NC]
 RewriteRule ^login /index.php?page=admin&url=login [QSA,L,NC]
 
 RewriteCond %{REQUEST_FILENAME} !-f

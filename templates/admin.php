@@ -142,34 +142,83 @@ function AdminShowAdminsList($admins) {
 	<?	
 }
 
-function AdminPagesButtonBar() {
+function AdminPagesButtonBar($pages) {
 	?>
 		<div  class="adminNavSubHolder">
-			<div class="adminNavSubItem"><a href='/admin/pages/home'>Home</a></div>
-			<div class="adminNavSubItem"><a href='/admin/pages/production'>Production</a></div>
-			<div class="adminNavSubItem"><a href='/admin/pages/events'>Weddings/Events</a></div>
-			<div class="adminNavSubItem"><a href='/admin/pages/decor'>Decor</a></div>
-			<div class="adminNavSubItem"><a href='/admin/pages/about'>About</a></div>
-			<div class="adminNavSubItem"><a href='/admin/pages/news'>News</a></div>
+			<?
+				foreach ($pages as $url => $name) {
+					echo "<div class=\"adminNavSubPagesItem\"><a href=\"/admin/pages/edit/$url\">$name</a></div>\n";
+				}
+			?>
 		</div>
 	<?
 }
 
-function AdminPagesListPage() {
+function AdminPagesListPage($pagedata) {
 	?>
 		<div class="AdminCategoryListContainer">
 			<div class="AdminCategoryListHeader">
-				<div class="AdminCategoryListItemURL">Page Editor</div>
+				<div class="AdminCategoryListItemDescription">Pages</div>
 			</div>
 			<div class="clear"></div>
-				<form method="POST" action="/admin/artists/edit/<?= $values['aid']; ?>" name="edit<?= $values['aid']; ?>">
+			<? foreach (array_keys($pagedata) as $url) { ?>
+				<form method="POST" action="/admin/pages/edit/<?= $url; ?>" name="edit<?= $url; ?>">
 					<input type="hidden" name="function" value="edit">
-					<input type="hidden" name="page" value="<?= $page ?>">
-					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $values['aid']; ?>'].submit(); return false;">
+					<input type="hidden" name="pageurl" value="<?= $url; ?>">
+					<div class="AdminCategoryListRow" onclick="document.forms['edit<?= $url; ?>'].submit(); return false;">
+						<div class="AdminCategoryListItemCategory"><?= $pagedata[$url]['name']; ?></div>
+						<div class="AdminCategoryListItemDescription" onclick="document.forms['edit<?= $url; ?>'].submit(); return false;"><?= nicetime($pagedata[$url]['lastupdated']); ?></div>
 					</div>
 				</form>
+			<? } ?>
 			<div class="AdminCategoryListHeader">
 			</div>
+		</div>
+	<?
+}
+
+function AdminPagesEditPage($pagedata) {
+	?>
+		<div class="AdminArtistContainer">
+			<div class="AdminArtistEditHeader"><?= MakeCase($pagedata['pagename']); ?> Page Editor</div>
+			<div class="AdminArtistLastUpdateHeader">Last updated <?= nicetime($pagedata['htmltime']) ?></div>
+			<link rel="stylesheet" type="text/css" href="/templates/redactor/redactor.css">
+			<script src="/templates/redactor/redactor.min.js"></script>
+			<script src="/templates/redactor/fontcolor.js"></script>
+			<script src="/templates/redactor/fontfamily.js"></script>
+			<script src="/templates/redactor/fontsize.js"></script>
+			<script type="text/javascript">
+				$(function() {
+					$('#redactor_content').redactor(
+						{
+							minHeight: 500,
+							focus: true,
+						  iframe: true,
+							plugins: ['fontfamily','fontsize','fontcolor'],
+					    css: ['/templates/css/responsiveboilerplate.css', '/templates/css/sbp.css'],
+							imageUpload: '/adminpageimageupload',
+							clipboardUploadUrl: '/adminpageimageclipboard'
+						}
+					);
+				});
+			</script>
+			<form method="POST" action="/admin/pages/update">
+				<input type="hidden" name="pageurl" value="<?= $pagedata['pagename']; ?>">
+				<textarea id="redactor_content" name="content">
+					<?= stripslashes($pagedata['html']); ?>
+				</textarea>
+				<div class="clear"></div>
+				<div class="AdminCategoryListingAddSubmit">
+				<input type="submit" value="&nbsp;&nbsp;&nbsp;Save&nbsp;&nbsp;&nbsp;" name="send">
+				</div>
+			</form>
+			<form method="POST" action="/admin/pages/revert">
+				<div class="AdminCategoryListingAddSubmit">
+				<input type="hidden" name="pageurl" value="<?= $pagedata['pagename']; ?>">
+				<input type="submit" value="Revert to content from <?= niceTime($pagedata['undotime']); ?>" name="Revert">
+				</div>
+				<div class="clear"></div>
+			</form>
 		</div>
 	<?
 }

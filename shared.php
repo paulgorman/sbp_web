@@ -35,6 +35,22 @@ function Init() {
 	$videowidth = 600;
 }
 
+function Pages() {
+	$pages = array(
+		"home" => "Home",
+		"about-top" => "About (Top)",
+		"about-bottom" => "About (Bottom)",
+		"special-top" => "Events (Top)",
+		"special-bottom" => "Events (Bottom)",
+		"production-top" => "Production (Top)",
+		"production-bottom" => "Production (Bottom)",
+		"decor-top" => "Decor (Top)",
+		"decor-bottom" => "Decor (Bottom)",
+		"news" => "News"
+	);
+	return ($pages);
+}
+
 function RecordHit() {
 	global $conn;
 	$query = sprintf("INSERT INTO `sitehits` (`hit_datetime`, `hit_ip`, `hit_addr`, `hit_url`, `referrer`, `user_agent`, `sessionid`, `sesscount`) values ('%s','%s','%s','%s','%s','%s', '%s', %s);",
@@ -1244,10 +1260,22 @@ function ShowAdminPage() {
 			}
 		}
 		if ($_REQUEST['url'] == "pages") {
-			AdminPagesButtonBar(); // display that additional nav/button bar
+			$pages = Pages();
+			AdminPagesButtonBar($pages); // display that additional nav/button bar
 			switch ($_REQUEST['function']) {
+				case "edit":
+					AdminPageEdit();
+					break;
+				case "update":
+					AdminPageUpdate();
+					AdminPagesListPage(AdminPagesListData($pages));
+					break;
+				case "revert":
+					AdminPageRevert();
+					AdminPageEdit();
+					break;
 				default:
-					AdminPagesList();
+					AdminPagesListPage(AdminPagesListData($pages));
 			}
 		}
 		if ($_REQUEST['url'] == "artists") {
@@ -1297,6 +1325,147 @@ function ShowAdminPage() {
 					AdminArtistList();
 			}
 		}
+	}
+}
+
+function AdminPagesListData($pages) {
+	global $conn;
+	$pagedata = array();
+	foreach ($pages as $url => $name) {
+		$query = sprintf("SELECT `htmltime` FROM `pages` WHERE `pagename` = '%s'", mysqli_real_escape_string($conn,$url));
+		$result = mysqli_query($conn,$query);
+		$updated = mysqli_fetch_array($result, MYSQLI_NUM)[0];
+		$pagedata[$url]['lastupdated'] = $updated;
+		$pagedata[$url]['name'] = $name;
+	}
+	return ($pagedata);
+}
+
+function AdminPageEdit() {
+	global $conn;
+	$pageurl = preg_replace("/[^a-z\-]/","",$_REQUEST['listpage']);
+	if (strlen($pageurl) < 2) {
+		$pageurl = preg_replace("/[^a-z\-]/","",$_REQUEST['pageurl']);
+	}
+	$query = sprintf("SELECT `pagename`,`html`,`undo`,`htmltime`,`undotime` FROM `pages` WHERE `pagename` = '%s'", mysqli_real_escape_string($conn,$pageurl));
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	AdminPagesEditPage($row);
+}
+
+function AdminPageImageUpload() {
+	global $dirlocation;
+	$fileid = uniqid();
+	move_uploaded_file($_FILES['file']['tmp_name'], "$dirlocation/i/pages/$fileid");
+	if (filesize("$dirlocation/i/pages/$fileid") < 1024) {
+		// if the file is smaller than 1kb, I don't trust it.
+		unlink("$dirlocation/i/pages/$fileid");
+		echo stripslashes(json_encode(array("filelink" => NULL)));
+	} else {
+		// Yay, its a file!
+		$finfo = finfo_open(FILEINFO_MIME);
+		$type = finfo_file($finfo, "$dirlocation/i/pages/$fileid");
+		if (preg_match("/jpeg/i",$type)) {
+			$newfileid = "$fileid.jpg";	
+			rename (
+				$dirlocation . "/i/pages/$fileid",
+				$dirlocation . "/i/pages/$newfileid"
+			);
+			echo stripslashes(json_encode(array("filelink" => "/i/pages/$newfileid")));
+		} elseif (preg_match("/png/i",$type)) {
+			$newfileid = "$fileid.png";
+			rename (
+				$dirlocation . "/i/pages/$fileid",
+				$dirlocation . "/i/pages/$newfileid"
+			);
+			echo stripslashes(json_encode(array("filelink" => "/i/pages/$newfileid")));
+		} else {
+			// Bad file!
+			unlink ("$dirlocation/i/pages/$fileid");
+			echo stripslashes(json_encode(array("filelink" => NULL)));
+		}
+	}
+}
+
+function AdminPageImageClipboard() {
+	global $dirlocation;
+	$contentType = $_POST['contentType'];
+	$data = base64_decode($_REQUEST['data']);
+	$filename = uniqid();
+	$fileloc = "$dirlocation/i/pages/$filename";
+	file_put_contents($fileloc, $data);
+	$finfo = finfo_open(FILEINFO_MIME);
+	$type = finfo_file($finfo, $fileloc);
+	if (preg_match("/jpeg/i",$type)) {
+		$newfilename = "$filename.jpg";	
+		rename (
+			$dirlocation . "/i/pages/$filename",
+			$dirlocation . "/i/pages/$newfilename"
+		);
+		echo stripslashes(json_encode(array("filelink" => "/i/pages/$newfilename")));
+	} elseif (preg_match("/png/i",$type)) {
+		$newfilename = "$filename.png";
+		rename (
+			$dirlocation . "/i/pages/$filename",
+			$dirlocation . "/i/pages/$newname"
+		);
+		echo stripslashes(json_encode(array("filelink" => "/i/pages/$newfilename")));
+	} else {
+		// Bad file!
+		unlink ("$fileloc");
+		echo stripslashes(json_encode(array("filelink" => NULL)));
+	}
+}
+
+function AdminPageRevert() {
+	global $conn;
+	$pages = Pages();
+	$pageurl = preg_replace("/[^a-z\-]/","",$_REQUEST['pageurl']);
+	$query = sprintf(
+		"SELECT `undo`,`undotime` FROM `pages` WHERE `pagename` = '%s'",
+		mysqli_real_escape_string($conn, $pageurl)
+	);
+	$result = mysqli_query($conn,$query);
+	$row = mysqli_fetch_assoc($result);
+	$update = sprintf(
+		"UPDATE `pages` SET `html` = '%s', `htmltime` = '%s' WHERE `pagename` = '%s'",
+		mysqli_real_escape_string($conn, $row['undo']),
+		mysqli_real_escape_string($conn, $row['undotime']),
+		mysqli_real_escape_string($conn, $pageurl)
+	);
+	if (mysqli_query($conn, $update) === TRUE) {
+		echo "<div class='AdminSuccess'><B>". makeCase($pages['pageurl']) ."</B> Reverted to Previous Version!</div>";
+	} else {
+		echo "<div class='AdminError'><B>\"$pageurl\" failed to roll back!</B> ". mysqli_error($conn) ."</div>";
+	}
+}
+
+function AdminPageUpdate() {
+	global $conn;
+	$pages = Pages();
+	$pageurl = preg_replace("/[^a-z\-]/","",$_REQUEST['pageurl']);
+	$content = preg_replace(array("/\s{2,}/", "/[\t\n\r]/"), " ", $_REQUEST['content']);
+	$query = sprintf("SELECT `html`,`htmltime` FROM `pages` WHERE `pagename` = '%s'", mysqli_real_escape_string($conn,$pageurl));
+	$result = mysqli_query($conn,$query);
+	$undo = mysqli_fetch_assoc($result);
+	// put in new data
+	$update = sprintf("
+		UPDATE `pages` SET
+		`html` = '%s',
+		`htmltime` = '%s',
+		`undo` = '%s',
+		`undotime` = '%s'
+		WHERE `pagename` = '%s'",
+		mysqli_real_escape_string($conn, $content), // html
+		mysqli_real_escape_string($conn, DatePHPtoSQL(time())), // htmltime
+		mysqli_real_escape_string($conn, $undo['html']), //undo
+		mysqli_real_escape_string($conn, $undo['htmltime']), //undo time
+		mysqli_real_escape_string($conn, $pageurl)
+	);
+	if (mysqli_query($conn,$update) === TRUE) {
+		echo "<div class='AdminSuccess'><B>". makeCase($pages[$pageurl]) ."</B> Successfully Updated!</div>";
+	} else {
+		echo "<div class='AdminError'><B>\"$pageurl\" page Failed to Update!</B> ". mysqli_error($conn) ."</div>";
 	}
 }
 
@@ -2154,11 +2323,6 @@ function MediaInfo($fileid,$purpose) {
 		$mediainfo['filetype'] = "mp4";
 	}
 	return ($mediainfo);
-}
-
-function AdminPagesList() {
-	global $conn;
-	AdminPagesListPage();
 }
 
 function AdminArtistList() {
@@ -3581,10 +3745,13 @@ function nicetime($date) {
 	if($now > $unix_date) {
 		$difference = $now - $unix_date;
 		$tense = "ago";
+	} else if ($now == $unix_date) {
+		$tense = "Just now";
 	} else {
 		$difference = $unix_date - $now;
 		$tense = "from now";
-	} for($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) {
+	} 
+	for($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) {
 		$difference /= $lengths[$j];
 	}
 	$difference = round($difference);
@@ -3592,7 +3759,11 @@ function nicetime($date) {
 	//  $periods[$j] .= "s"; // plural for English language
 		$periods = array("seconds", "minutes", "hours", "days", "weeks", "months", "years", "decades"); // plural for international words
 	}
-	return "$difference $periods[$j] {$tense}";
+	if ($tense == "Just now") {
+		return ($tense);
+	} else {
+		return "$difference $periods[$j] {$tense}";
+	}
 }
 
 function StatesArray() {

@@ -4,7 +4,7 @@
 
 -- DANGER!!! XXX --------------
 -- DROP ALL TABLES FOR A FRESH START HERE 
--- DROP TABLE IF EXISTS artists, artistcategories, artistsubcategories, artistmembers, artistlocations, locations, categories, media, sitehits, artiststyles, styles, admins;
+-- DROP TABLE IF EXISTS artists, artistcategories, artistsubcategories, artistmembers, artistlocations, locations, categories, media, sitehits, artiststyles, styles, admins, pages;
 -- DANGER!!! XXX --------------
 
 CREATE TABLE `sbpweb`.`artists` (
@@ -139,3 +139,22 @@ CREATE TABLE `sbpweb`.`artistsubcategories` (
 	INDEX(`aid`),
 	INDEX(`subid`)
 ) ENGINE=InnoDB;
+
+CREATE TABLE `sbpweb`.`pages` (
+	`pagename` VARCHAR(24) NOT NULL PRIMARY KEY,
+	`undo` TEXT NULL,
+	`html` TEXT NULL,
+	`undotime` DATETIME,
+	`htmltime` DATETIME
+) ENGINE=InnoDB;
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('home','Home','2014-01-01 00:00:00');
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('about-top','About (Top)','2014-01-01 00:00:00');
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('about-bottom','About (Bottom)','2014-01-01 00:00:00');
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('special-top','Events (Top)','2014-01-01 00:00:00');
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('special-bottom','Events (Bottom)','2014-01-01 00:00:00');
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('production-top','Production (Top)','2014-01-01 00:00:00');
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('production-bottom','Production (Bottom)','2014-01-01 00:00:00');
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('decor-top','Decor (Top)','2014-01-01 00:00:00');
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('decor-bottom','Decor (Bottom)','2014-01-01 00:00:00');
+INSERT INTO `pages` (`pagename`,`html`,`htmltime`) VALUES ('news','News','2014-01-01 00:00:00');
+

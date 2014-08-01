@@ -59,6 +59,17 @@ td {
 	padding-right: 1em;
 }
 
+.adminNavSubPagesItem {
+	text-align: center;
+	height: 1.5em;              
+	float: left;
+	margin: auto;
+	padding: 4px;
+	padding-left: 1em;
+	padding-right: 1em;
+	font-size: 12px;
+}
+
 .adminNavItemSelected {
 	text-align: center;
 	background-color: #AACEDF;
@@ -88,7 +99,7 @@ td {
 	background-color: #BFEFFF;
 }
 
-.adminNavSubItem:hover {
+.adminNavSubItem:hover, .adminNavSubPagesItem:hover {
 	background-color: #BFEFFF;
 }
 
