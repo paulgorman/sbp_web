@@ -299,10 +299,10 @@ nav.menu ul:hover li{
 	margin-bottom: 0px;
 }
 .homeBody p {
-	font-size:14px;
-	line-height: 16px;
-	line-height: 2vmin;
-	font-size: 1.8vmin;
+	font-size: 1.2em;
+	line-height: 1.3em;
+	//line-height: 2vmin;
+	//font-size: 1.8vmin;
 }
 .homeBody ul {
   list-style: disc;
@@ -323,10 +323,10 @@ nav.menu ul:hover li{
 }
 
 .homeNews p {
-	font-size: 12px;
-	line-height: 15px;
-	font-size: 1.6vmin;
-	line-height: 2vmin;
+	font-size: 1em;
+	line-height: 1.2em;
+	//font-size: 1.6vmin;
+	//line-height: 2vmin;
 }
 
 .homeNews p + p { margin-top: 0.5em; }
