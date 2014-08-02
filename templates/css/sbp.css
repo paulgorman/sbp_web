@@ -542,6 +542,9 @@ p.smallLabel{
 	color: white;
 	font-size: 16px;
 }
+.managementListBox em { color: white; }
+.managementListBox a:link,.managementListBox a:visited,.managementListBox a:active { color: white; }
+.managementListBox a:hover {color: white; }
 .managementEmail {
 	color: orange;
 }
@@ -588,7 +591,11 @@ p.smallLabel{
 .artistsListBoxTextName {
 	font-size:16px;
 	font-weight:bold;
+	color: white;
 }
+
+.artistListBoxTextName a:link, .artistListBoxTextName a:visited, .artistListBoxTextName a:active { color: white; }
+.artistListBoxTextName a:hover {color: white; }
 
 .artistsListBox:hover .artistsListBoxText {
 	text-decoration: none;
