@@ -288,6 +288,8 @@ nav.menu ul:hover li{
 	text-align:justify;
 	padding-bottom: 20px;
 }
+.homeBody a:link,.homeBody a:visited,.homeBody a:active { color: orange; }
+.homeBody a:hover {color: yellow; }
 .homeBody p + p { margin-top: 0.5em; }
 .homeBody h1 {
 	padding: 24px; 
