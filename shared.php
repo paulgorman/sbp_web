@@ -471,8 +471,31 @@ function getArtistCategory($aid) {
 	$cid = NULL;
 	if (strlen(preg_replace("/[^0-9]/","",$_SESSION['category'])) >= 1 ) {
 		// did the web visitor pass through a category listing page?
-		$cid = preg_replace("/[^0-9]/","",$_SESSION['category']);
+		$sess_cid = preg_replace("/[^0-9]/","",$_SESSION['category']);
 		// FIXME XXX ASDF is the artist really under this category?
+		// get all categories artist listed under
+		$query = sprintf(
+			"SELECT `categories`.`cid` FROM `categories` 
+			 LEFT OUTER JOIN `artistcategories` ON `categories`.`cid` = `artistcategories`.`cid` 
+			 WHERE `artistcategories`.`aid` = '%s' AND `categories`.`published` = 1 ORDER BY `categories`.`is_highlighted` DESC, `categories`.`category` ASC",
+			mysqli_real_escape_string($conn,$aid)
+		);
+		$result = mysqli_query($conn,$query);
+		$categories = array();
+		$j = 0; // I want the first category set aside plz
+		if (mysqli_num_rows($result)) {
+			while ($row = mysqli_fetch_assoc($result)) {
+				$categories[$j] = $row['cid'];
+				if ($row['cid'] == $sess_cid)
+					$cid = $sess_cid;
+				}
+				$j++;
+			} 
+		if (isEmpty($cid)) {
+			// wrong CID in session cookie, so use first category from the database
+			$cid = $categories[0];
+			$_SESSION['category'] = $cid;
+		}
 	} else {
 		// no category was in the session, prolly a direct link, so go pick a category for this one artist
 		$query = sprintf(
