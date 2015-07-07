@@ -30,3 +30,5 @@ Install
 Notes
 -----
 alias ci='git add -A;git commit;git push origin master;'
+Depends upon ffmpeg and php5-ffmpeg
+PHP modules: fileinfo, gd, mysqli, session

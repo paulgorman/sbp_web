@@ -830,7 +830,7 @@ function DecorPage() {
 	htmlMasthead($meta);
 	htmlDropDownNavigationSingle(gatherNavData());
 	//htmlDropDownNavigationFull(gatherNavData());
-	htmlWavesStart();
+	htmlWavesStartShort();
 	htmlContent($content);
 	htmlBodyStart();
 	//htmlBreadcrumb($meta);
@@ -2721,7 +2721,7 @@ function AdminSaveSingleCategory($cid) {
 		echo "<div class='AdminError'>Please fill in all three Category fields</div>";
 	} else {
 		$cid = preg_replace("/\[^0-9]/","",trim($cid));
-		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
+		$url = MakeURL(strip_tags(trim($_REQUEST['form_url'])));
 		$category = htmlspecialchars(trim($_REQUEST['form_category']));
 		if (strlen($_REQUEST['published'])) {
 			$published = TRUE;
@@ -2797,7 +2797,7 @@ function AdminSaveSingleSubCategory($subid) {
 		echo "<div class='AdminError'>Please fill in all three Category fields</div>";
 	} else {
 		$subid = preg_replace("/\[^0-9]/","",trim($subid));
-		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
+		$url = MakeURL(strtolower(strip_tags(trim($_REQUEST['form_url']))));
 		$subcategory = htmlspecialchars(trim($_REQUEST['form_subcategory']));
 		if ($filename) {
 			// delete the old category image file from the system
@@ -3240,7 +3240,7 @@ function AdminSaveNewCategory() {
 		echo "<div class='AdminError'>Please fill in Category Name, Description and the Category Graphic</div>";
 	} else {
 		$category = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
-		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
+		$url = MakeURL(strip_tags(trim($_REQUEST['form_url'])));
 		if (isEmpty($url)) {
 			$url = MakeURL(strtolower($category));
 		}
@@ -3292,7 +3292,7 @@ function AdminSaveNewSubCategory() {
 		echo "<div class='AdminError'>Please fill in Category Name, Description and the Category Graphic</div>";
 	} else {
 		$subcategory = htmlspecialchars(ucwords(trim($_REQUEST['form_category'])));
-		$url = preg_replace("/ /","_",strtolower(strip_tags(trim($_REQUEST['form_url']))) );
+		$url = MakeURL(strtolower(strip_tags(trim($_REQUEST['form_url']))));
 		if (isEmpty($url)) {
 			$url = MakeURL(strtolower($subcategory));
 		}
@@ -3370,13 +3370,20 @@ function ResizeImage($fileid,$purpose) {
 		$ffmpeg = new ffmpeg_movie("$dirlocation/m/$fileid");
 		$totalframes = $ffmpeg->getFrameCount();
 		// XXX: This takes some time to render
-		for ($i = 1; $i < 4; $i++) {
-			echo "rendering preview $i using frame ". ceil($totalframes*($i * "0.1")) ." of $totalframes\n<br>";
+		for ($i = 1; $i < 5; $i++) {
 			$thumbnailname = substr($fileid,0,-4) . "-$i.jpg";
-			$frame = $ffmpeg->getFrame(ceil($totalframes*($i * "0.1"))); // make four thumbnails every 100 frames
-			$gd_image = $frame->toGDImage();
-			imagejpeg($gd_image, "$dirlocation/i/$purpose/$thumbnailname");
-			imagedestroy($gd_image);
+			$frame = framesToTC(ceil($totalframes*($i * "0.2")), 30); // make four thumbnails every 200~ish frames, assuming 30 fps
+			echo "rendering preview $i using frame ". ceil($totalframes*($i * "0.1")) ." at ". $frame ." of $totalframes\n<br>";
+			/* ffmpegthumbnailer quality sucks, it's combining frames!
+				exec("/usr/local/bin/ffmpegthumbnailer -i $dirlocation/m/$fileid -o $dirlocation/i/$purpose/$thumbnailname -s 0 -t $frame");
+			*/
+			exec ("/usr/local/bin/ffmpeg -ss $frame -i $dirlocation/m/$fileid -frames 1 -qscale:v 2 $dirlocation/i/$purpose/$thumbnailname");
+			/* phpffmpeg fails on toGDImage() since late 2014
+				$frame = $ffmpeg->getFrame(ceil($totalframes*($i * "0.1"))); // make four thumbnails every 100 frames
+				$gd_image = $frame->toGDImage();
+				imagejpeg($gd_image, "$dirlocation/i/$purpose/$thumbnailname");
+				imagedestroy($gd_image);
+			*/
 		}
 		// whatever image is fileid.jpg is the visible thumbnail, others just there for backup wasting space
 		copy ("$dirlocation/i/$purpose/".substr($fileid,0,-4) . "-1.jpg", "$dirlocation/i/$purpose/". substr($fileid,0,-4) .".jpg");
@@ -3896,6 +3903,7 @@ function MakeURL($str, $replace=array(), $delimiter='-') {
 		$str = str_replace((array)$replace, ' ', $str);
 	}
 	$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+	$clean = preg_replace("/&quot;/", '', $clean);
 	$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
 	$clean = strtolower(trim($clean, '-'));
 	$clean = trim(preg_replace("/[\/_|+ -]+/", $delimiter, $clean));
@@ -4086,4 +4094,15 @@ function getDntStatus() {
 	// returns TRUE if Do-Not-Track is on and is equal to 1,
 	// returns FALSE if DNT is unset or not equal to 1.
 	return (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1);
+}
+
+function framesToTC($frames, $framerate) {
+	$hours = floor( $frames / ( $framerate * 60 * 60 ) );
+	$framesleft = $frames - ($hours * $framerate * 60 * 60);
+	$minutes = floor( $framesleft / ( $framerate * 60 ) );
+	$framesleft -= ( $minutes * $framerate * 60 );
+	$seconds = floor( $framesleft / ( $framerate ) );
+	$framesleft -= ( $seconds * $framerate ); // unused by ffmpegthumbnailer
+	$tc = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+	return $tc;
 }
