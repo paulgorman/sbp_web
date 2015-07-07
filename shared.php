@@ -403,6 +403,8 @@ function getArtistInfoFromURL($url) {
 		}
 		// prepare the artist bio for mobile and desktop view
 		// XXX Hardcoded at 850 characters
+		// Split the Artist Bio into Nice Fitting Space and include "More" link to display more text
+		// XXX FixMe:  If just one dangling sentence remains, just include it please. 
 		$browser = get_browser(null, true); 
 		if ($browser['ismobiledevice'] > 0) {
 			$artistnames[$aid]['bio'] = Parsedown::instance()->parse(htmlspecialchars_decode($artistnames[$aid]['bio']));
@@ -423,9 +425,9 @@ function getArtistInfoFromURL($url) {
 			if (!isEmpty($secondpart)) {
 				$firstpart = Parsedown::instance()->parse(htmlspecialchars_decode($firstpart));
 				$firstpart .= "<a href=\"#\" id=\"continued-show\" class=\"showLink\" onclick=\"showHide('continued');return false;\">More &#9660;</a>";
-				$secondpartparsed = "<div style=\"margin-top: 6px;\" id=\"continued\" class=\"more\">";
+				$secondpartparsed = "<div style=\"margin-top: 6px;\" id=\"continued\" class=\"more\">\n";
 				$secondpartparsed .= Parsedown::instance()->parse($secondpart);
-				$secondpartparsed .= "</div>";
+				$secondpartparsed .= "\n</div>";
 				$artistnames[$aid]['bio'] = $firstpart . $secondpartparsed;
 			} else {
 				$artistnames[$aid]['bio'] = Parsedown::instance()->parse(htmlspecialchars_decode($firstpart));
@@ -472,7 +474,6 @@ function getArtistCategory($aid) {
 	if (strlen(preg_replace("/[^0-9]/","",$_SESSION['category'])) >= 1 ) {
 		// did the web visitor pass through a category listing page?
 		$sess_cid = preg_replace("/[^0-9]/","",$_SESSION['category']);
-		// FIXME XXX ASDF is the artist really under this category?
 		// get all categories artist listed under
 		$query = sprintf(
 			"SELECT `categories`.`cid` FROM `categories` 
@@ -511,6 +512,22 @@ function getArtistCategory($aid) {
 		}
 	}
 	return($cid);
+}
+
+function getArtistSubCategory ($aid) {
+	global $conn;
+	//asdf
+	$subid = NULL;
+	if ($strlen(preg_replace("/[^0-9]/","",$_SESSION['subcategory'])) >= 1) {
+		$sess_subid = preg_replace("/[^0-9]/","",$_SESSION['subcategory']);
+		$query = sprintf(
+			"SELECT `subcategories`.`subid` FROM `subcategories`
+			 LEFT OUTER JOIN `artistsubcategories` ON `subcategories`.`subid` = `artistsubcategories`.`subid`
+			 WHERE `artistsubcategories`.`aid` = '%s' AND `subcategories`.`published` = 1 ORDER BY `subcategories`.`subcategory` ASC",
+			mysqli_real_escape_string($conn,$aid)
+		);
+		// XXX: sure great, but what about if that subcat is in the parent's cat??
+	}
 }
 
 function FaceBookLike() {
