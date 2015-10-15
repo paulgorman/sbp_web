@@ -1,6 +1,12 @@
 
 RewriteEngine on
 
+### 20151014 
+## We send sbeyer.com to the new ZDI SBP website!
+RewriteCond %{HTTP_HOST} ^(?:www\.)?sbeyer\.com$
+RewriteRule ^(.*)$ https://stevebeyerproductions.com/$1 [R=301,L]
+
+
 # turn pretty SEO url's into presence's index.php dispatcher
 
 RewriteRule ^server-status - [L]
